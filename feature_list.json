@@ -257,7 +257,7 @@
       "Step 5: Check that category name is highlighted in filters",
       "Step 6: Verify product count matches filtered results"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
