@@ -1,16 +1,21 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 import useCartStore from '../stores/cartStore';
 import CartDrawer from './CartDrawer';
 import CategoryNavigation from './CategoryNavigation';
+import Autocomplete from './Autocomplete';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { user, logout, isAuthenticated } = useAuthStore();
   const { fetchCart, getItemCount } = useCartStore();
   const location = useLocation();
+  const navigate = useNavigate();
+  const searchContainerRef = useRef(null);
 
   // Fetch cart when user logs in or when header mounts
   useEffect(() => {
@@ -27,6 +32,20 @@ export default function Header() {
     setIsMenuOpen(false);
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsMenuOpen(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
+  };
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,15 +60,30 @@ export default function Header() {
 
           {/* Search Bar */}
           <div className="hidden md:flex flex-1 max-w-2xl mx-8">
-            <div className="w-full relative">
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            <div ref={searchContainerRef} className="w-full relative">
+              <form onSubmit={handleSearch}>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  placeholder="Search products..."
+                  className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full hover:bg-green-600 transition"
+                >
+                  Search
+                </button>
+              </form>
+              <Autocomplete
+                isVisible={isSearchFocused && searchQuery.length > 0}
+                query={searchQuery}
+                onNavigate={() => setIsSearchFocused(false)}
               />
-              <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full hover:bg-green-600 transition">
-                Search
-              </button>
             </div>
           </div>
 
@@ -133,11 +167,16 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t">
             <div className="mb-4">
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
-              />
+              <form onSubmit={handleSearch}>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  placeholder="Search products..."
+                  className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </form>
             </div>
             <nav className="flex flex-col space-y-3">
               {/* Mobile Categories */}

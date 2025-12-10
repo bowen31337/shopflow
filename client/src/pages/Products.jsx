@@ -26,6 +26,7 @@ export default function Products() {
     brand: searchParams.get('brand') || '',
     minPrice: searchParams.get('minPrice') || '',
     maxPrice: searchParams.get('maxPrice') || '',
+    search: searchParams.get('search') || '',
     sort: searchParams.get('sort') || 'price_asc',
     view: searchParams.get('view') || 'grid',
   });
@@ -87,6 +88,7 @@ export default function Products() {
         brand: filters.brand || undefined,
         minPrice: filters.minPrice || undefined,
         maxPrice: filters.maxPrice || undefined,
+        search: filters.search || undefined,
         sort: filters.sort || undefined,
         page: currentPage.toString(),
         limit: '6',
@@ -124,6 +126,7 @@ export default function Products() {
       brand: '',
       minPrice: '',
       maxPrice: '',
+      search: '',
       sort: 'price_asc',
       view: 'grid',
     });

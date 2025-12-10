@@ -419,7 +419,7 @@
       "Step 5: Navigate to checkout page",
       "Step 6: Verify search bar remains accessible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -432,7 +432,7 @@
       "Step 5: Check that all results contain the search keyword",
       "Step 6: Verify result count is displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -445,7 +445,7 @@
       "Step 5: Click on a suggestion",
       "Step 6: Verify navigation to product or search results"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
