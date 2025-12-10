@@ -8,7 +8,7 @@
       "Step 3: Confirm server is listening on the correct port",
       "Step 4: Check that database connection is established"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -30,7 +30,7 @@
       "Step 3: Verify all tables from schema are created (addresses, categories, products, etc.)",
       "Step 4: Confirm foreign key relationships are properly set up"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -42,7 +42,7 @@
       "Step 4: Verify product images are associated with products",
       "Step 5: Confirm brands table has sample data"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
