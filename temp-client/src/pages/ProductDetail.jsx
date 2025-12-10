@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchProductBySlug } from '../api/products';
 import { addToCart } from '../api/cart';
+import { addToWishlist } from '../api/wishlist';
 import useCartStore from '../stores/cartStore';
+import { useAuth } from '../stores/authStore';
+import { toast } from 'react-hot-toast';
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -15,6 +18,7 @@ export default function ProductDetail() {
 
   // Cart store
   const { addToCart: addToCartStore, error: cartError, clearError } = useCartStore();
+  const auth = useAuth();
 
   useEffect(() => {
     loadProduct();
@@ -280,10 +284,19 @@ export default function ProductDetail() {
                 </button>
                 <button
                   className="px-6 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition"
-                  onClick={() => {
-                    // TODO: Add to wishlist functionality
-                    alert('Added to wishlist!');
+                  onClick={async () => {
+                    if (!auth.user) {
+                      toast.error('Please login to add to wishlist');
+                      return;
+                    }
+                    try {
+                      await addToWishlist(product.id);
+                      toast.success('Added to wishlist');
+                    } catch (err) {
+                      toast.error(err.message || 'Failed to add to wishlist');
+                    }
                   }}
+                  title="Add to wishlist"
                 >
                   ❤️
                 </button>

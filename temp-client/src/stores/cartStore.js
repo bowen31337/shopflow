@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import * as cartApi from '../api/cart.js';
 
 const useCartStore = create((set, get) => ({
   items: [],
@@ -10,7 +11,7 @@ const useCartStore = create((set, get) => ({
   fetchCart: async () => {
     try {
       set({ loading: true, error: null });
-      const response = await import('../api/cart.js').then(mod => mod.fetchCart());
+      const response = await cartApi.fetchCart();
       set({
         items: response.items,
         subtotal: response.subtotal,
@@ -28,7 +29,7 @@ const useCartStore = create((set, get) => ({
   addToCart: async (productId, quantity, variantId = null) => {
     try {
       set({ loading: true, error: null });
-      const response = await import('../api/cart.js').then(mod => mod.addToCart(productId, quantity, variantId));
+      const response = await cartApi.addToCart(productId, quantity, variantId);
       set({
         items: response.items,
         subtotal: response.subtotal,
@@ -48,7 +49,7 @@ const useCartStore = create((set, get) => ({
   updateItem: async (id, quantity) => {
     try {
       set({ loading: true, error: null });
-      const response = await import('../api/cart.js').then(mod => mod.updateCartItem(id, quantity));
+      const response = await cartApi.updateCartItem(id, quantity);
       set({
         items: response.items,
         subtotal: response.subtotal,
@@ -67,7 +68,7 @@ const useCartStore = create((set, get) => ({
   removeItem: async (id) => {
     try {
       set({ loading: true, error: null });
-      const response = await import('../api/cart.js').then(mod => mod.removeFromCart(id));
+      const response = await cartApi.removeFromCart(id);
       set({
         items: response.items,
         subtotal: response.subtotal,

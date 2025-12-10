@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchProductBySlug } from '../api/products';
+import useCartStore from '../stores/cartStore';
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -9,6 +10,9 @@ export default function ProductDetail() {
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [selectedVariants, setSelectedVariants] = useState({});
+  const { addToCart, isAuthenticated } = useCartStore();
 
   useEffect(() => {
     loadProduct();
@@ -33,6 +37,23 @@ export default function ProductDetail() {
       style: 'currency',
       currency: 'USD',
     }).format(price);
+  };
+
+  // Group variants by name (e.g., Size, Color)
+  const groupedVariants = product?.variants?.reduce((acc, variant) => {
+    if (!acc[variant.name]) {
+      acc[variant.name] = [];
+    }
+    acc[variant.name].push(variant);
+    return acc;
+  }, {});
+
+  // Get selected variant for add to cart
+  const getSelectedVariant = () => {
+    const variants = product?.variants || [];
+    return variants.find(variant =>
+      Object.keys(selectedVariants).every(key => selectedVariants[key] === variant.value)
+    );
   };
 
   const renderStars = (rating) => {
@@ -134,7 +155,10 @@ export default function ProductDetail() {
               <img
                 src={images[selectedImage] || '/placeholder.jpg'}
                 alt={product.name}
-                className="w-full h-[500px] object-cover"
+                className={`w-full h-[500px] object-cover cursor-zoom-in transition-transform duration-300 ${isZoomed ? 'scale-125' : 'scale-100'}`}
+                onMouseEnter={() => setIsZoomed(true)}
+                onMouseLeave={() => setIsZoomed(false)}
+                onClick={() => setIsZoomed(!isZoomed)}
                 onError={(e) => {
                   e.target.src = 'https://via.placeholder.com/600x600?text=Product+Image';
                 }}
@@ -230,6 +254,45 @@ export default function ProductDetail() {
               <p className="text-gray-600 leading-relaxed">{product.description}</p>
             </div>
 
+            {/* Product Variants */}
+            {groupedVariants && Object.keys(groupedVariants).length > 0 && (
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h3 className="text-lg font-semibold mb-3">Options</h3>
+                {Object.entries(groupedVariants).map(([variantName, variants]) => (
+                  <div key={variantName} className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {variantName}
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {variants.map((variant) => {
+                        const isSelected = selectedVariants[variantName] === variant.value;
+                        return (
+                          <button
+                            key={variant.id}
+                            onClick={() => setSelectedVariants({
+                              ...selectedVariants,
+                              [variantName]: variant.value
+                            })}
+                            className={`px-4 py-2 border rounded-full text-sm font-medium transition-all ${
+                              isSelected
+                                ? 'border-primary bg-primary text-white'
+                                : 'border-gray-300 hover:border-primary hover:text-primary'
+                            }`}
+                            disabled={variant.stock_quantity === 0}
+                          >
+                            {variant.value}
+                            {variant.stock_quantity === 0 && (
+                              <span className="ml-2 text-red-500">- Out of Stock</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Add to Cart */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-center gap-4 mb-4">
@@ -257,9 +320,30 @@ export default function ProductDetail() {
                 <button
                   className="flex-1 bg-primary text-white py-3 rounded-full font-semibold hover:bg-green-600 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
                   disabled={product.stock_quantity === 0}
-                  onClick={() => {
-                    // TODO: Add to cart functionality
-                    alert(`Added ${quantity} ${product.name}(s) to cart!`);
+                  onClick={async () => {
+                    try {
+                      // Check if required variants are selected
+                      const requiredVariantGroups = Object.keys(groupedVariants || {});
+                      const missingVariants = requiredVariantGroups.filter(group => !selectedVariants[group]);
+
+                      if (missingVariants.length > 0) {
+                        alert(`Please select ${missingVariants.join(', ')}`);
+                        return;
+                      }
+
+                      // Get the selected variant
+                      const selectedVariant = getSelectedVariant();
+
+                      if (!isAuthenticated) {
+                        alert('Please login to add items to cart');
+                        return;
+                      }
+
+                      await addToCart(product.id, quantity, selectedVariant?.id);
+                      alert(`Added ${quantity} ${product.name}(s) to cart!`);
+                    } catch (error) {
+                      alert(`Error adding to cart: ${error.message}`);
+                    }
                   }}
                 >
                   {product.stock_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCartStore } from '../stores/cartStore';
-import { useAuthStore } from '../stores/authStore';
+import useCartStore from '../stores/cartStore';
+import useAuthStore from '../stores/authStore';
 
 export default function Cart() {
   const navigate = useNavigate();

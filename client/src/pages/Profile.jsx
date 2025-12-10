@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuthStore } from '../stores/authStore';
+import useAuthStore from '../stores/authStore';
 import api from '../api';
 
 export default function Profile() {
@@ -38,12 +38,7 @@ export default function Profile() {
     setSuccess('');
 
     try {
-      const response = await api.put('/api/user/profile', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
+      const response = await api.put('/api/user/profile', formData);
       useAuthStore.setState({ user: response.data.user });
       setSuccess('Profile updated successfully!');
       setIsEditing(false);
@@ -204,12 +199,7 @@ function ChangePassword() {
       await api.post('/api/user/change-password', {
         currentPassword: formData.currentPassword,
         newPassword: formData.newPassword
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
       });
-
       setSuccess('Password changed successfully!');
       setFormData({
         currentPassword: '',

@@ -19,7 +19,7 @@
       "Step 3: Confirm frontend is accessible on specified port",
       "Step 4: Check that the homepage loads"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -80,7 +80,7 @@
       "Step 4: Verify error message is displayed",
       "Step 5: Confirm user remains on login page"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -92,7 +92,7 @@
       "Step 4: Access same endpoint with valid token",
       "Step 5: Confirm request succeeds with 200 response"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -105,7 +105,7 @@
       "Step 5: Navigate to site",
       "Step 6: Verify user is still logged in"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -120,7 +120,7 @@
       "Step 7: Submit and verify password is updated",
       "Step 8: Login with new password successfully"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -143,7 +143,7 @@
       "Step 4: Click grid view toggle button",
       "Step 5: Verify layout changes back to grid view"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -170,7 +170,7 @@
       "Step 4: Confirm main image updates to show selected thumbnail",
       "Step 5: Test navigation arrows between images"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -182,7 +182,7 @@
       "Step 4: Move cursor to see different parts of zoomed image",
       "Step 5: Confirm zoom deactivates when cursor leaves"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -195,7 +195,7 @@
       "Step 5: Verify selected color is highlighted",
       "Step 6: Confirm price updates if variant has price adjustment"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

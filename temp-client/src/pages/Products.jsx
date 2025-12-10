@@ -18,6 +18,7 @@ export default function Products() {
     minPrice: searchParams.get('minPrice') || '',
     maxPrice: searchParams.get('maxPrice') || '',
     sort: searchParams.get('sort') || 'price_asc',
+    view: searchParams.get('view') || 'grid',
   });
 
   // Load filters and products
@@ -88,6 +89,7 @@ export default function Products() {
       minPrice: '',
       maxPrice: '',
       sort: 'price_asc',
+      view: 'grid',
     });
   };
 
@@ -121,6 +123,28 @@ export default function Products() {
                 <option value="created_desc">Newest</option>
                 <option value="rating_desc">Rating</option>
               </select>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => updateFilter('view', 'grid')}
+                  className={`p-2 rounded-lg transition ${filters.view === 'grid' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                  aria-label="Grid view"
+                  title="Grid view"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => updateFilter('view', 'list')}
+                  className={`p-2 rounded-lg transition ${filters.view === 'list' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                  aria-label="List view"
+                  title="List view"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -226,11 +250,11 @@ export default function Products() {
           {/* Products Grid */}
           <main className="lg:col-span-3">
             {/* Sort Mobile */}
-            <div className="md:hidden mb-6">
+            <div className="md:hidden mb-6 flex items-center justify-between">
               <select
                 value={filters.sort}
                 onChange={(e) => updateFilter('sort', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="price_asc">Price: Low to High</option>
                 <option value="price_desc">Price: High to Low</option>
@@ -239,6 +263,28 @@ export default function Products() {
                 <option value="created_desc">Newest</option>
                 <option value="rating_desc">Rating</option>
               </select>
+              <div className="flex items-center gap-2 ml-4">
+                <button
+                  onClick={() => updateFilter('view', 'grid')}
+                  className={`p-2 rounded-lg transition ${filters.view === 'grid' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                  aria-label="Grid view"
+                  title="Grid view"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => updateFilter('view', 'list')}
+                  className={`p-2 rounded-lg transition ${filters.view === 'list' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                  aria-label="List view"
+                  title="List view"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {/* Results Info */}
@@ -280,13 +326,23 @@ export default function Products() {
               </div>
             )}
 
-            {/* Products Grid */}
+            {/* Products Grid/List */}
             {!loading && !error && products.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <>
+                {filters.view === 'grid' ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {products.map((product) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {products.map((product) => (
+                      <ProductCard key={product.id} product={product} view="list" />
+                    ))}
+                  </div>
+                )}
+              </>
             )}
 
             {/* No Products */}

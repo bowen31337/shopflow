@@ -1,8 +1,47 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useCartStore } from '../stores/cartStore';
+import { useAuth } from '../stores/authStore';
 
-export default function Header() {
+export default function Header({ onCartClick }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { items } = useCartStore();
+  const auth = useAuth();
+  const location = useLocation();
+
+  const [wishlistCount, setWishlistCount] = useState(0);
+
+  useEffect(() => {
+    if (auth.user) {
+      loadWishlistCount();
+    }
+  }, [auth.user]);
+
+  const loadWishlistCount = async () => {
+    try {
+      const response = await fetch('/api/wishlist');
+      if (response.ok) {
+        const data = await response.json();
+        setWishlistCount(data.count || 0);
+      }
+    } catch (err) {
+      console.error('Failed to load wishlist count:', err);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      if (response.ok) {
+        auth.logout();
+      }
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -10,7 +49,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
               <span className="text-white text-xl font-bold">SF</span>
             </div>
             <span className="text-2xl font-bold text-gray-900">ShopFlow</span>
@@ -22,9 +61,9 @@ export default function Header() {
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
-              <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full hover:bg-green-600 transition">
+              <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-emerald-600 text-white px-4 py-1 rounded-full hover:bg-emerald-700 transition">
                 Search
               </button>
             </div>
@@ -32,18 +71,64 @@ export default function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/products" className="text-gray-700 hover:text-primary transition">
+            <Link
+              to="/products"
+              className={`text-gray-700 hover:text-emerald-600 transition ${
+                location.pathname === '/products' ? 'text-emerald-600 font-semibold' : ''
+              }`}
+            >
               Products
             </Link>
-            <Link to="/login" className="text-gray-700 hover:text-primary transition">
-              Login
-            </Link>
-            <Link to="/cart" className="relative text-gray-700 hover:text-primary transition">
+            {auth.user ? (
+              <>
+                <Link to="/wishlist" className="text-gray-700 hover:text-emerald-600 transition relative">
+                  <span className="text-2xl">❤️</span>
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                </Link>
+                <Link
+                  to="/profile"
+                  className={`text-gray-700 hover:text-emerald-600 transition ${
+                    location.pathname === '/profile' ? 'text-emerald-600 font-semibold' : ''
+                  }`}
+                >
+                  Profile
+                </Link>
+                <button onClick={handleLogout} className="text-gray-700 hover:text-emerald-600 transition">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className={`text-gray-700 hover:text-emerald-600 transition ${
+                    location.pathname === '/login' ? 'text-emerald-600 font-semibold' : ''
+                  }`}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className={`text-gray-700 hover:text-emerald-600 transition ${
+                    location.pathname === '/register' ? 'text-emerald-600 font-semibold' : ''
+                  }`}
+                >
+                  Register
+                </Link>
+              </>
+            )}
+            <button
+              onClick={onCartClick}
+              className="relative text-gray-700 hover:text-emerald-600 transition"
+              aria-label="Open cart"
+            >
               <span className="text-2xl">🛒</span>
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                0
+                {items.length}
               </span>
-            </Link>
+            </button>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -64,19 +149,80 @@ export default function Header() {
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-600"
               />
             </div>
             <nav className="flex flex-col space-y-3">
-              <Link to="/products" className="text-gray-700 hover:text-primary transition">
+              <Link
+                to="/products"
+                onClick={() => setIsMenuOpen(false)}
+                className={`text-gray-700 hover:text-emerald-600 transition ${
+                  location.pathname === '/products' ? 'text-emerald-600 font-semibold' : ''
+                }`}
+              >
                 Products
               </Link>
-              <Link to="/login" className="text-gray-700 hover:text-primary transition">
-                Login
-              </Link>
-              <Link to="/cart" className="text-gray-700 hover:text-primary transition">
-                Cart (0)
-              </Link>
+              {auth.user ? (
+                <>
+                  <Link
+                    to="/wishlist"
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`text-gray-700 hover:text-emerald-600 transition ${
+                      location.pathname === '/wishlist' ? 'text-emerald-600 font-semibold' : ''
+                    }`}
+                  >
+                    Wishlist ({wishlistCount})
+                  </Link>
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`text-gray-700 hover:text-emerald-600 transition ${
+                      location.pathname === '/profile' ? 'text-emerald-600 font-semibold' : ''
+                    }`}
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="text-gray-700 hover:text-emerald-600 transition text-left"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`text-gray-700 hover:text-emerald-600 transition ${
+                      location.pathname === '/login' ? 'text-emerald-600 font-semibold' : ''
+                    }`}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`text-gray-700 hover:text-emerald-600 transition ${
+                      location.pathname === '/register' ? 'text-emerald-600 font-semibold' : ''
+                    }`}
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
+              <button
+                onClick={() => {
+                  onCartClick();
+                  setIsMenuOpen(false);
+                }}
+                className="text-gray-700 hover:text-emerald-600 transition text-left"
+              >
+                Cart ({items.length})
+              </button>
             </nav>
           </div>
         )}

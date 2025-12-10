@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../stores/authStore';
-import { useCartStore } from '../stores/cartStore';
+import useAuthStore from '../stores/authStore';
+import useCartStore from '../stores/cartStore';
 import CartDrawer from './CartDrawer';
 
 export default function Header() {

@@ -1,4 +1,4 @@
-import useCartStore from '../stores/cartStore';
+import { useCartStore } from '../stores/cartStore';
 
 export default function CartDrawer({ isOpen, onClose }) {
   const { items, getItemCount, getTotal, removeFromCart, updateQuantity, isLoading, error } = useCartStore();
