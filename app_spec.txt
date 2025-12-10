@@ -9,26 +9,35 @@
   </overview>
 
   <technology_stack>
+    <language_preference>
+      IMPORTANT: Use TypeScript (.ts, .tsx) for ALL code. Do NOT use JavaScript (.js, .jsx).
+      All files must have proper type annotations and strict type checking enabled.
+    </language_preference>
     <api_key>
         You can use an API key located at /tmp/api-key for testing.
     </api_key>
     <frontend>
-      <framework>React with Vite</framework>
-      <styling>Tailwind CSS (via CDN)</styling>
-      <state_management>React hooks, Context for cart, Zustand for global state</state_management>
-      <routing>React Router for navigation</routing>
-      <forms>React Hook Form for checkout</forms>
+      <framework>React 18+ with Vite and TypeScript</framework>
+      <language>TypeScript (strict mode) - use .tsx for components, .ts for utilities</language>
+      <styling>Tailwind CSS (via CDN or PostCSS)</styling>
+      <state_management>React hooks with typed state, Context for cart, Zustand with TypeScript</state_management>
+      <routing>React Router v6 with typed routes</routing>
+      <forms>React Hook Form with TypeScript and Zod for validation</forms>
+      <type_safety>Enable strict mode in tsconfig.json, no implicit any</type_safety>
       <port>Only launch on port {frontend_port}</port>
     </frontend>
     <backend>
-      <runtime>Node.js with Express</runtime>
-      <database>SQLite with better-sqlite3</database>
-      <authentication>JWT-based auth with refresh tokens</authentication>
-      <payment>Stripe integration (test mode)</payment>
-      <image_handling>Multer for product image uploads</image_handling>
+      <runtime>Node.js with Express and TypeScript</runtime>
+      <language>TypeScript - compile with tsc or ts-node for development</language>
+      <database>SQLite with better-sqlite3 (with typed queries)</database>
+      <authentication>JWT-based auth with refresh tokens (typed middleware)</authentication>
+      <payment>Stripe integration with @stripe/stripe-js types (test mode)</payment>
+      <image_handling>Multer with TypeScript types for product image uploads</image_handling>
+      <type_safety>Use interfaces for all API request/response types</type_safety>
     </backend>
     <communication>
-      <api>RESTful endpoints</api>
+      <api>RESTful endpoints with typed request/response interfaces</api>
+      <shared_types>Create shared type definitions for frontend and backend</shared_types>
     </communication>
   </technology_stack>
 
@@ -409,10 +418,13 @@
     <step number="1">
       <title>Foundation Setup</title>
       <tasks>
-        - Initialize Express with SQLite
-        - Create database schema
-        - Implement authentication
-        - Seed sample products
+        - Initialize Vite React project with TypeScript template (npm create vite@latest client -- --template react-ts)
+        - Initialize Express backend with TypeScript (tsconfig.json with strict: true)
+        - Create shared types directory for frontend/backend type sharing
+        - Set up SQLite with better-sqlite3 and typed query helpers
+        - Create database schema with TypeScript interfaces
+        - Implement typed authentication middleware
+        - Seed sample products with type-safe data
       </tasks>
     </step>
 

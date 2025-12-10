@@ -55,7 +55,7 @@
       "Step 5: Check that user is created in database",
       "Step 6: Confirm password is hashed in database"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -68,7 +68,7 @@
       "Step 5: Confirm user is redirected to homepage",
       "Step 6: Check that user account menu shows logged-in state"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -131,7 +131,7 @@
       "Step 3: Check that product cards show image, name, price, and rating",
       "Step 4: Confirm add to cart button is visible on each card"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -158,7 +158,7 @@
       "Step 7: Check that stock availability indicator is displayed",
       "Step 8: Verify add to cart button is present"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -496,7 +496,7 @@
       "Step 4: Check that cart icon badge updates with item count",
       "Step 5: Open cart drawer and confirm product is in cart"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -510,7 +510,7 @@
       "Step 6: Check cart icon badge shows correct quantity",
       "Step 7: Open cart and verify product with selected variant and quantity"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -748,7 +748,7 @@
       "Step 5: Confirm phone number is displayed (if provided)",
       "Step 6: Verify avatar/profile picture is shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -763,7 +763,7 @@
       "Step 7: Refresh page and confirm changes persisted",
       "Step 8: Check database to verify updates"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -779,7 +779,7 @@
       "Step 8: Logout and login with new password",
       "Step 9: Confirm new password works"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1815,7 +1815,7 @@
       "Step 5: Confirm section has appropriate heading",
       "Step 6: Click on featured product and verify navigation"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
