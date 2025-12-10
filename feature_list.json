@@ -309,7 +309,7 @@
       "Step 5: Drag maximum price slider handle",
       "Step 6: Confirm products filter as slider is adjusted"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

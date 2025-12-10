@@ -4,6 +4,7 @@ import { fetchProducts } from '../api/products';
 import ProductCard from '../components/ProductCard';
 import RecentlyViewedProducts from '../components/RecentlyViewedProducts';
 import Pagination from '../components/Pagination';
+import PriceRangeSlider from '../components/PriceRangeSlider';
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,6 +30,12 @@ export default function Products() {
     view: searchParams.get('view') || 'grid',
   });
 
+  // Price range limits
+  const [priceLimits, setPriceLimits] = useState({
+    min: 0,
+    max: 1000
+  });
+
   // Load filters and products
   useEffect(() => {
     loadFilters();
@@ -49,6 +56,21 @@ export default function Products() {
       if (brandsResponse.ok) {
         const brandsData = await brandsResponse.json();
         setBrands(brandsData.brands || []);
+      }
+
+      // Load price limits
+      const productsResponse = await fetch('/api/products?limit=1000');
+      if (productsResponse.ok) {
+        const productsData = await productsResponse.json();
+        const productsList = productsData.products || [];
+        if (productsList.length > 0) {
+          const minPrice = Math.floor(Math.min(...productsList.map(p => p.price)));
+          const maxPrice = Math.ceil(Math.max(...productsList.map(p => p.price)));
+          setPriceLimits({
+            min: Math.floor(minPrice * 0.9),
+            max: Math.ceil(maxPrice * 1.1)
+          });
+        }
       }
     } catch (err) {
       console.error('Failed to load filters:', err);
@@ -350,23 +372,14 @@ export default function Products() {
 
               {/* Price Range Filter */}
               <div className="mb-6">
-                <h3 className="font-medium text-gray-900 mb-3">Price Range</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    value={filters.minPrice}
-                    onChange={(e) => updateFilter('minPrice', e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    value={filters.maxPrice}
-                    onChange={(e) => updateFilter('maxPrice', e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
+                <PriceRangeSlider
+                  minPrice={filters.minPrice ? parseInt(filters.minPrice) : priceLimits.min}
+                  maxPrice={filters.maxPrice ? parseInt(filters.maxPrice) : priceLimits.max}
+                  minLimit={priceLimits.min}
+                  maxLimit={priceLimits.max}
+                  onMinChange={(value) => updateFilter('minPrice', value.toString())}
+                  onMaxChange={(value) => updateFilter('maxPrice', value.toString())}
+                />
               </div>
 
               {/* Active Filters */}
