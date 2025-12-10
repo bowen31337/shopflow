@@ -1,18 +1,32 @@
 {
   "project_name": "demo",
   "project_dir": "demo",
-  "report_generated": "2025-12-10T05:33:50.493369+00:00",
+  "report_generated": "2025-12-10T07:59:46.867123+00:00",
   "summary": {
-    "total_sessions": 1,
-    "total_api_calls": 1,
+    "total_sessions": 3,
+    "total_api_calls": 3,
     "total_input_tokens": 0,
     "total_output_tokens": 0,
     "total_tokens": 0,
-    "total_duration_seconds": 1.3500580787658691,
+    "total_duration_seconds": 8746.23800611496,
     "estimated_cost_usd": 0.0
   },
   "endpoint_breakdown": {
     "https://api.anthropic.com": {
+      "calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "estimated_cost_usd": 0.0
+    },
+    "https://vanchin.streamlake.ai/api/gateway/v1/endpoints/ep-fti2r8-1764583729284568237/claude-code-proxy": {
+      "calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "estimated_cost_usd": 0.0
+    },
+    "https://api.minimax.io/anthropic": {
       "calls": 1,
       "input_tokens": 0,
       "output_tokens": 0,
@@ -34,6 +48,34 @@
       "successful_calls": 1,
       "failed_calls": 0,
       "duration_seconds": 1.3500580787658691
+    },
+    {
+      "session_id": 2,
+      "start_time": "2025-12-10T05:33:54.496128+00:00",
+      "end_time": "2025-12-10T07:56:31.097726+00:00",
+      "endpoint": "https://vanchin.streamlake.ai/api/gateway/v1/endpoints/ep-fti2r8-1764583729284568237/claude-code-proxy",
+      "model": "claude-sonnet-4-5-20250929",
+      "total_calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "successful_calls": 1,
+      "failed_calls": 0,
+      "duration_seconds": 8555.08202290535
+    },
+    {
+      "session_id": 3,
+      "start_time": "2025-12-10T07:56:35.110627+00:00",
+      "end_time": "2025-12-10T07:59:46.865466+00:00",
+      "endpoint": "https://api.minimax.io/anthropic",
+      "model": "claude-sonnet-4-5-20250929",
+      "total_calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "successful_calls": 1,
+      "failed_calls": 0,
+      "duration_seconds": 189.80592513084412
     }
   ],
   "calls": [
@@ -46,6 +88,30 @@
       "total_tokens": 0,
       "session_id": 1,
       "duration_seconds": 1.3500580787658691,
+      "success": true,
+      "error": null
+    },
+    {
+      "timestamp": "2025-12-10T07:56:31.052254+00:00",
+      "endpoint": "https://vanchin.streamlake.ai/api/gateway/v1/endpoints/ep-fti2r8-1764583729284568237/claude-code-proxy",
+      "model": "claude-sonnet-4-5-20250929",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "session_id": 2,
+      "duration_seconds": 8555.08202290535,
+      "success": true,
+      "error": null
+    },
+    {
+      "timestamp": "2025-12-10T07:59:46.852192+00:00",
+      "endpoint": "https://api.minimax.io/anthropic",
+      "model": "claude-sonnet-4-5-20250929",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "session_id": 3,
+      "duration_seconds": 189.80592513084412,
       "success": true,
       "error": null
     }

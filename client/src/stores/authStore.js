@@ -15,7 +15,7 @@ const useAuthStore = create(
         set({ isLoading: true, error: null });
         try {
           const response = await api.post('/api/auth/login', { email, password });
-          const { token, user } = response.data;
+          const { accessToken: token, user } = response;
 
           set({
             user,
@@ -25,7 +25,7 @@ const useAuthStore = create(
           });
 
           // Set auth header for future requests
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          api.setAuthToken(token);
         } catch (error) {
           set({
             error: error.response?.data?.message || 'Login failed',
@@ -40,7 +40,7 @@ const useAuthStore = create(
         set({ isLoading: true, error: null });
         try {
           const response = await api.post('/api/auth/register', userData);
-          const { token, user } = response.data;
+          const { accessToken: token, user } = response;
 
           set({
             user,
@@ -50,7 +50,7 @@ const useAuthStore = create(
           });
 
           // Set auth header for future requests
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          api.setAuthToken(token);
         } catch (error) {
           set({
             error: error.response?.data?.message || 'Registration failed',
@@ -63,7 +63,7 @@ const useAuthStore = create(
       // Logout action
       logout: () => {
         set({ user: null, token: null, error: null });
-        delete api.defaults.headers.common['Authorization'];
+        api.setAuthToken(null);
       },
 
       // Clear error

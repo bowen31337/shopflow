@@ -1,40 +1,36 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../stores/authStore';
 
 export default function Login() {
   const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const error = useAuthStore((state) => state.error);
+  const clearError = useAuthStore((state) => state.clearError);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    'remember-me': false,
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    clearError();
 
     try {
-      // TODO: Implement actual login
-      console.log('Login attempt:', formData);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // For now, just navigate to home
+      await login(formData.email, formData.password);
       navigate('/');
-      alert('Login successful! (Mock implementation)');
     } catch (err) {
-      setError(err.message || 'Login failed');
-    } finally {
-      setLoading(false);
+      // Error is handled by the store
+      console.error('Login failed:', err);
     }
   };
 
   const handleChange = (e) => {
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.type === 'checkbox' ? e.target.checked : e.target.value
     }));
   };
 
@@ -94,6 +90,8 @@ export default function Login() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
+                  checked={formData['remember-me']}
+                  onChange={handleChange}
                   className="h-4 w-4 text-primary focus:ring-green-500 border-gray-300 rounded"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
@@ -102,19 +100,19 @@ export default function Login() {
               </div>
 
               <div className="text-sm">
-                <Link to="/forgot-password" className="font-medium text-primary hover:text-green-600">
+                <a href="/forgot-password" className="font-medium text-primary hover:text-green-600">
                   Forgot your password?
-                </Link>
+                </a>
               </div>
             </div>
 
             <div>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={isLoading}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
               >
-                {loading ? 'Signing in...' : 'Sign in'}
+                {isLoading ? 'Signing in...' : 'Sign in'}
               </button>
             </div>
           </form>
@@ -160,9 +158,9 @@ export default function Login() {
 
           <p className="mt-6 text-center text-sm text-gray-600">
             Don't have an account?{' '}
-            <Link to="/register" className="font-medium text-primary hover:text-green-600">
+            <a href="/register" className="font-medium text-primary hover:text-green-600">
               Sign up
-            </Link>
+            </a>
           </p>
         </div>
       </div>

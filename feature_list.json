@@ -220,7 +220,7 @@
       "Step 4: Check that related products are from same category or brand",
       "Step 5: Click on a related product and verify navigation works"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -550,7 +550,7 @@
       "Step 7: Verify quantity decrements by 1",
       "Step 8: Confirm subtotal recalculates"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -565,7 +565,7 @@
       "Step 7: Verify cart count badge updates",
       "Step 8: Confirm subtotal recalculates"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
