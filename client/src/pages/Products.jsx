@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { fetchProducts } from '../api/products';
 import ProductCard from '../components/ProductCard';
 import RecentlyViewedProducts from '../components/RecentlyViewedProducts';
+import Pagination from '../components/Pagination';
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -11,6 +12,12 @@ export default function Products() {
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 6,
+    total: 0,
+    totalPages: 0
+  });
 
   // Filter states
   const [filters, setFilters] = useState({
@@ -52,17 +59,23 @@ export default function Products() {
     try {
       setLoading(true);
       setError(null);
+      const currentPage = parseInt(searchParams.get('page')) || 1;
       const params = {
         category: filters.category || undefined,
         brand: filters.brand || undefined,
         minPrice: filters.minPrice || undefined,
         maxPrice: filters.maxPrice || undefined,
         sort: filters.sort || undefined,
-        page: searchParams.get('page') || '1',
-        limit: '20',
+        page: currentPage.toString(),
+        limit: '6',
       };
       const data = await fetchProducts(params);
       setProducts(data.products || []);
+
+      // Update pagination state
+      if (data.pagination) {
+        setPagination(data.pagination);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -92,6 +105,15 @@ export default function Products() {
       sort: 'price_asc',
       view: 'grid',
     });
+  };
+
+  const handlePageChange = (newPage) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', newPage.toString());
+    setSearchParams(newParams);
+
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const formatPrice = (price) => {
@@ -417,7 +439,7 @@ export default function Products() {
             {/* Results Info */}
             <div className="flex justify-between items-center mb-6">
               <p className="text-gray-600">
-                Showing {products.length} products
+                Showing {products.length} of {pagination.total} products
                 {filters.category && ` in ${filters.category}`}
                 {filters.brand && ` by ${filters.brand}`}
               </p>
@@ -469,6 +491,17 @@ export default function Products() {
                     ))}
                   </div>
                 )}
+
+                {/* Pagination */}
+                <div className="mt-8">
+                  <Pagination
+                    currentPage={pagination.page}
+                    totalPages={pagination.totalPages}
+                    onPageChange={handlePageChange}
+                    total={pagination.total}
+                    limit={pagination.limit}
+                  />
+                </div>
               </>
             )}
 

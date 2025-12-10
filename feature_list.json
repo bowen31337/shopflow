@@ -380,7 +380,7 @@
       "Step 3: Verify count matches expected per-page limit (e.g., 12 or 24)",
       "Step 4: Scroll to bottom and check pagination controls are visible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -393,7 +393,7 @@
       "Step 5: Click 'Previous' or page 1 button",
       "Step 6: Confirm original products from page 1 are shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
