@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchProductBySlug } from '../api/products';
 import useCartStore from '../stores/cartStore';
+import useRecentlyViewedStore from '../stores/recentlyViewedStore';
+import RecentlyViewedProducts from '../components/RecentlyViewedProducts';
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -13,6 +15,7 @@ export default function ProductDetail() {
   const [isZoomed, setIsZoomed] = useState(false);
   const [selectedVariants, setSelectedVariants] = useState({});
   const { addToCart, isAuthenticated } = useCartStore();
+  const { addToRecentlyViewed } = useRecentlyViewedStore();
 
   useEffect(() => {
     loadProduct();
@@ -25,6 +28,9 @@ export default function ProductDetail() {
       const data = await fetchProductBySlug(slug);
       setProduct(data.product);
       setSelectedImage(0);
+
+      // Add to recently viewed after loading product
+      addToRecentlyViewed(data.product);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -416,6 +422,9 @@ export default function ProductDetail() {
                 </div>
               </div>
             )}
+
+            {/* Recently Viewed Products */}
+            <RecentlyViewedProducts excludeProductId={product?.id} />
           </div>
         </div>
       </div>

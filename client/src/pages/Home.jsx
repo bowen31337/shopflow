@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchFeaturedProducts } from '../api/products';
 import ProductCard from '../components/ProductCard';
+import RecentlyViewedProducts from '../components/RecentlyViewedProducts';
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -107,6 +108,11 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* Recently Viewed Products */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <RecentlyViewedProducts />
+      </div>
 
       {/* Categories Section */}
       <section className="py-16 bg-white">

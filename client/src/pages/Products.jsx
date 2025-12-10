@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { fetchProducts } from '../api/products';
 import ProductCard from '../components/ProductCard';
+import RecentlyViewedProducts from '../components/RecentlyViewedProducts';
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -361,6 +362,11 @@ export default function Products() {
             )}
           </main>
         </div>
+      </div>
+
+      {/* Recently Viewed Products */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        <RecentlyViewedProducts />
       </div>
     </div>
   );

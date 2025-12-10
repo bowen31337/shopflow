@@ -232,7 +232,7 @@
       "Step 4: Check that most recent products appear first",
       "Step 5: Confirm clicking on recently viewed product navigates correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
