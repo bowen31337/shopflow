@@ -1,14 +1,14 @@
 {
   "project_name": "demo",
   "project_dir": "demo",
-  "report_generated": "2025-12-10T07:59:46.867123+00:00",
+  "report_generated": "2025-12-10T08:36:08.032062+00:00",
   "summary": {
-    "total_sessions": 3,
-    "total_api_calls": 3,
+    "total_sessions": 4,
+    "total_api_calls": 4,
     "total_input_tokens": 0,
     "total_output_tokens": 0,
     "total_tokens": 0,
-    "total_duration_seconds": 8746.23800611496,
+    "total_duration_seconds": 10921.18032693863,
     "estimated_cost_usd": 0.0
   },
   "endpoint_breakdown": {
@@ -27,6 +27,13 @@
       "estimated_cost_usd": 0.0
     },
     "https://api.minimax.io/anthropic": {
+      "calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "estimated_cost_usd": 0.0
+    },
+    "https://api.z.ai/api/anthropic": {
       "calls": 1,
       "input_tokens": 0,
       "output_tokens": 0,
@@ -76,6 +83,20 @@
       "successful_calls": 1,
       "failed_calls": 0,
       "duration_seconds": 189.80592513084412
+    },
+    {
+      "session_id": 4,
+      "start_time": "2025-12-10T07:59:50.871765+00:00",
+      "end_time": "2025-12-10T08:36:08.031706+00:00",
+      "endpoint": "https://api.z.ai/api/anthropic",
+      "model": "claude-sonnet-4-5-20250929",
+      "total_calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "successful_calls": 1,
+      "failed_calls": 0,
+      "duration_seconds": 2174.9423208236694
     }
   ],
   "calls": [
@@ -112,6 +133,18 @@
       "total_tokens": 0,
       "session_id": 3,
       "duration_seconds": 189.80592513084412,
+      "success": true,
+      "error": null
+    },
+    {
+      "timestamp": "2025-12-10T08:36:08.014788+00:00",
+      "endpoint": "https://api.z.ai/api/anthropic",
+      "model": "claude-sonnet-4-5-20250929",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "session_id": 4,
+      "duration_seconds": 2174.9423208236694,
       "success": true,
       "error": null
     }

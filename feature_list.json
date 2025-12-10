@@ -208,7 +208,7 @@
       "Step 5: Navigate to product with zero stock",
       "Step 6: Verify 'Out of Stock' message and disabled add to cart button"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
