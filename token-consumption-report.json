@@ -1,14 +1,14 @@
 {
   "project_name": "demo",
   "project_dir": "demo",
-  "report_generated": "2025-12-10T10:10:32.057228+00:00",
+  "report_generated": "2025-12-10T10:19:33.630255+00:00",
   "summary": {
-    "total_sessions": 9,
-    "total_api_calls": 9,
+    "total_sessions": 10,
+    "total_api_calls": 10,
     "total_input_tokens": 0,
     "total_output_tokens": 0,
     "total_tokens": 0,
-    "total_duration_seconds": 16133.949199914932,
+    "total_duration_seconds": 16669.952299833298,
     "estimated_cost_usd": 0.0
   },
   "endpoint_breakdown": {
@@ -34,7 +34,7 @@
       "estimated_cost_usd": 0.0
     },
     "https://api.z.ai/api/anthropic": {
-      "calls": 6,
+      "calls": 7,
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
@@ -167,6 +167,20 @@
       "successful_calls": 1,
       "failed_calls": 0,
       "duration_seconds": 614.2175159454346
+    },
+    {
+      "session_id": 10,
+      "start_time": "2025-12-10T10:10:36.067253+00:00",
+      "end_time": "2025-12-10T10:19:33.630062+00:00",
+      "endpoint": "https://api.z.ai/api/anthropic",
+      "model": "claude-sonnet-4-5-20250929",
+      "total_calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "successful_calls": 1,
+      "failed_calls": 0,
+      "duration_seconds": 536.0030999183655
     }
   ],
   "calls": [
@@ -275,6 +289,18 @@
       "total_tokens": 0,
       "session_id": 9,
       "duration_seconds": 614.2175159454346,
+      "success": true,
+      "error": null
+    },
+    {
+      "timestamp": "2025-12-10T10:19:33.615421+00:00",
+      "endpoint": "https://api.z.ai/api/anthropic",
+      "model": "claude-sonnet-4-5-20250929",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "session_id": 10,
+      "duration_seconds": 536.0030999183655,
       "success": true,
       "error": null
     }

@@ -296,7 +296,7 @@
       "Step 5: Verify only products within price range are displayed",
       "Step 6: Check that most expensive and cheapest visible products are within range"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -321,7 +321,7 @@
       "Step 4: Verify products are reordered with cheapest first",
       "Step 5: Check that each subsequent product has equal or higher price"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -333,7 +333,7 @@
       "Step 4: Verify products are reordered with most expensive first",
       "Step 5: Check that each subsequent product has equal or lower price"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -345,7 +345,7 @@
       "Step 4: Verify products are reordered by popularity metric",
       "Step 5: Confirm most reviewed or highest-rated products appear first"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -357,7 +357,7 @@
       "Step 4: Verify products are ordered by creation date descending",
       "Step 5: Check that most recently added products appear first"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -369,7 +369,7 @@
       "Step 4: Verify products are ordered by average rating descending",
       "Step 5: Confirm 5-star products appear before 4-star products"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

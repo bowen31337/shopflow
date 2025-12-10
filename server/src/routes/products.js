@@ -12,7 +12,7 @@ router.get('/', [
   query('brand').optional(),
   query('minPrice').optional().isFloat({ min: 0 }),
   query('maxPrice').optional().isFloat({ min: 0 }),
-  query('sort').optional().isIn(['price_asc', 'price_desc', 'newest', 'popular', 'rating']),
+  query('sort').optional().isIn(['price_asc', 'price_desc', 'name_asc', 'name_desc', 'newest', 'popular', 'rating']),
   query('search').optional()
 ], (req, res) => {
   try {
@@ -61,13 +61,21 @@ router.get('/', [
       case 'price_desc':
         orderBy = 'p.price DESC';
         break;
+      case 'name_asc':
+        orderBy = 'p.name ASC';
+        break;
+      case 'name_desc':
+        orderBy = 'p.name DESC';
+        break;
       case 'newest':
+      case 'created_desc':
         orderBy = 'p.created_at DESC';
         break;
       case 'popular':
         orderBy = 'p.is_featured DESC, p.created_at DESC';
         break;
       case 'rating':
+      case 'rating_desc':
         orderBy = 'avg_rating DESC NULLS LAST, p.created_at DESC';
         break;
     }
