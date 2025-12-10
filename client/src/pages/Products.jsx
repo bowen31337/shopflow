@@ -106,10 +106,93 @@ export default function Products() {
       {/* Page Header */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {/* Breadcrumb Navigation */}
+          {filters.category && (() => {
+            const selectedCategory = categories.find(cat => cat.slug === filters.category);
+            const parentCategory = selectedCategory?.parent_id
+              ? categories.find(cat => cat.id === selectedCategory.parent_id)
+              : selectedCategory;
+            const isSubcategory = selectedCategory?.parent_id;
+
+            if (isSubcategory && parentCategory) {
+              return (
+                <nav className="text-sm mb-4" aria-label="Breadcrumb">
+                  <ol className="flex items-center space-x-2">
+                    <li>
+                      <button
+                        onClick={() => updateFilter('category', '')}
+                        className="text-gray-500 hover:text-gray-700 transition"
+                      >
+                        Home
+                      </button>
+                    </li>
+                    <li className="flex items-center space-x-2">
+                      <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <button
+                        onClick={() => updateFilter('category', parentCategory.slug)}
+                        className="text-gray-500 hover:text-gray-700 transition"
+                      >
+                        {parentCategory.name}
+                      </button>
+                    </li>
+                    <li className="flex items-center space-x-2">
+                      <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-gray-900 font-medium">{selectedCategory.name}</span>
+                    </li>
+                  </ol>
+                </nav>
+              );
+            } else if (parentCategory) {
+              return (
+                <nav className="text-sm mb-4" aria-label="Breadcrumb">
+                  <ol className="flex items-center space-x-2">
+                    <li>
+                      <button
+                        onClick={() => updateFilter('category', '')}
+                        className="text-gray-500 hover:text-gray-700 transition"
+                      >
+                        Home
+                      </button>
+                    </li>
+                    <li className="flex items-center space-x-2">
+                      <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-gray-900 font-medium">{parentCategory.name}</span>
+                    </li>
+                  </ol>
+                </nav>
+              );
+            }
+            return null;
+          })()}
+
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Products</h1>
-              <p className="text-gray-600 mt-1">Discover amazing products at unbeatable prices</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {filters.category && (() => {
+                  const selectedCategory = categories.find(cat => cat.slug === filters.category);
+                  return selectedCategory ? selectedCategory.name : 'Products';
+                })()}
+              </h1>
+              <p className="text-gray-600 mt-1">
+                {filters.category && (() => {
+                  const selectedCategory = categories.find(cat => cat.slug === filters.category);
+                  if (selectedCategory) {
+                    const isSubcategory = selectedCategory.parent_id;
+                    if (isSubcategory) {
+                      return `Products in ${selectedCategory.name} category`;
+                    } else {
+                      return `All ${selectedCategory.name} products`;
+                    }
+                  }
+                  return 'Discover amazing products at unbeatable prices';
+                })()}
+              </p>
             </div>
             <div className="hidden md:flex items-center gap-4">
               <select
@@ -175,12 +258,55 @@ export default function Products() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <option value="">All Categories</option>
-                  {categories.map((category) => (
+                  {categories.filter(cat => !cat.parent_id).map((category) => (
                     <option key={category.id} value={category.slug}>
                       {category.name}
                     </option>
                   ))}
                 </select>
+
+                {/* Subcategory Filter - only show if parent category is selected */}
+                {filters.category && (() => {
+                  const selectedCategory = categories.find(cat => cat.slug === filters.category);
+                  if (selectedCategory && selectedCategory.subcategories && selectedCategory.subcategories.length > 0) {
+                    return (
+                      <div className="mt-3">
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Subcategories</h4>
+                        <div className="space-y-2">
+                          {selectedCategory.subcategories.map((subcategory) => (
+                            <label key={subcategory.id} className="flex items-center">
+                              <input
+                                type="radio"
+                                name="subcategory"
+                                value={subcategory.slug}
+                                checked={filters.category === subcategory.slug}
+                                onChange={(e) => updateFilter('category', e.target.value)}
+                                className="mr-2 text-primary focus:ring-primary"
+                              />
+                              <span className="text-sm text-gray-600">
+                                {subcategory.name} ({subcategory.product_count || 0})
+                              </span>
+                            </label>
+                          ))}
+                          <label className="flex items-center">
+                            <input
+                              type="radio"
+                              name="subcategory"
+                              value={selectedCategory.slug}
+                              checked={filters.category === selectedCategory.slug}
+                              onChange={(e) => updateFilter('category', e.target.value)}
+                              className="mr-2 text-primary focus:ring-primary"
+                            />
+                            <span className="text-sm text-gray-600">
+                              All {selectedCategory.name}
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
 
               {/* Brand Filter */}

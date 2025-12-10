@@ -270,7 +270,7 @@
       "Step 5: Confirm breadcrumb shows parent > subcategory",
       "Step 6: Check that product count updates"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
