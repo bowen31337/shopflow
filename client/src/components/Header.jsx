@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 import useCartStore from '../stores/cartStore';
 import CartDrawer from './CartDrawer';
+import CategoryNavigation from './CategoryNavigation';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -54,6 +55,8 @@ export default function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
+            <CategoryNavigation />
+
             <Link
               to="/products"
               className={`text-gray-700 hover:text-primary transition ${
@@ -137,6 +140,19 @@ export default function Header() {
               />
             </div>
             <nav className="flex flex-col space-y-3">
+              {/* Mobile Categories */}
+              <div className="py-2">
+                <button
+                  className="text-gray-700 font-semibold text-left w-full flex items-center justify-between"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                  <span>Categories</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
               <Link
                 to="/products"
                 className={`py-2 ${

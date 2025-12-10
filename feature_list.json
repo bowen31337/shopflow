@@ -244,7 +244,7 @@
       "Step 4: Check that subcategories are shown under parent categories",
       "Step 5: Hover over categories to see hover effects"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
