@@ -283,7 +283,7 @@
       "Step 5: Unselect a brand and confirm products update",
       "Step 6: Clear all brand filters and verify all products show again"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
