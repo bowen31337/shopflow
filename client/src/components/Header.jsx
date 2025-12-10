@@ -1,11 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
+import { useCartStore } from '../stores/cartStore';
+import CartDrawer from './CartDrawer';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const { user, logout, isAuthenticated } = useAuthStore();
+  const { fetchCart, getItemCount } = useCartStore();
   const location = useLocation();
+
+  // Fetch cart when user logs in or when header mounts
+  useEffect(() => {
+    if (isAuthenticated()) {
+      fetchCart();
+    }
+  }, [isAuthenticated(), location.pathname]);
+
+  // Get cart item count
+  const cartCount = getItemCount();
 
   const handleLogout = () => {
     logout();
@@ -88,10 +102,16 @@ export default function Header() {
             )}
 
             <Link to="/cart" className="relative text-gray-700 hover:text-primary transition">
-              <span className="text-2xl">🛒</span>
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                0
-              </span>
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="flex items-center gap-2"
+                aria-label="Open cart"
+              >
+                <span className="text-2xl">🛒</span>
+                <span className="bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              </button>
             </Link>
           </nav>
 
@@ -173,14 +193,18 @@ export default function Header() {
                 className={`py-2 ${
                   location.pathname === '/cart' ? 'text-primary font-semibold' : 'text-gray-700'
                 }`}
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setIsCartOpen(true);
+                }}
               >
-                Cart (0)
+                Cart ({cartCount})
               </Link>
             </nav>
           </div>
         )}
       </div>
+      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </header>
   );
 }

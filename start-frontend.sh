@@ -1,3 +1,3 @@
 #!/bin/bash
-cd temp-client
+echo "Starting frontend server..."
 npm run dev

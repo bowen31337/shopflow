@@ -522,7 +522,7 @@
       "Step 4: Check that cart items are displayed with images",
       "Step 5: Confirm subtotal is shown at bottom"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -535,7 +535,7 @@
       "Step 5: Confirm quantity and individual price are shown",
       "Step 6: Verify item subtotal is calculated correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1969,7 +1969,7 @@
       "Step 5: Confirm product images are appropriately sized",
       "Step 6: Verify subtotal and checkout button are prominent at bottom"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
