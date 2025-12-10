@@ -4,6 +4,12 @@ import dotenv from 'dotenv';
 import { initializeDatabase } from './database.js';
 import { seedDatabase } from './seed.js';
 
+// Import routes
+import authRoutes from './routes/auth.js';
+import productsRoutes from './routes/products.js';
+import categoriesRoutes from './routes/categories.js';
+import brandsRoutes from './routes/brands.js';
+
 // Load environment variables
 dotenv.config();
 
@@ -44,8 +50,11 @@ app.get('/', (req, res) => {
   });
 });
 
-// API Routes will be added here
-// TODO: Import and use route modules
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productsRoutes);
+app.use('/api/categories', categoriesRoutes);
+app.use('/api/brands', brandsRoutes);
 
 // 404 handler
 app.use((req, res) => {
