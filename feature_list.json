@@ -1,0 +1,2654 @@
+[
+  {
+    "category": "functional",
+    "description": "Backend server starts successfully on specified port",
+    "steps": [
+      "Step 1: Run init.sh to start backend server",
+      "Step 2: Verify server starts without errors",
+      "Step 3: Confirm server is listening on the correct port",
+      "Step 4: Check that database connection is established"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Frontend server starts successfully on specified port",
+    "steps": [
+      "Step 1: Run init.sh to start frontend server",
+      "Step 2: Verify frontend starts without errors",
+      "Step 3: Confirm frontend is accessible on specified port",
+      "Step 4: Check that the homepage loads"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Database schema is created with all required tables",
+    "steps": [
+      "Step 1: Start the backend server",
+      "Step 2: Check that users table exists with correct columns",
+      "Step 3: Verify all tables from schema are created (addresses, categories, products, etc.)",
+      "Step 4: Confirm foreign key relationships are properly set up"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Sample product data is seeded into database",
+    "steps": [
+      "Step 1: Start the backend server",
+      "Step 2: Query products table and verify it contains sample data",
+      "Step 3: Check that categories are populated",
+      "Step 4: Verify product images are associated with products",
+      "Step 5: Confirm brands table has sample data"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User registration with email and password works",
+    "steps": [
+      "Step 1: Navigate to registration page",
+      "Step 2: Fill in email, password, and name fields",
+      "Step 3: Submit registration form",
+      "Step 4: Verify user receives success message",
+      "Step 5: Check that user is created in database",
+      "Step 6: Confirm password is hashed in database"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User login with valid credentials",
+    "steps": [
+      "Step 1: Navigate to login page",
+      "Step 2: Enter registered email and password",
+      "Step 3: Submit login form",
+      "Step 4: Verify JWT token is received",
+      "Step 5: Confirm user is redirected to homepage",
+      "Step 6: Check that user account menu shows logged-in state"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User login with invalid credentials fails appropriately",
+    "steps": [
+      "Step 1: Navigate to login page",
+      "Step 2: Enter incorrect email or password",
+      "Step 3: Submit login form",
+      "Step 4: Verify error message is displayed",
+      "Step 5: Confirm user remains on login page"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "JWT token authentication protects API endpoints",
+    "steps": [
+      "Step 1: Attempt to access protected endpoint without token",
+      "Step 2: Verify 401 unauthorized response",
+      "Step 3: Login and obtain valid token",
+      "Step 4: Access same endpoint with valid token",
+      "Step 5: Confirm request succeeds with 200 response"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Remember me functionality persists login session",
+    "steps": [
+      "Step 1: Navigate to login page",
+      "Step 2: Check 'Remember me' option",
+      "Step 3: Login with valid credentials",
+      "Step 4: Close browser and reopen",
+      "Step 5: Navigate to site",
+      "Step 6: Verify user is still logged in"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Password reset flow sends reset email and allows password change",
+    "steps": [
+      "Step 1: Navigate to forgot password page",
+      "Step 2: Enter registered email address",
+      "Step 3: Submit form",
+      "Step 4: Verify reset token is generated",
+      "Step 5: Navigate to reset link (mock email)",
+      "Step 6: Enter new password",
+      "Step 7: Submit and verify password is updated",
+      "Step 8: Login with new password successfully"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Product listing page displays all products in grid view",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Verify products are displayed in grid layout",
+      "Step 3: Check that product cards show image, name, price, and rating",
+      "Step 4: Confirm add to cart button is visible on each card"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Product listing can toggle between grid and list view",
+    "steps": [
+      "Step 1: Navigate to products page (default grid view)",
+      "Step 2: Click list view toggle button",
+      "Step 3: Verify layout changes to list view",
+      "Step 4: Click grid view toggle button",
+      "Step 5: Verify layout changes back to grid view"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Product detail page displays complete product information",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Click on a product card",
+      "Step 3: Verify product detail page loads with correct product",
+      "Step 4: Check that image gallery displays with thumbnails",
+      "Step 5: Verify product name, brand, description, and price are shown",
+      "Step 6: Confirm variant selectors (size, color) are present",
+      "Step 7: Check that stock availability indicator is displayed",
+      "Step 8: Verify add to cart button is present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Product image gallery allows viewing multiple images",
+    "steps": [
+      "Step 1: Navigate to product detail page",
+      "Step 2: Verify main product image is displayed",
+      "Step 3: Click on thumbnail images",
+      "Step 4: Confirm main image updates to show selected thumbnail",
+      "Step 5: Test navigation arrows between images"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Product image zoom functionality works on hover/click",
+    "steps": [
+      "Step 1: Navigate to product detail page",
+      "Step 2: Hover over main product image",
+      "Step 3: Verify zoom effect is triggered",
+      "Step 4: Move cursor to see different parts of zoomed image",
+      "Step 5: Confirm zoom deactivates when cursor leaves"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Product variants (size, color) can be selected",
+    "steps": [
+      "Step 1: Navigate to product detail page with variants",
+      "Step 2: Click on different size options",
+      "Step 3: Verify selected size is highlighted",
+      "Step 4: Click on different color options",
+      "Step 5: Verify selected color is highlighted",
+      "Step 6: Confirm price updates if variant has price adjustment"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Stock availability indicator shows correct status",
+    "steps": [
+      "Step 1: Navigate to product with high stock",
+      "Step 2: Verify 'In Stock' message is displayed",
+      "Step 3: Navigate to product with low stock",
+      "Step 4: Verify 'Low Stock' or quantity remaining message",
+      "Step 5: Navigate to product with zero stock",
+      "Step 6: Verify 'Out of Stock' message and disabled add to cart button"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Related products section displays relevant products",
+    "steps": [
+      "Step 1: Navigate to product detail page",
+      "Step 2: Scroll to related products section",
+      "Step 3: Verify at least 3-4 related products are shown",
+      "Step 4: Check that related products are from same category or brand",
+      "Step 5: Click on a related product and verify navigation works"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Recently viewed products section tracks and displays history",
+    "steps": [
+      "Step 1: Navigate to multiple product detail pages",
+      "Step 2: Return to homepage or products page",
+      "Step 3: Verify recently viewed section displays previously viewed products",
+      "Step 4: Check that most recent products appear first",
+      "Step 5: Confirm clicking on recently viewed product navigates correctly"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Category navigation displays all categories",
+    "steps": [
+      "Step 1: Navigate to homepage",
+      "Step 2: Click on categories menu in header",
+      "Step 3: Verify mega menu displays with all categories",
+      "Step 4: Check that subcategories are shown under parent categories",
+      "Step 5: Hover over categories to see hover effects"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Category filtering shows only products in selected category",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Click on a specific category",
+      "Step 3: Verify URL updates with category slug",
+      "Step 4: Confirm only products from selected category are displayed",
+      "Step 5: Check that category name is highlighted in filters",
+      "Step 6: Verify product count matches filtered results"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Subcategory filtering works within parent category",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Select a parent category",
+      "Step 3: Click on a subcategory",
+      "Step 4: Verify only products from subcategory are displayed",
+      "Step 5: Confirm breadcrumb shows parent > subcategory",
+      "Step 6: Check that product count updates"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Brand filtering shows only products from selected brands",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Open brand filter in sidebar",
+      "Step 3: Select one or more brand checkboxes",
+      "Step 4: Verify products are filtered to selected brands only",
+      "Step 5: Unselect a brand and confirm products update",
+      "Step 6: Clear all brand filters and verify all products show again"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Price range filtering filters products by price",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Open price range filter in sidebar",
+      "Step 3: Set minimum and maximum price values",
+      "Step 4: Apply filter",
+      "Step 5: Verify only products within price range are displayed",
+      "Step 6: Check that most expensive and cheapest visible products are within range"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Price range slider provides visual adjustment",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Open price range filter",
+      "Step 3: Drag minimum price slider handle",
+      "Step 4: Verify price value updates in real-time",
+      "Step 5: Drag maximum price slider handle",
+      "Step 6: Confirm products filter as slider is adjusted"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Sort by price low to high works correctly",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Click sort dropdown",
+      "Step 3: Select 'Price: Low to High'",
+      "Step 4: Verify products are reordered with cheapest first",
+      "Step 5: Check that each subsequent product has equal or higher price"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Sort by price high to low works correctly",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Click sort dropdown",
+      "Step 3: Select 'Price: High to Low'",
+      "Step 4: Verify products are reordered with most expensive first",
+      "Step 5: Check that each subsequent product has equal or lower price"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Sort by popularity shows most popular products first",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Click sort dropdown",
+      "Step 3: Select 'Popularity'",
+      "Step 4: Verify products are reordered by popularity metric",
+      "Step 5: Confirm most reviewed or highest-rated products appear first"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Sort by newest shows recently added products first",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Click sort dropdown",
+      "Step 3: Select 'Newest'",
+      "Step 4: Verify products are ordered by creation date descending",
+      "Step 5: Check that most recently added products appear first"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Sort by rating shows highest rated products first",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Click sort dropdown",
+      "Step 3: Select 'Rating'",
+      "Step 4: Verify products are ordered by average rating descending",
+      "Step 5: Confirm 5-star products appear before 4-star products"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Pagination displays correct number of products per page",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Count products displayed on first page",
+      "Step 3: Verify count matches expected per-page limit (e.g., 12 or 24)",
+      "Step 4: Scroll to bottom and check pagination controls are visible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Pagination navigation between pages works",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Note the first product on page 1",
+      "Step 3: Click 'Next' or page 2 button",
+      "Step 4: Verify different products are displayed",
+      "Step 5: Click 'Previous' or page 1 button",
+      "Step 6: Confirm original products from page 1 are shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Infinite scroll option loads more products on scroll",
+    "steps": [
+      "Step 1: Enable infinite scroll mode (if toggle available)",
+      "Step 2: Navigate to products page",
+      "Step 3: Scroll to bottom of page",
+      "Step 4: Verify loading indicator appears",
+      "Step 5: Confirm additional products are loaded and appended",
+      "Step 6: Continue scrolling and verify more products load"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Search bar is accessible from all pages",
+    "steps": [
+      "Step 1: Navigate to homepage",
+      "Step 2: Verify search bar is visible in header",
+      "Step 3: Navigate to product detail page",
+      "Step 4: Confirm search bar is still visible",
+      "Step 5: Navigate to checkout page",
+      "Step 6: Verify search bar remains accessible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Full-text search returns relevant product results",
+    "steps": [
+      "Step 1: Click on search bar",
+      "Step 2: Type a product keyword (e.g., 'shirt')",
+      "Step 3: Press Enter or click search button",
+      "Step 4: Verify search results page displays",
+      "Step 5: Check that all results contain the search keyword",
+      "Step 6: Verify result count is displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Search autocomplete shows suggestions while typing",
+    "steps": [
+      "Step 1: Click on search bar",
+      "Step 2: Start typing a product name",
+      "Step 3: Verify dropdown appears with search suggestions",
+      "Step 4: Check that suggestions update as more characters are typed",
+      "Step 5: Click on a suggestion",
+      "Step 6: Verify navigation to product or search results"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Search filters can be applied to search results",
+    "steps": [
+      "Step 1: Perform a search query",
+      "Step 2: View search results page",
+      "Step 3: Apply category filter to search results",
+      "Step 4: Verify results are filtered by category",
+      "Step 5: Apply price range filter",
+      "Step 6: Confirm results update to match both filters",
+      "Step 7: Apply brand filter",
+      "Step 8: Verify all filters work together"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Search history displays previous searches",
+    "steps": [
+      "Step 1: Perform several searches",
+      "Step 2: Click on search bar without typing",
+      "Step 3: Verify dropdown shows recent search history",
+      "Step 4: Click on a previous search",
+      "Step 5: Confirm search is re-executed with same query"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "No results page displays when search has no matches",
+    "steps": [
+      "Step 1: Enter a search query that won't match any products",
+      "Step 2: Submit search",
+      "Step 3: Verify 'no results' message is displayed",
+      "Step 4: Check that alternative suggestions are offered",
+      "Step 5: Verify option to clear filters or try different search is available"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Add to cart from product listing page",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Click 'Add to Cart' button on a product card",
+      "Step 3: Verify success message or toast notification appears",
+      "Step 4: Check that cart icon badge updates with item count",
+      "Step 5: Open cart drawer and confirm product is in cart"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Add to cart from product detail page with quantity selection",
+    "steps": [
+      "Step 1: Navigate to product detail page",
+      "Step 2: Select product variant (size, color) if available",
+      "Step 3: Adjust quantity using quantity picker",
+      "Step 4: Click 'Add to Cart' button",
+      "Step 5: Verify success message appears",
+      "Step 6: Check cart icon badge shows correct quantity",
+      "Step 7: Open cart and verify product with selected variant and quantity"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Cart drawer opens from header cart icon",
+    "steps": [
+      "Step 1: Add at least one product to cart",
+      "Step 2: Click on cart icon in header",
+      "Step 3: Verify cart drawer slides out from right side",
+      "Step 4: Check that cart items are displayed with images",
+      "Step 5: Confirm subtotal is shown at bottom"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Cart drawer displays all cart items with details",
+    "steps": [
+      "Step 1: Add multiple products to cart",
+      "Step 2: Open cart drawer",
+      "Step 3: Verify each item shows product image",
+      "Step 4: Check that product name and variant details are displayed",
+      "Step 5: Confirm quantity and individual price are shown",
+      "Step 6: Verify item subtotal is calculated correctly"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Update quantity of item in cart",
+    "steps": [
+      "Step 1: Add a product to cart",
+      "Step 2: Open cart drawer",
+      "Step 3: Click increase quantity button",
+      "Step 4: Verify quantity increments by 1",
+      "Step 5: Check that item subtotal updates",
+      "Step 6: Click decrease quantity button",
+      "Step 7: Verify quantity decrements by 1",
+      "Step 8: Confirm subtotal recalculates"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Remove item from cart",
+    "steps": [
+      "Step 1: Add products to cart",
+      "Step 2: Open cart drawer",
+      "Step 3: Click remove/delete button on an item",
+      "Step 4: Verify confirmation prompt appears (if applicable)",
+      "Step 5: Confirm removal",
+      "Step 6: Check that item is removed from cart",
+      "Step 7: Verify cart count badge updates",
+      "Step 8: Confirm subtotal recalculates"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Save for later moves item from cart to saved list",
+    "steps": [
+      "Step 1: Add products to cart",
+      "Step 2: Open cart drawer",
+      "Step 3: Click 'Save for Later' on an item",
+      "Step 4: Verify item is removed from cart section",
+      "Step 5: Check that item appears in 'Saved for Later' section",
+      "Step 6: Verify cart subtotal updates without saved item",
+      "Step 7: Click 'Move to Cart' on saved item",
+      "Step 8: Confirm item returns to cart"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Cart persistence saves cart to localStorage",
+    "steps": [
+      "Step 1: Add products to cart",
+      "Step 2: Close browser tab",
+      "Step 3: Reopen application",
+      "Step 4: Verify cart icon shows previous item count",
+      "Step 5: Open cart drawer",
+      "Step 6: Confirm all previous items are still in cart"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Cart syncs with server for logged-in users",
+    "steps": [
+      "Step 1: Login as a user",
+      "Step 2: Add products to cart",
+      "Step 3: Logout",
+      "Step 4: Login again on different browser/device",
+      "Step 5: Verify cart items are synced from server",
+      "Step 6: Check that all products and quantities match"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Cart merges local and server cart on login",
+    "steps": [
+      "Step 1: Add products to cart as guest",
+      "Step 2: Login to existing account",
+      "Step 3: Verify local cart items are merged with server cart",
+      "Step 4: Check that no items are lost",
+      "Step 5: Confirm duplicate items have quantities combined"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Cart item count badge displays correct number",
+    "steps": [
+      "Step 1: Start with empty cart",
+      "Step 2: Verify cart badge shows 0 or is hidden",
+      "Step 3: Add one item to cart",
+      "Step 4: Check badge shows 1",
+      "Step 5: Add another item with quantity 3",
+      "Step 6: Verify badge shows total quantity (4)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Estimated shipping cost is calculated in cart",
+    "steps": [
+      "Step 1: Add products to cart",
+      "Step 2: Open cart drawer or cart page",
+      "Step 3: Verify estimated shipping cost is displayed",
+      "Step 4: Check that shipping calculation is based on cart total or weight",
+      "Step 5: Add more items and confirm shipping recalculates"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Promo code can be applied to cart",
+    "steps": [
+      "Step 1: Add products to cart",
+      "Step 2: Open cart page",
+      "Step 3: Locate promo code input field",
+      "Step 4: Enter a valid promo code",
+      "Step 5: Click apply button",
+      "Step 6: Verify success message appears",
+      "Step 7: Check that discount is applied to subtotal",
+      "Step 8: Confirm total reflects discounted price"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Invalid promo code shows error message",
+    "steps": [
+      "Step 1: Add products to cart",
+      "Step 2: Navigate to cart page",
+      "Step 3: Enter an invalid or expired promo code",
+      "Step 4: Click apply button",
+      "Step 5: Verify error message is displayed",
+      "Step 6: Check that no discount is applied to cart"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Promo code can be removed from cart",
+    "steps": [
+      "Step 1: Apply a valid promo code to cart",
+      "Step 2: Verify discount is applied",
+      "Step 3: Click remove or clear promo code button",
+      "Step 4: Confirm discount is removed",
+      "Step 5: Check that cart total returns to original amount"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Cart summary displays all cost breakdowns",
+    "steps": [
+      "Step 1: Add products to cart",
+      "Step 2: Navigate to cart page",
+      "Step 3: Verify subtotal is displayed and correct",
+      "Step 4: Check that shipping cost is shown",
+      "Step 5: Verify tax calculation is displayed (if applicable)",
+      "Step 6: Confirm discount amount is shown (if promo applied)",
+      "Step 7: Check that final total is calculated correctly",
+      "Step 8: Verify all amounts sum to total"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Continue shopping link returns to previous page",
+    "steps": [
+      "Step 1: Browse products on a category page",
+      "Step 2: Add item to cart",
+      "Step 3: Open cart drawer",
+      "Step 4: Click 'Continue Shopping' link",
+      "Step 5: Verify cart drawer closes",
+      "Step 6: Confirm user returns to previous product page"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Proceed to checkout button navigates to checkout",
+    "steps": [
+      "Step 1: Add products to cart",
+      "Step 2: Open cart drawer or cart page",
+      "Step 3: Click 'Proceed to Checkout' button",
+      "Step 4: Verify navigation to checkout page",
+      "Step 5: Check that checkout page shows cart items"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Empty cart displays appropriate message",
+    "steps": [
+      "Step 1: Ensure cart is empty",
+      "Step 2: Click on cart icon",
+      "Step 3: Verify 'Your cart is empty' message is displayed",
+      "Step 4: Check that 'Start Shopping' or similar CTA is present",
+      "Step 5: Confirm checkout button is disabled"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User profile page displays user information",
+    "steps": [
+      "Step 1: Login as a user",
+      "Step 2: Navigate to profile page from account menu",
+      "Step 3: Verify name is displayed",
+      "Step 4: Check that email is shown",
+      "Step 5: Confirm phone number is displayed (if provided)",
+      "Step 6: Verify avatar/profile picture is shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User can update profile information",
+    "steps": [
+      "Step 1: Login and navigate to profile page",
+      "Step 2: Click edit profile button",
+      "Step 3: Update name field",
+      "Step 4: Update phone number",
+      "Step 5: Submit changes",
+      "Step 6: Verify success message appears",
+      "Step 7: Refresh page and confirm changes persisted",
+      "Step 8: Check database to verify updates"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User can change password from profile",
+    "steps": [
+      "Step 1: Login and navigate to profile page",
+      "Step 2: Click change password option",
+      "Step 3: Enter current password",
+      "Step 4: Enter new password",
+      "Step 5: Confirm new password",
+      "Step 6: Submit form",
+      "Step 7: Verify success message",
+      "Step 8: Logout and login with new password",
+      "Step 9: Confirm new password works"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Address book displays saved addresses",
+    "steps": [
+      "Step 1: Login as user with saved addresses",
+      "Step 2: Navigate to address book from account menu",
+      "Step 3: Verify all saved addresses are displayed",
+      "Step 4: Check that address details are complete (street, city, state, zip)",
+      "Step 5: Confirm default address is marked/highlighted"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User can add new address to address book",
+    "steps": [
+      "Step 1: Navigate to address book",
+      "Step 2: Click 'Add New Address' button",
+      "Step 3: Fill in address form (name, street, city, state, postal code)",
+      "Step 4: Set address label (Home, Work, etc.)",
+      "Step 5: Submit form",
+      "Step 6: Verify success message",
+      "Step 7: Confirm new address appears in address book",
+      "Step 8: Check database to verify address was saved"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User can edit existing address",
+    "steps": [
+      "Step 1: Navigate to address book with existing addresses",
+      "Step 2: Click edit button on an address",
+      "Step 3: Modify address fields",
+      "Step 4: Submit changes",
+      "Step 5: Verify success message",
+      "Step 6: Confirm address updates are displayed",
+      "Step 7: Check that database reflects changes"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User can delete address from address book",
+    "steps": [
+      "Step 1: Navigate to address book with multiple addresses",
+      "Step 2: Click delete button on an address",
+      "Step 3: Verify confirmation prompt appears",
+      "Step 4: Confirm deletion",
+      "Step 5: Check that address is removed from list",
+      "Step 6: Verify deletion from database"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User can set default address",
+    "steps": [
+      "Step 1: Navigate to address book with multiple addresses",
+      "Step 2: Click 'Set as Default' on a non-default address",
+      "Step 3: Verify confirmation or immediate update",
+      "Step 4: Check that new address is marked as default",
+      "Step 5: Confirm previous default is no longer marked",
+      "Step 6: Navigate to checkout and verify default address is pre-selected"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Order history displays all past orders",
+    "steps": [
+      "Step 1: Login as user with order history",
+      "Step 2: Navigate to order history from account menu",
+      "Step 3: Verify list of orders is displayed",
+      "Step 4: Check that each order shows order number, date, and total",
+      "Step 5: Confirm order status is displayed for each",
+      "Step 6: Verify orders are sorted by date (newest first)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Order detail page shows complete order information",
+    "steps": [
+      "Step 1: Navigate to order history",
+      "Step 2: Click on an order to view details",
+      "Step 3: Verify order number and date are displayed",
+      "Step 4: Check that all order items are listed with images",
+      "Step 5: Confirm quantities and prices for each item",
+      "Step 6: Verify shipping address is shown",
+      "Step 7: Check that order status and tracking info are displayed",
+      "Step 8: Confirm payment method and amounts are shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Wishlist page displays all saved items",
+    "steps": [
+      "Step 1: Login as user with wishlist items",
+      "Step 2: Navigate to wishlist from account menu or wishlist icon",
+      "Step 3: Verify all wishlist items are displayed",
+      "Step 4: Check that each item shows image, name, and price",
+      "Step 5: Confirm remove button is present on each item"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Add product to wishlist from product detail page",
+    "steps": [
+      "Step 1: Login as a user",
+      "Step 2: Navigate to product detail page",
+      "Step 3: Click heart or 'Add to Wishlist' button",
+      "Step 4: Verify success message or heart fills in",
+      "Step 5: Check that wishlist icon badge increments",
+      "Step 6: Navigate to wishlist page",
+      "Step 7: Confirm product appears in wishlist"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Add product to wishlist from product listing card",
+    "steps": [
+      "Step 1: Login as a user",
+      "Step 2: Navigate to products page",
+      "Step 3: Click heart icon on a product card",
+      "Step 4: Verify heart icon fills or changes color",
+      "Step 5: Check that wishlist count increments",
+      "Step 6: View wishlist and confirm product was added"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Remove product from wishlist",
+    "steps": [
+      "Step 1: Navigate to wishlist with items",
+      "Step 2: Click remove button or heart icon on an item",
+      "Step 3: Verify confirmation prompt (if applicable)",
+      "Step 4: Confirm removal",
+      "Step 5: Check that item is removed from wishlist",
+      "Step 6: Verify wishlist count decrements"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Move product from wishlist to cart",
+    "steps": [
+      "Step 1: Navigate to wishlist with items",
+      "Step 2: Click 'Move to Cart' or 'Add to Cart' on an item",
+      "Step 3: Verify item is added to cart",
+      "Step 4: Check cart icon badge increments",
+      "Step 5: Optionally verify item is removed from wishlist",
+      "Step 6: Open cart and confirm product is there"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Share wishlist generates shareable link",
+    "steps": [
+      "Step 1: Navigate to wishlist with items",
+      "Step 2: Click 'Share Wishlist' button",
+      "Step 3: Verify shareable link is generated",
+      "Step 4: Copy link to clipboard",
+      "Step 5: Open link in new browser/incognito window",
+      "Step 6: Confirm wishlist items are viewable without login"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Wishlist shows low stock notifications",
+    "steps": [
+      "Step 1: Add product with low stock to wishlist",
+      "Step 2: Navigate to wishlist page",
+      "Step 3: Verify low stock badge or message is displayed",
+      "Step 4: Check that notification stands out visually",
+      "Step 5: Add product with out of stock to wishlist",
+      "Step 6: Verify 'Out of Stock' message appears"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Guest users must login to access wishlist",
+    "steps": [
+      "Step 1: Logout or use incognito mode",
+      "Step 2: Navigate to product page",
+      "Step 3: Click 'Add to Wishlist' button",
+      "Step 4: Verify redirect to login page or login modal appears",
+      "Step 5: Login with credentials",
+      "Step 6: Confirm product is added to wishlist after login"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Checkout page displays progress stepper",
+    "steps": [
+      "Step 1: Add products to cart and proceed to checkout",
+      "Step 2: Verify checkout page loads",
+      "Step 3: Check that progress stepper is visible at top",
+      "Step 4: Confirm stepper shows all steps (Shipping, Payment, Review)",
+      "Step 5: Verify current step is highlighted"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Checkout step 1: Shipping address form validates input",
+    "steps": [
+      "Step 1: Navigate to checkout",
+      "Step 2: Attempt to submit empty address form",
+      "Step 3: Verify validation errors appear for required fields",
+      "Step 4: Fill in invalid email format",
+      "Step 5: Check that email validation error appears",
+      "Step 6: Enter invalid postal code",
+      "Step 7: Verify postal code validation error"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Checkout shipping address can be selected from saved addresses",
+    "steps": [
+      "Step 1: Login as user with saved addresses",
+      "Step 2: Navigate to checkout",
+      "Step 3: Verify list of saved addresses is displayed",
+      "Step 4: Click to select a saved address",
+      "Step 5: Confirm address fields are auto-filled",
+      "Step 6: Verify ability to proceed to next step"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Checkout allows entering new shipping address",
+    "steps": [
+      "Step 1: Navigate to checkout",
+      "Step 2: Select 'Add New Address' option",
+      "Step 3: Fill in complete address form",
+      "Step 4: Check 'Save to address book' checkbox",
+      "Step 5: Submit and proceed to next step",
+      "Step 6: Verify address is saved to account (check address book later)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Address autocomplete suggests addresses as user types",
+    "steps": [
+      "Step 1: Navigate to checkout address form",
+      "Step 2: Start typing street address",
+      "Step 3: Verify autocomplete dropdown appears with suggestions",
+      "Step 4: Click on a suggested address",
+      "Step 5: Confirm all address fields are auto-filled",
+      "Step 6: Verify city, state, and postal code are populated"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Checkout step 2: Shipping method selection displays options",
+    "steps": [
+      "Step 1: Complete shipping address and proceed to shipping method",
+      "Step 2: Verify multiple shipping options are displayed",
+      "Step 3: Check that each option shows cost and delivery timeframe",
+      "Step 4: Confirm one option is pre-selected (default)",
+      "Step 5: Verify order summary updates with shipping cost"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User can select different shipping methods",
+    "steps": [
+      "Step 1: Navigate to shipping method step",
+      "Step 2: Note current total with default shipping",
+      "Step 3: Select express shipping option",
+      "Step 4: Verify express shipping is highlighted as selected",
+      "Step 5: Check that order total updates with new shipping cost",
+      "Step 6: Select standard shipping",
+      "Step 7: Confirm total updates again"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Checkout step 3: Payment form with Stripe Elements loads",
+    "steps": [
+      "Step 1: Complete shipping steps and proceed to payment",
+      "Step 2: Verify payment step is displayed",
+      "Step 3: Check that Stripe card element is embedded and visible",
+      "Step 4: Verify placeholder text in card input",
+      "Step 5: Confirm CVV and expiry fields are present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Stripe payment form validates card information",
+    "steps": [
+      "Step 1: Navigate to payment step",
+      "Step 2: Enter invalid card number",
+      "Step 3: Verify Stripe shows validation error",
+      "Step 4: Enter expired card expiry date",
+      "Step 5: Check that expiry validation error appears",
+      "Step 6: Enter invalid CVV",
+      "Step 7: Verify CVV error message"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Payment step creates Stripe payment intent",
+    "steps": [
+      "Step 1: Navigate to payment step",
+      "Step 2: Enter valid test card (4242 4242 4242 4242)",
+      "Step 3: Fill in expiry and CVV",
+      "Step 4: Check browser network tab for payment intent API call",
+      "Step 5: Verify payment intent is created successfully",
+      "Step 6: Confirm client secret is received"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Checkout step 4: Review order summary before confirming",
+    "steps": [
+      "Step 1: Complete all checkout steps and reach review step",
+      "Step 2: Verify all order items are displayed",
+      "Step 3: Check that shipping address is shown",
+      "Step 4: Confirm shipping method is displayed",
+      "Step 5: Verify payment method is shown (last 4 digits)",
+      "Step 6: Check all cost breakdowns (subtotal, shipping, tax, total)",
+      "Step 7: Verify 'Place Order' button is present"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User can edit shipping address from review step",
+    "steps": [
+      "Step 1: Navigate to review step",
+      "Step 2: Click 'Edit' next to shipping address",
+      "Step 3: Verify navigation back to address step",
+      "Step 4: Modify address",
+      "Step 5: Proceed through steps back to review",
+      "Step 6: Confirm updated address is displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User can edit shipping method from review step",
+    "steps": [
+      "Step 1: Navigate to review step",
+      "Step 2: Click 'Edit' next to shipping method",
+      "Step 3: Verify navigation back to shipping method step",
+      "Step 4: Select different shipping option",
+      "Step 5: Proceed to review step",
+      "Step 6: Confirm new shipping method and updated total are displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Place order completes checkout and creates order",
+    "steps": [
+      "Step 1: Complete all checkout steps and reach review",
+      "Step 2: Click 'Place Order' button",
+      "Step 3: Verify loading indicator appears",
+      "Step 4: Wait for order processing",
+      "Step 5: Confirm navigation to order confirmation page",
+      "Step 6: Check that order number is displayed",
+      "Step 7: Verify cart is emptied",
+      "Step 8: Check database for created order record"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Order confirmation page displays order details",
+    "steps": [
+      "Step 1: Complete an order successfully",
+      "Step 2: View order confirmation page",
+      "Step 3: Verify success message is displayed",
+      "Step 4: Check that order number is shown prominently",
+      "Step 5: Confirm order date is displayed",
+      "Step 6: Verify order items are listed",
+      "Step 7: Check that shipping address is shown",
+      "Step 8: Confirm total amount charged is displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Order confirmation email is sent (mock)",
+    "steps": [
+      "Step 1: Complete an order",
+      "Step 2: Check server logs or mock email service",
+      "Step 3: Verify email send was triggered",
+      "Step 4: Confirm email contains order number",
+      "Step 5: Check that email includes order items and total"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Guest checkout allows purchase without account",
+    "steps": [
+      "Step 1: Logout or use incognito mode",
+      "Step 2: Add products to cart",
+      "Step 3: Proceed to checkout",
+      "Step 4: Verify 'Continue as Guest' option is available",
+      "Step 5: Click continue as guest",
+      "Step 6: Complete checkout with email and shipping info",
+      "Step 7: Place order successfully",
+      "Step 8: Confirm order is created without user account"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Express checkout provides fast path to payment",
+    "steps": [
+      "Step 1: Login as user with default address",
+      "Step 2: Add products to cart",
+      "Step 3: Click 'Express Checkout' button",
+      "Step 4: Verify checkout skips to payment step",
+      "Step 5: Confirm default address is used",
+      "Step 6: Check that standard shipping is pre-selected",
+      "Step 7: Complete payment and place order"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Order status tracking shows current order status",
+    "steps": [
+      "Step 1: Place an order",
+      "Step 2: Navigate to order detail page",
+      "Step 3: Verify order status is displayed (pending, processing, etc.)",
+      "Step 4: Check that status timeline or progress bar is shown",
+      "Step 5: Confirm estimated delivery date is displayed (if applicable)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Order tracking shows shipment tracking number",
+    "steps": [
+      "Step 1: View order that has been shipped",
+      "Step 2: Navigate to order detail page",
+      "Step 3: Verify tracking number is displayed",
+      "Step 4: Check that carrier name is shown",
+      "Step 5: Confirm 'Track Package' link is present and functional"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Reorder functionality creates new cart from previous order",
+    "steps": [
+      "Step 1: Navigate to order history",
+      "Step 2: Click 'Reorder' button on a past order",
+      "Step 3: Verify all items from order are added to cart",
+      "Step 4: Check cart icon badge updates with item count",
+      "Step 5: Open cart and confirm all items with correct quantities",
+      "Step 6: Verify navigation to cart or checkout"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Order invoice can be downloaded as PDF (mock)",
+    "steps": [
+      "Step 1: Navigate to order detail page",
+      "Step 2: Click 'Download Invoice' button",
+      "Step 3: Verify invoice generation is triggered",
+      "Step 4: Check that PDF download starts or opens",
+      "Step 5: Confirm invoice contains order number, items, and totals"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Cancel order functionality works for non-shipped orders",
+    "steps": [
+      "Step 1: View order with 'pending' or 'processing' status",
+      "Step 2: Click 'Cancel Order' button",
+      "Step 3: Verify cancellation confirmation prompt",
+      "Step 4: Confirm cancellation",
+      "Step 5: Check that order status updates to 'cancelled'",
+      "Step 6: Verify order appears as cancelled in order history",
+      "Step 7: Confirm database reflects cancelled status"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Cancel order is disabled for shipped orders",
+    "steps": [
+      "Step 1: View order with 'shipped' or 'delivered' status",
+      "Step 2: Verify 'Cancel Order' button is disabled or hidden",
+      "Step 3: Check that message explains order cannot be cancelled",
+      "Step 4: Confirm contact support option is available"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Product reviews display on product detail page",
+    "steps": [
+      "Step 1: Navigate to product with reviews",
+      "Step 2: Scroll to reviews section",
+      "Step 3: Verify reviews are displayed",
+      "Step 4: Check that each review shows star rating",
+      "Step 5: Confirm reviewer name and date are shown",
+      "Step 6: Verify review title and content are displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Submit product review with rating and text",
+    "steps": [
+      "Step 1: Login and navigate to product page",
+      "Step 2: Scroll to reviews section",
+      "Step 3: Click 'Write a Review' button",
+      "Step 4: Select star rating (1-5)",
+      "Step 5: Enter review title",
+      "Step 6: Enter review text content",
+      "Step 7: Submit review",
+      "Step 8: Verify success message",
+      "Step 9: Confirm review appears in reviews list",
+      "Step 10: Check database for review record"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Review form validates required fields",
+    "steps": [
+      "Step 1: Navigate to write review form",
+      "Step 2: Attempt to submit without selecting rating",
+      "Step 3: Verify validation error for rating",
+      "Step 4: Select rating but leave text empty",
+      "Step 5: Submit form",
+      "Step 6: Check that review text validation error appears"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Upload photos with product review",
+    "steps": [
+      "Step 1: Navigate to write review form",
+      "Step 2: Fill in rating and text",
+      "Step 3: Click 'Add Photos' button",
+      "Step 4: Select image files from file system",
+      "Step 5: Verify image previews appear",
+      "Step 6: Submit review",
+      "Step 7: Confirm review is posted with images",
+      "Step 8: View review and verify images are displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verified purchase badge displays on reviews from buyers",
+    "steps": [
+      "Step 1: Purchase a product",
+      "Step 2: Submit review for purchased product",
+      "Step 3: View product reviews",
+      "Step 4: Verify your review shows 'Verified Purchase' badge",
+      "Step 5: Check that badge visually distinguishes verified reviews",
+      "Step 6: Compare with non-verified reviews (no badge)"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Helpful/not helpful voting on reviews",
+    "steps": [
+      "Step 1: Navigate to product reviews",
+      "Step 2: Click 'Helpful' button on a review",
+      "Step 3: Verify helpful count increments",
+      "Step 4: Check that button state changes (e.g., filled icon)",
+      "Step 5: Click 'Not Helpful' on another review",
+      "Step 6: Verify not helpful count increments"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Reviews can be filtered by star rating",
+    "steps": [
+      "Step 1: Navigate to product with multiple reviews",
+      "Step 2: Click on 5-star rating filter",
+      "Step 3: Verify only 5-star reviews are displayed",
+      "Step 4: Click on 3-star rating filter",
+      "Step 5: Confirm only 3-star reviews are shown",
+      "Step 6: Clear filter and verify all reviews return"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Reviews can be sorted by date, helpfulness, or rating",
+    "steps": [
+      "Step 1: Navigate to product reviews",
+      "Step 2: Select 'Most Recent' sort option",
+      "Step 3: Verify reviews are ordered by date descending",
+      "Step 4: Select 'Most Helpful' sort option",
+      "Step 5: Confirm reviews are ordered by helpful count",
+      "Step 6: Select 'Highest Rating' sort option",
+      "Step 7: Verify 5-star reviews appear first"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Average product rating is calculated and displayed",
+    "steps": [
+      "Step 1: Navigate to product with multiple reviews",
+      "Step 2: Verify average rating is displayed (e.g., 4.5 stars)",
+      "Step 3: Check that rating is shown as stars and numeric value",
+      "Step 4: Confirm total review count is displayed",
+      "Step 5: Verify average rating on product listing card matches"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Rating distribution chart shows breakdown of ratings",
+    "steps": [
+      "Step 1: Navigate to product reviews",
+      "Step 2: Verify rating distribution chart/graph is displayed",
+      "Step 3: Check that each star level (1-5) shows count or percentage",
+      "Step 4: Confirm visual bars represent proportions correctly",
+      "Step 5: Click on a rating bar and verify reviews filter to that rating"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User can edit their own review",
+    "steps": [
+      "Step 1: Login and navigate to product you reviewed",
+      "Step 2: Find your review in the reviews list",
+      "Step 3: Click 'Edit' button on your review",
+      "Step 4: Modify rating or review text",
+      "Step 5: Submit changes",
+      "Step 6: Verify success message",
+      "Step 7: Confirm review updates are displayed",
+      "Step 8: Check database for updated review"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User can delete their own review",
+    "steps": [
+      "Step 1: Login and find a product you reviewed",
+      "Step 2: Navigate to your review",
+      "Step 3: Click 'Delete' button",
+      "Step 4: Verify confirmation prompt appears",
+      "Step 5: Confirm deletion",
+      "Step 6: Check that review is removed from list",
+      "Step 7: Verify database record is deleted"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Users cannot edit or delete others' reviews",
+    "steps": [
+      "Step 1: Login as one user",
+      "Step 2: View reviews from other users",
+      "Step 3: Verify edit and delete buttons are not present on others' reviews",
+      "Step 4: Confirm only your own reviews have edit/delete options"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin dashboard displays key metrics",
+    "steps": [
+      "Step 1: Login as admin user",
+      "Step 2: Navigate to admin dashboard",
+      "Step 3: Verify total revenue metric is displayed",
+      "Step 4: Check that total orders count is shown",
+      "Step 5: Confirm total customers metric is displayed",
+      "Step 6: Verify average order value is calculated and shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can view all products in product management",
+    "steps": [
+      "Step 1: Login as admin",
+      "Step 2: Navigate to Products section in admin dashboard",
+      "Step 3: Verify list of all products is displayed",
+      "Step 4: Check that product name, SKU, price, and stock are shown",
+      "Step 5: Confirm pagination or scrolling for many products",
+      "Step 6: Verify search/filter options are available"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can create new product",
+    "steps": [
+      "Step 1: Login as admin and navigate to Products",
+      "Step 2: Click 'Add New Product' button",
+      "Step 3: Fill in product name, description, price",
+      "Step 4: Set category and brand",
+      "Step 5: Upload product images",
+      "Step 6: Set stock quantity",
+      "Step 7: Submit form",
+      "Step 8: Verify success message",
+      "Step 9: Confirm new product appears in product list",
+      "Step 10: Check product is visible on storefront"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can edit existing product",
+    "steps": [
+      "Step 1: Login as admin and navigate to Products",
+      "Step 2: Click edit button on a product",
+      "Step 3: Modify product name and price",
+      "Step 4: Update stock quantity",
+      "Step 5: Submit changes",
+      "Step 6: Verify success message",
+      "Step 7: Confirm product updates are displayed in admin list",
+      "Step 8: Check updates are reflected on storefront"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can delete product",
+    "steps": [
+      "Step 1: Login as admin and navigate to Products",
+      "Step 2: Click delete button on a product",
+      "Step 3: Verify confirmation prompt",
+      "Step 4: Confirm deletion",
+      "Step 5: Check that product is removed from list",
+      "Step 6: Verify product no longer appears on storefront",
+      "Step 7: Confirm database record is deleted or marked inactive"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can upload multiple product images",
+    "steps": [
+      "Step 1: Navigate to product creation or edit form",
+      "Step 2: Click image upload button",
+      "Step 3: Select multiple image files",
+      "Step 4: Verify all images are uploaded and previewed",
+      "Step 5: Set image order/position",
+      "Step 6: Mark one as primary image",
+      "Step 7: Save product",
+      "Step 8: Verify images display correctly on storefront"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can manage product variants",
+    "steps": [
+      "Step 1: Navigate to product edit form",
+      "Step 2: Click 'Add Variants' section",
+      "Step 3: Create size variants (S, M, L)",
+      "Step 4: Create color variants (Red, Blue)",
+      "Step 5: Set stock quantities for each variant",
+      "Step 6: Set price adjustments if applicable",
+      "Step 7: Save product",
+      "Step 8: Verify variants appear correctly on product detail page"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can view all orders in order management",
+    "steps": [
+      "Step 1: Login as admin",
+      "Step 2: Navigate to Orders section",
+      "Step 3: Verify list of all orders is displayed",
+      "Step 4: Check that order number, date, customer, and status are shown",
+      "Step 5: Confirm total amount for each order is visible",
+      "Step 6: Verify orders can be filtered by status"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can update order status",
+    "steps": [
+      "Step 1: Navigate to admin orders list",
+      "Step 2: Click on an order to view details",
+      "Step 3: Change status from 'pending' to 'processing'",
+      "Step 4: Submit status update",
+      "Step 5: Verify success message",
+      "Step 6: Confirm order status is updated in list",
+      "Step 7: Check that customer sees updated status on their order page"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can add tracking number to shipped order",
+    "steps": [
+      "Step 1: Navigate to order detail in admin",
+      "Step 2: Change status to 'shipped'",
+      "Step 3: Enter tracking number",
+      "Step 4: Select carrier",
+      "Step 5: Save changes",
+      "Step 6: Verify tracking info is saved",
+      "Step 7: Check that customer can see tracking number on their order page"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can view customer list",
+    "steps": [
+      "Step 1: Login as admin",
+      "Step 2: Navigate to Customers section",
+      "Step 3: Verify list of all customers is displayed",
+      "Step 4: Check that customer name and email are shown",
+      "Step 5: Confirm registration date is displayed",
+      "Step 6: Verify total orders and total spent for each customer"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can view individual customer details",
+    "steps": [
+      "Step 1: Navigate to admin customers list",
+      "Step 2: Click on a customer",
+      "Step 3: Verify customer profile details are displayed",
+      "Step 4: Check that order history for this customer is shown",
+      "Step 5: Confirm addresses associated with customer are listed",
+      "Step 6: Verify total lifetime value is calculated"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can manage product categories",
+    "steps": [
+      "Step 1: Navigate to Categories section in admin",
+      "Step 2: Verify list of categories is displayed",
+      "Step 3: Click 'Add Category' button",
+      "Step 4: Enter category name and description",
+      "Step 5: Set parent category (for subcategory)",
+      "Step 6: Save category",
+      "Step 7: Verify category appears in list",
+      "Step 8: Check category is available on storefront"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can edit and delete categories",
+    "steps": [
+      "Step 1: Navigate to Categories in admin",
+      "Step 2: Click edit on a category",
+      "Step 3: Modify category name",
+      "Step 4: Save changes",
+      "Step 5: Verify updates are displayed",
+      "Step 6: Click delete on another category",
+      "Step 7: Confirm deletion prompt",
+      "Step 8: Verify category is removed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can create and manage promo codes",
+    "steps": [
+      "Step 1: Navigate to Promo Codes section in admin",
+      "Step 2: Click 'Create Promo Code'",
+      "Step 3: Enter code name (e.g., SAVE20)",
+      "Step 4: Select discount type (percentage or fixed)",
+      "Step 5: Set discount value",
+      "Step 6: Set minimum order amount",
+      "Step 7: Set expiry date",
+      "Step 8: Save promo code",
+      "Step 9: Verify code appears in list",
+      "Step 10: Test code on storefront checkout"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can view sales analytics dashboard",
+    "steps": [
+      "Step 1: Login as admin",
+      "Step 2: Navigate to Analytics section",
+      "Step 3: Verify revenue chart is displayed",
+      "Step 4: Check that time period can be selected (day, week, month)",
+      "Step 5: Confirm sales by category chart is shown",
+      "Step 6: Verify top selling products are listed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can filter analytics by date range",
+    "steps": [
+      "Step 1: Navigate to admin analytics",
+      "Step 2: Select custom date range",
+      "Step 3: Set start and end dates",
+      "Step 4: Apply filter",
+      "Step 5: Verify charts and metrics update for selected period",
+      "Step 6: Check that date range is displayed in header"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can view inventory tracking",
+    "steps": [
+      "Step 1: Navigate to Inventory section in admin",
+      "Step 2: Verify list of all products with stock levels",
+      "Step 3: Check that low stock items are highlighted",
+      "Step 4: Confirm out of stock items are flagged",
+      "Step 5: Verify ability to sort by stock quantity",
+      "Step 6: Check that stock history or log is available"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin can generate revenue reports",
+    "steps": [
+      "Step 1: Navigate to Reports section in admin",
+      "Step 2: Select 'Revenue Report'",
+      "Step 3: Choose date range",
+      "Step 4: Click 'Generate Report'",
+      "Step 5: Verify report displays with summary metrics",
+      "Step 6: Check detailed breakdown by day/week/month",
+      "Step 7: Confirm export to CSV option works"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Admin access is restricted to admin users only",
+    "steps": [
+      "Step 1: Login as regular customer user",
+      "Step 2: Attempt to navigate to admin dashboard URL",
+      "Step 3: Verify access is denied or redirected to homepage",
+      "Step 4: Logout and login as admin",
+      "Step 5: Confirm admin dashboard is accessible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Social login with Google works (mock implementation)",
+    "steps": [
+      "Step 1: Navigate to login page",
+      "Step 2: Click 'Sign in with Google' button",
+      "Step 3: Verify mock Google OAuth flow initiates",
+      "Step 4: Complete mock authorization",
+      "Step 5: Confirm user is logged in",
+      "Step 6: Check that user account is created or linked"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Email verification flow after registration",
+    "steps": [
+      "Step 1: Register new account",
+      "Step 2: Verify message about verification email is shown",
+      "Step 3: Check mock email or logs for verification link",
+      "Step 4: Click verification link",
+      "Step 5: Confirm account is marked as verified",
+      "Step 6: Check database email_verified field is true"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "User can delete their account",
+    "steps": [
+      "Step 1: Login and navigate to account settings",
+      "Step 2: Click 'Delete Account' option",
+      "Step 3: Verify warning message about permanent deletion",
+      "Step 4: Enter password to confirm",
+      "Step 5: Submit deletion request",
+      "Step 6: Confirm account is deleted from database",
+      "Step 7: Verify unable to login with deleted account credentials"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Quick view modal shows product summary",
+    "steps": [
+      "Step 1: Navigate to products listing",
+      "Step 2: Hover over a product card",
+      "Step 3: Click 'Quick View' button",
+      "Step 4: Verify modal opens with product details",
+      "Step 5: Check that product image, name, price, and add to cart are shown",
+      "Step 6: Close modal and confirm return to listing"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Featured products section on homepage",
+    "steps": [
+      "Step 1: Navigate to homepage",
+      "Step 2: Scroll to featured products section",
+      "Step 3: Verify featured products are displayed",
+      "Step 4: Check that products marked as featured in admin appear",
+      "Step 5: Confirm section has appropriate heading",
+      "Step 6: Click on featured product and verify navigation"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Sale/discount badges display on products",
+    "steps": [
+      "Step 1: Navigate to products with compare_at_price set",
+      "Step 2: Verify sale badge is displayed on product card",
+      "Step 3: Check that discount percentage is calculated and shown",
+      "Step 4: Confirm original price shows as strikethrough",
+      "Step 5: Verify sale price is highlighted in red or accent color"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Logout functionality clears session",
+    "steps": [
+      "Step 1: Login as a user",
+      "Step 2: Click logout from account menu",
+      "Step 3: Verify redirect to homepage or login page",
+      "Step 4: Check that account menu shows logged-out state",
+      "Step 5: Confirm JWT token is cleared from storage",
+      "Step 6: Attempt to access protected page and verify redirect to login"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Homepage has professional e-commerce design",
+    "steps": [
+      "Step 1: Navigate to homepage",
+      "Step 2: Take screenshot of entire page",
+      "Step 3: Verify clean, modern design aesthetic",
+      "Step 4: Check that hero section is visually appealing",
+      "Step 5: Confirm consistent branding and color scheme",
+      "Step 6: Verify clear call-to-action buttons"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Header navigation is well-designed and accessible",
+    "steps": [
+      "Step 1: Navigate to any page",
+      "Step 2: Take screenshot of header",
+      "Step 3: Verify logo is prominent and left-aligned",
+      "Step 4: Check that category menu is clear and organized",
+      "Step 5: Confirm search bar is centered and visible",
+      "Step 6: Verify icons (account, wishlist, cart) are right-aligned and clear"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Product cards have consistent styling",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Take screenshot of product grid",
+      "Step 3: Verify all cards have same dimensions",
+      "Step 4: Check that images are properly sized and centered",
+      "Step 5: Confirm typography is consistent across cards",
+      "Step 6: Verify hover effects are smooth and consistent"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Product card hover effects are polished",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Hover over product cards",
+      "Step 3: Verify smooth transition effects on hover",
+      "Step 4: Check that shadow or elevation increases on hover",
+      "Step 5: Confirm quick view and wishlist buttons appear smoothly"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Color palette matches design system",
+    "steps": [
+      "Step 1: Navigate through multiple pages",
+      "Step 2: Take screenshots",
+      "Step 3: Verify primary color (Emerald #10B981) is used for CTAs",
+      "Step 4: Check that text colors match specification (Gray-900, Gray-600)",
+      "Step 5: Confirm sale prices use Red-500",
+      "Step 6: Verify success messages use Green-500"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Typography is consistent and readable",
+    "steps": [
+      "Step 1: Navigate through various pages",
+      "Step 2: Take screenshots",
+      "Step 3: Verify Inter or system-ui font is used",
+      "Step 4: Check that heading hierarchy is clear",
+      "Step 5: Confirm body text is readable (text-sm to text-base)",
+      "Step 6: Verify sufficient line-height for readability"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Buttons have consistent pill-shaped style",
+    "steps": [
+      "Step 1: Navigate through pages with various buttons",
+      "Step 2: Take screenshots",
+      "Step 3: Verify all primary buttons have rounded corners",
+      "Step 4: Check that button sizing is consistent",
+      "Step 5: Confirm hover and active states are styled",
+      "Step 6: Verify disabled buttons have appropriate styling"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Star rating component is visually clear",
+    "steps": [
+      "Step 1: Navigate to product with ratings",
+      "Step 2: Take screenshot of star rating",
+      "Step 3: Verify stars are clear and recognizable",
+      "Step 4: Check that filled vs empty stars are distinct",
+      "Step 5: Confirm half-star display for partial ratings",
+      "Step 6: Verify rating aligns with numeric value"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Product detail page layout is well-organized",
+    "steps": [
+      "Step 1: Navigate to product detail page",
+      "Step 2: Take screenshot of full page",
+      "Step 3: Verify image gallery is prominent on left",
+      "Step 4: Check that product info section is organized on right",
+      "Step 5: Confirm tabs for description/specs/reviews are below",
+      "Step 6: Verify layout is balanced and not cluttered"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Shopping cart drawer has clean design",
+    "steps": [
+      "Step 1: Open cart drawer",
+      "Step 2: Take screenshot",
+      "Step 3: Verify drawer slides in smoothly from right",
+      "Step 4: Check that cart items are clearly separated",
+      "Step 5: Confirm product images are appropriately sized",
+      "Step 6: Verify subtotal and checkout button are prominent at bottom"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Checkout flow has clear progress indicator",
+    "steps": [
+      "Step 1: Navigate to checkout",
+      "Step 2: Take screenshot of stepper",
+      "Step 3: Verify progress stepper is clear and visible",
+      "Step 4: Check that current step is highlighted",
+      "Step 5: Confirm completed steps have checkmark or different style",
+      "Step 6: Verify upcoming steps are visually distinct"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Form inputs have consistent styling",
+    "steps": [
+      "Step 1: Navigate to forms (login, checkout, etc.)",
+      "Step 2: Take screenshots",
+      "Step 3: Verify all inputs have consistent height and padding",
+      "Step 4: Check that borders and focus states are styled",
+      "Step 5: Confirm error states are clearly visible in red",
+      "Step 6: Verify labels are properly aligned"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Mobile navigation menu is well-designed",
+    "steps": [
+      "Step 1: Resize browser to mobile width",
+      "Step 2: Take screenshot of header",
+      "Step 3: Open mobile menu",
+      "Step 4: Verify menu slides in smoothly",
+      "Step 5: Check that menu items are touch-friendly sized",
+      "Step 6: Confirm close button is obvious and accessible"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Mobile product cards are touch-optimized",
+    "steps": [
+      "Step 1: View products page on mobile width",
+      "Step 2: Take screenshot",
+      "Step 3: Verify cards are appropriately sized for touch",
+      "Step 4: Check that tap targets are at least 44x44px",
+      "Step 5: Confirm spacing between cards is adequate",
+      "Step 6: Verify text is readable without zooming"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Responsive design works at tablet breakpoint",
+    "steps": [
+      "Step 1: Resize browser to tablet width (768px)",
+      "Step 2: Take screenshots of multiple pages",
+      "Step 3: Verify layout adapts appropriately",
+      "Step 4: Check that product grid adjusts columns",
+      "Step 5: Confirm navigation is still usable",
+      "Step 6: Verify no horizontal scrolling"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Responsive design works at mobile breakpoint",
+    "steps": [
+      "Step 1: Resize browser to mobile width (375px)",
+      "Step 2: Take screenshots of multiple pages",
+      "Step 3: Verify layout stacks vertically",
+      "Step 4: Check that all content is accessible",
+      "Step 5: Confirm buttons and links are touch-friendly",
+      "Step 6: Verify no content is cut off"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Loading states use skeleton loaders",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Refresh and observe loading state",
+      "Step 3: Take screenshot of skeleton loaders",
+      "Step 4: Verify skeleton shapes match content layout",
+      "Step 5: Confirm smooth transition from skeleton to content",
+      "Step 6: Check that loading animation is subtle"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Error messages are clearly styled and visible",
+    "steps": [
+      "Step 1: Trigger form validation errors",
+      "Step 2: Take screenshot",
+      "Step 3: Verify error messages are in red color",
+      "Step 4: Check that error text is below/beside relevant field",
+      "Step 5: Confirm error icon is present if applicable",
+      "Step 6: Verify error text is readable and clear"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Success notifications are well-designed",
+    "steps": [
+      "Step 1: Perform action that triggers success message (e.g., add to cart)",
+      "Step 2: Take screenshot of notification",
+      "Step 3: Verify success color (green) is used",
+      "Step 4: Check that notification is positioned appropriately",
+      "Step 5: Confirm checkmark icon is present",
+      "Step 6: Verify notification auto-dismisses after appropriate time"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Footer has organized layout with links",
+    "steps": [
+      "Step 1: Scroll to bottom of any page",
+      "Step 2: Take screenshot of footer",
+      "Step 3: Verify footer has organized sections (e.g., Company, Help, Legal)",
+      "Step 4: Check that links are clearly visible",
+      "Step 5: Confirm social media icons are present",
+      "Step 6: Verify copyright information is displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Admin dashboard has professional interface",
+    "steps": [
+      "Step 1: Login as admin",
+      "Step 2: Take screenshot of admin dashboard",
+      "Step 3: Verify sidebar navigation is clear",
+      "Step 4: Check that metrics/cards are well-designed",
+      "Step 5: Confirm charts and graphs are visually appealing",
+      "Step 6: Verify consistent spacing and alignment"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Wishlist heart icon has smooth animation",
+    "steps": [
+      "Step 1: Navigate to product card or detail page",
+      "Step 2: Click wishlist heart icon",
+      "Step 3: Verify smooth animation when adding to wishlist",
+      "Step 4: Check that icon changes from outline to filled",
+      "Step 5: Confirm animation is not jarring or too slow"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Quantity picker has clear UI",
+    "steps": [
+      "Step 1: Navigate to product detail or cart",
+      "Step 2: Take screenshot of quantity picker",
+      "Step 3: Verify plus and minus buttons are clear",
+      "Step 4: Check that current quantity is displayed prominently",
+      "Step 5: Confirm buttons have hover/active states",
+      "Step 6: Verify picker is compact but touch-friendly on mobile"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Price display with strikethrough for discounts is clear",
+    "steps": [
+      "Step 1: Navigate to product with discount",
+      "Step 2: Take screenshot",
+      "Step 3: Verify original price has strikethrough style",
+      "Step 4: Check that sale price is in red or accent color",
+      "Step 5: Confirm discount percentage badge is visible",
+      "Step 6: Verify prices are properly aligned"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Badge components (sale, new, bestseller) are distinctive",
+    "steps": [
+      "Step 1: Navigate to products with various badges",
+      "Step 2: Take screenshots",
+      "Step 3: Verify sale badge is red and prominent",
+      "Step 4: Check that 'new' badge has distinct color",
+      "Step 5: Confirm 'bestseller' badge is recognizable",
+      "Step 6: Verify badges don't overlap with product images"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Category mega menu has organized layout",
+    "steps": [
+      "Step 1: Hover over categories in header",
+      "Step 2: Take screenshot of mega menu",
+      "Step 3: Verify categories are organized in columns",
+      "Step 4: Check that subcategories are indented or grouped clearly",
+      "Step 5: Confirm images or icons enhance navigation",
+      "Step 6: Verify menu doesn't feel cluttered"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Search autocomplete dropdown is well-styled",
+    "steps": [
+      "Step 1: Click search and start typing",
+      "Step 2: Take screenshot of autocomplete dropdown",
+      "Step 3: Verify dropdown has shadow or border",
+      "Step 4: Check that suggestions are clearly separated",
+      "Step 5: Confirm hover state highlights suggestion",
+      "Step 6: Verify product images in suggestions are appropriately sized"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Order confirmation page is celebratory and clear",
+    "steps": [
+      "Step 1: Complete an order",
+      "Step 2: Take screenshot of confirmation page",
+      "Step 3: Verify success icon or checkmark is prominent",
+      "Step 4: Check that success message is celebratory",
+      "Step 5: Confirm order number is displayed clearly",
+      "Step 6: Verify next steps are clearly outlined"
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Empty states (cart, wishlist) are helpful and encouraging",
+    "steps": [
+      "Step 1: View empty cart",
+      "Step 2: Take screenshot",
+      "Step 3: Verify empty state illustration or icon is present",
+      "Step 4: Check that message is friendly and encouraging",
+      "Step 5: Confirm CTA button is prominent",
+      "Step 6: Repeat for empty wishlist and verify similar quality"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "API endpoints use proper RESTful conventions",
+    "steps": [
+      "Step 1: Review API endpoint structure",
+      "Step 2: Verify GET endpoints for retrieving data",
+      "Step 3: Check POST endpoints for creating resources",
+      "Step 4: Confirm PUT/PATCH for updates",
+      "Step 5: Verify DELETE endpoints for deletions",
+      "Step 6: Check that endpoints follow naming conventions"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "API returns proper status codes",
+    "steps": [
+      "Step 1: Make successful API request",
+      "Step 2: Verify 200 status code for success",
+      "Step 3: Create a new resource",
+      "Step 4: Check for 201 created status",
+      "Step 5: Request non-existent resource",
+      "Step 6: Verify 404 not found",
+      "Step 7: Send invalid data",
+      "Step 8: Confirm 400 bad request"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "API handles validation errors gracefully",
+    "steps": [
+      "Step 1: Send API request with invalid data",
+      "Step 2: Verify 400 status code is returned",
+      "Step 3: Check that error response includes validation messages",
+      "Step 4: Confirm error format is consistent (JSON)",
+      "Step 5: Verify specific field errors are identified"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Database foreign key constraints are enforced",
+    "steps": [
+      "Step 1: Attempt to create order_item with non-existent product_id",
+      "Step 2: Verify database constraint prevents creation",
+      "Step 3: Check that appropriate error is returned",
+      "Step 4: Verify referential integrity is maintained",
+      "Step 5: Test with other foreign key relationships"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Product stock decrements when order is placed",
+    "steps": [
+      "Step 1: Note current stock quantity of a product",
+      "Step 2: Add product to cart with quantity 2",
+      "Step 3: Complete checkout and place order",
+      "Step 4: Check product stock in database",
+      "Step 5: Verify stock decreased by 2",
+      "Step 6: Confirm stock update is reflected on product page"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Cart items sync when user logs in",
+    "steps": [
+      "Step 1: As guest, add products to cart",
+      "Step 2: Note cart items and quantities",
+      "Step 3: Login to existing account (that already has cart items)",
+      "Step 4: Verify guest cart items are merged with user cart",
+      "Step 5: Check that quantities are summed for duplicate items",
+      "Step 6: Confirm no items are lost in merge"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Images are lazy-loaded for performance",
+    "steps": [
+      "Step 1: Navigate to products page with many products",
+      "Step 2: Open browser dev tools network tab",
+      "Step 3: Verify only visible images are loaded initially",
+      "Step 4: Scroll down page",
+      "Step 5: Confirm images load as they enter viewport",
+      "Step 6: Check that loading attribute or IntersectionObserver is used"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Product filtering maintains URL state",
+    "steps": [
+      "Step 1: Navigate to products page",
+      "Step 2: Apply category and price filters",
+      "Step 3: Check that URL updates with filter parameters",
+      "Step 4: Copy URL and open in new tab",
+      "Step 5: Verify filters are applied based on URL parameters",
+      "Step 6: Confirm same filtered results are displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "SEO meta tags are properly set on pages",
+    "steps": [
+      "Step 1: Navigate to homepage",
+      "Step 2: View page source",
+      "Step 3: Verify title tag is present and descriptive",
+      "Step 4: Check that meta description is present",
+      "Step 5: Navigate to product detail page",
+      "Step 6: Verify dynamic title includes product name",
+      "Step 7: Confirm og:image tag is present for social sharing"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Bottom navigation appears on mobile for key actions",
+    "steps": [
+      "Step 1: View site on mobile width",
+      "Step 2: Scroll through a page",
+      "Step 3: Verify bottom navigation bar is visible and sticky",
+      "Step 4: Check that key actions are accessible (Home, Search, Cart, Account)",
+      "Step 5: Tap each navigation item and verify navigation works"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Sticky add to cart button on mobile product pages",
+    "steps": [
+      "Step 1: View product detail on mobile width",
+      "Step 2: Scroll down the page",
+      "Step 3: Verify add to cart button becomes sticky at bottom",
+      "Step 4: Check that button remains accessible while scrolling",
+      "Step 5: Tap button and verify product is added to cart"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Swipe gesture for product images on mobile",
+    "steps": [
+      "Step 1: View product detail on mobile device or mobile width",
+      "Step 2: Verify product images are in swipeable carousel",
+      "Step 3: Swipe left on image",
+      "Step 4: Confirm image advances to next",
+      "Step 5: Swipe right",
+      "Step 6: Verify image goes back to previous"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Voice search functionality on mobile (mock)",
+    "steps": [
+      "Step 1: View site on mobile",
+      "Step 2: Click microphone icon in search bar",
+      "Step 3: Verify voice input is activated (mock)",
+      "Step 4: Speak or simulate voice input",
+      "Step 5: Confirm search query is populated",
+      "Step 6: Verify search executes with voice query"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Session timeout logs user out after inactivity",
+    "steps": [
+      "Step 1: Login as a user",
+      "Step 2: Note the session timeout duration",
+      "Step 3: Wait for timeout period without activity",
+      "Step 4: Attempt to access protected page",
+      "Step 5: Verify redirect to login page",
+      "Step 6: Confirm session expired message is shown"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Refresh token extends user session",
+    "steps": [
+      "Step 1: Login and obtain initial JWT token",
+      "Step 2: Note access token expiry time",
+      "Step 3: Make API request near token expiry",
+      "Step 4: Verify refresh token is used to get new access token",
+      "Step 5: Confirm user session continues without re-login",
+      "Step 6: Check that new token is stored"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Rate limiting protects API endpoints",
+    "steps": [
+      "Step 1: Make rapid successive API requests to same endpoint",
+      "Step 2: Verify rate limit is enforced after threshold",
+      "Step 3: Check for 429 Too Many Requests status code",
+      "Step 4: Confirm error message indicates rate limit",
+      "Step 5: Wait for rate limit window to reset",
+      "Step 6: Verify requests are allowed again"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "CORS headers allow frontend access to API",
+    "steps": [
+      "Step 1: Make API request from frontend",
+      "Step 2: Check browser console for CORS errors",
+      "Step 3: Verify Access-Control-Allow-Origin header is present",
+      "Step 4: Confirm preflight OPTIONS requests succeed",
+      "Step 5: Verify credentials can be included if needed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Product search handles special characters",
+    "steps": [
+      "Step 1: Navigate to search",
+      "Step 2: Enter search with special characters (e.g., 'men's shirt')",
+      "Step 3: Verify search executes without error",
+      "Step 4: Check that results are returned correctly",
+      "Step 5: Confirm special characters don't break query"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Product prices display with correct currency formatting",
+    "steps": [
+      "Step 1: View products on listing page",
+      "Step 2: Verify prices show currency symbol (e.g., $)",
+      "Step 3: Check that prices have two decimal places",
+      "Step 4: Confirm thousand separators if applicable",
+      "Step 5: Verify consistent formatting across all price displays"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Tax calculation in checkout is accurate",
+    "steps": [
+      "Step 1: Add products to cart",
+      "Step 2: Proceed to checkout",
+      "Step 3: Enter shipping address in taxable region",
+      "Step 4: Verify tax is calculated based on address",
+      "Step 5: Check that tax rate is appropriate for region",
+      "Step 6: Confirm tax amount is added to total correctly"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Minimum order amount for promo code is enforced",
+    "steps": [
+      "Step 1: Create promo code with minimum order amount",
+      "Step 2: Add products to cart below minimum",
+      "Step 3: Attempt to apply promo code",
+      "Step 4: Verify error message about minimum not met",
+      "Step 5: Add more products to exceed minimum",
+      "Step 6: Apply promo code again",
+      "Step 7: Confirm code is accepted"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Promo code usage limit is enforced",
+    "steps": [
+      "Step 1: Create promo code with max_uses limit",
+      "Step 2: Apply code to orders until limit is reached",
+      "Step 3: Attempt to use code after limit reached",
+      "Step 4: Verify error message that code is no longer valid",
+      "Step 5: Check database that current_uses equals max_uses"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Expired promo codes cannot be applied",
+    "steps": [
+      "Step 1: Create promo code with past end_date",
+      "Step 2: Attempt to apply code at checkout",
+      "Step 3: Verify error message about code being expired",
+      "Step 4: Confirm no discount is applied",
+      "Step 5: Check that code with future start_date also cannot be used yet"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Order number is unique for each order",
+    "steps": [
+      "Step 1: Place first order and note order number",
+      "Step 2: Place second order",
+      "Step 3: Verify second order has different order number",
+      "Step 4: Check database for uniqueness constraint on order_number",
+      "Step 5: Confirm order numbers follow consistent format"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Order items snapshot preserves product details at time of purchase",
+    "steps": [
+      "Step 1: Place order with specific product",
+      "Step 2: Check database order_items.product_snapshot",
+      "Step 3: Verify product name, price, and image are stored in snapshot",
+      "Step 4: Change product price in admin",
+      "Step 5: View previous order details",
+      "Step 6: Confirm order still shows original price from snapshot"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Multiple addresses can be saved per user",
+    "steps": [
+      "Step 1: Login and navigate to address book",
+      "Step 2: Add first address with label 'Home'",
+      "Step 3: Add second address with label 'Work'",
+      "Step 4: Add third address with label 'Parents'",
+      "Step 5: Verify all three addresses are saved and displayed",
+      "Step 6: Check database confirms multiple addresses for user_id"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Default address is pre-selected at checkout",
+    "steps": [
+      "Step 1: Set an address as default in address book",
+      "Step 2: Navigate to checkout",
+      "Step 3: Verify default address is pre-filled in form",
+      "Step 4: Confirm default address is highlighted in address selection",
+      "Step 5: Check that user can still choose different address"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Breadcrumb navigation shows current location",
+    "steps": [
+      "Step 1: Navigate to a subcategory (e.g., Electronics > Laptops)",
+      "Step 2: Verify breadcrumb is displayed at top of page",
+      "Step 3: Check that breadcrumb shows Home > Electronics > Laptops",
+      "Step 4: Click on 'Electronics' in breadcrumb",
+      "Step 5: Verify navigation to Electronics category page",
+      "Step 6: Confirm breadcrumb updates to Home > Electronics"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "404 page displays for non-existent routes",
+    "steps": [
+      "Step 1: Navigate to invalid URL (e.g., /nonexistent-page)",
+      "Step 2: Verify 404 page is displayed",
+      "Step 3: Check that page explains content not found",
+      "Step 4: Confirm navigation links to return to homepage",
+      "Step 5: Verify search is available to find content"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Product URL slugs are SEO-friendly",
+    "steps": [
+      "Step 1: Navigate to product detail page",
+      "Step 2: Check URL format",
+      "Step 3: Verify URL uses slug format (e.g., /products/blue-cotton-shirt)",
+      "Step 4: Confirm slug is lowercase with hyphens",
+      "Step 5: Verify slug is derived from product name",
+      "Step 6: Check that product is accessible via slug URL"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Category URL slugs are SEO-friendly",
+    "steps": [
+      "Step 1: Navigate to category page",
+      "Step 2: Check URL format",
+      "Step 3: Verify URL uses slug format (e.g., /categories/mens-clothing)",
+      "Step 4: Confirm slug is lowercase with hyphens",
+      "Step 5: Verify category is accessible via slug URL"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Brand pages display all products from brand",
+    "steps": [
+      "Step 1: Click on a brand link or filter",
+      "Step 2: Navigate to brand page",
+      "Step 3: Verify brand name and logo are displayed",
+      "Step 4: Check that all products from brand are shown",
+      "Step 5: Confirm product count matches brand filter",
+      "Step 6: Verify brand description is displayed"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Filters sidebar is collapsible on desktop",
+    "steps": [
+      "Step 1: Navigate to products page on desktop",
+      "Step 2: Verify filters sidebar is visible by default",
+      "Step 3: Click collapse/hide filters button",
+      "Step 4: Confirm sidebar collapses and more space for products",
+      "Step 5: Click show filters button",
+      "Step 6: Verify sidebar expands again"
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Mobile filter menu opens as modal or drawer",
+    "steps": [
+      "Step 1: View products page on mobile width",
+      "Step 2: Verify filters are hidden by default",
+      "Step 3: Click 'Filters' button",
+      "Step 4: Confirm filters open in modal or drawer",
+      "Step 5: Apply filters",
+      "Step 6: Close filter panel",
+      "Step 7: Verify filters are applied to products"
+    ],
+    "passes": false
+  }
+]

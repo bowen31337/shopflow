@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/bowenli/development/claude-quickstarts/autonomous-coding/demo/logs/.b526b221f507de629bda6596cb56cb78cc2e6847-audit.json",
+    "files": [
+        {
+            "date": 1765331533932,
+            "name": "/Users/bowenli/development/claude-quickstarts/autonomous-coding/demo/logs/mcp-puppeteer-2025-12-10.log",
+            "hash": "35447e0af6b4c082651aabeb077f744168ffeb84081bce8ad55b9317143253dc"
+        }
+    ],
+    "hashType": "sha256"
+}
