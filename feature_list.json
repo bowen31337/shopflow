@@ -859,7 +859,7 @@
       "Step 5: Confirm order status is displayed for each",
       "Step 6: Verify orders are sorted by date (newest first)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

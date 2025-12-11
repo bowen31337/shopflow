@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
 import Header from './components/Header';
 import Home from './pages/Home';
 import Products from './pages/Products';
@@ -8,8 +9,19 @@ import Register from './pages/Register';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
+import OrderHistory from './pages/OrderHistory';
+import OrderDetail from './pages/OrderDetail';
+import useAuthStore from './stores/authStore';
+import api from './api';
 
 function App() {
+  // Initialize API token from persisted storage
+  useEffect(() => {
+    const { token } = useAuthStore.getState();
+    if (token) {
+      api.setAuthToken(token);
+    }
+  }, []);
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
@@ -23,6 +35,8 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/orders" element={<OrderHistory />} />
+          <Route path="/orders/:id" element={<OrderDetail />} />
         </Routes>
       </div>
     </Router>

@@ -1,0 +1,322 @@
+import { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import useAuthStore from '../stores/authStore';
+import api from '../api';
+
+export default function OrderDetail() {
+  const { id } = useParams();
+  const { user, isAuthenticated } = useAuthStore();
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isAuthenticated() && id) {
+      fetchOrderDetails();
+    }
+  }, [isAuthenticated(), id]);
+
+  const fetchOrderDetails = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const response = await api.get(`/api/orders/${id}`);
+      setOrder(response.data.order);
+    } catch (error) {
+      console.error('Error fetching order details:', error);
+      setError(error.response?.data?.message || 'Failed to fetch order details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const statusStyles = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      processing: 'bg-blue-100 text-blue-800',
+      shipped: 'bg-purple-100 text-purple-800',
+      delivered: 'bg-green-100 text-green-800',
+      cancelled: 'bg-red-100 text-red-800'
+    };
+
+    const statusDescriptions = {
+      pending: 'Order received, awaiting processing',
+      processing: 'Order is being prepared',
+      shipped: 'Order has been shipped',
+      delivered: 'Order has been delivered',
+      cancelled: 'Order has been cancelled'
+    };
+
+    return (
+      <div>
+        <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${statusStyles[status] || 'bg-gray-100 text-gray-800'}`}>
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </span>
+        <p className="text-sm text-gray-600 mt-1">{statusDescriptions[status]}</p>
+      </div>
+    );
+  };
+
+  const handleCancelOrder = async () => {
+    if (!window.confirm('Are you sure you want to cancel this order?')) {
+      return;
+    }
+
+    try {
+      await api.post(`/api/orders/${id}/cancel`);
+      // Refresh order details
+      fetchOrderDetails();
+    } catch (error) {
+      alert(error.response?.data?.message || 'Failed to cancel order');
+    }
+  };
+
+  if (!isAuthenticated()) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Please Login</h1>
+          <p className="text-gray-600 mb-6">You need to be logged in to view order details.</p>
+          <Link
+            to="/login"
+            className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+          >
+            Login to View Order
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+          {error}
+        </div>
+        <Link
+          to="/orders"
+          className="text-primary hover:text-green-600 font-medium"
+        >
+          ← Back to Order History
+        </Link>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Order Not Found</h1>
+          <p className="text-gray-600 mb-6">The order you're looking for doesn't exist or you don't have permission to view it.</p>
+          <Link
+            to="/orders"
+            className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+          >
+            Back to Order History
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      {/* Breadcrumb */}
+      <nav className="flex mb-6 text-sm">
+        <Link to="/orders" className="text-primary hover:text-green-600">
+          Order History
+        </Link>
+        <span className="mx-2 text-gray-500">/</span>
+        <span className="text-gray-900">Order #{order.order_number}</span>
+      </nav>
+
+      {/* Order Header */}
+      <div className="bg-white rounded-lg shadow mb-6">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                Order #{order.order_number}
+              </h1>
+              <p className="text-gray-600">Placed on {order.formatted_date}</p>
+              {order.updated_at !== order.created_at && (
+                <p className="text-sm text-gray-500">Last updated: {order.formatted_updated_date}</p>
+              )}
+            </div>
+            <div className="text-right">
+              {getStatusBadge(order.status)}
+              <p className="text-2xl font-bold text-gray-900 mt-2">{order.formatted_total}</p>
+            </div>
+          </div>
+
+          {['pending', 'processing'].includes(order.status) && (
+            <div className="flex space-x-3 pt-4 border-t">
+              <button
+                onClick={handleCancelOrder}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+              >
+                Cancel Order
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Order Items */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg shadow">
+            <div className="p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Items</h2>
+              <div className="space-y-4">
+                {order.items.map((item) => (
+                  <div key={item.id} className="flex items-center space-x-4 pb-4 border-b last:border-b-0">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-20 h-20 object-cover rounded-lg border"
+                    />
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900">
+                        {item.name}
+                      </h3>
+                      {item.sku && (
+                        <p className="text-sm text-gray-600">SKU: {item.sku}</p>
+                      )}
+                      <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium text-gray-900">
+                        ${item.unit_price.toFixed(2)} each
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        ${item.total_price.toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Order Summary & Details */}
+        <div className="space-y-6">
+          {/* Order Summary */}
+          <div className="bg-white rounded-lg shadow">
+            <div className="p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Subtotal</span>
+                  <span className="font-medium">{order.formatted_subtotal}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Shipping</span>
+                  <span className="font-medium">{order.formatted_shipping_cost}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Tax</span>
+                  <span className="font-medium">{order.formatted_tax}</span>
+                </div>
+                {order.discount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount</span>
+                    <span className="font-medium">-{order.formatted_discount}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t">
+                  <span>Total</span>
+                  <span>{order.formatted_total}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Shipping Information */}
+          <div className="bg-white rounded-lg shadow">
+            <div className="p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Shipping Information</h2>
+              <div className="space-y-3">
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-1">Shipping Address</h3>
+                  <div className="text-sm text-gray-600">
+                    <p>{order.shipping_address.first_name} {order.shipping_address.last_name}</p>
+                    <p>{order.shipping_address.street_address}</p>
+                    {order.shipping_address.apartment && <p>{order.shipping_address.apartment}</p>}
+                    <p>
+                      {order.shipping_address.city}, {order.shipping_address.state} {order.shipping_address.postal_code}
+                    </p>
+                    <p>{order.shipping_address.country}</p>
+                    {order.shipping_address.phone && <p>{order.shipping_address.phone}</p>}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-1">Shipping Method</h3>
+                  <p className="text-sm text-gray-600">{order.shipping_method}</p>
+                </div>
+
+                {order.tracking_number && (
+                  <div>
+                    <h3 className="font-medium text-gray-900 mb-1">Tracking Number</h3>
+                    <p className="text-sm text-gray-600">{order.tracking_number}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Information */}
+          <div className="bg-white rounded-lg shadow">
+            <div className="p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Information</h2>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Payment Method</span>
+                  <span className="font-medium">{order.payment_method}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Payment Status</span>
+                  <span className={`font-medium ${
+                    order.payment_status === 'paid' ? 'text-green-600' : 'text-yellow-600'
+                  }`}>
+                    {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="mt-6 flex space-x-4">
+        <Link
+          to="/products"
+          className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+        >
+          Continue Shopping
+        </Link>
+        <Link
+          to="/orders"
+          className="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition"
+        >
+          Back to Order History
+        </Link>
+      </div>
+    </div>
+  );
+}

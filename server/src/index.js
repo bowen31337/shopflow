@@ -13,6 +13,7 @@ import cartRoutes from './routes/cart.js';
 import userRoutes from './routes/user.js';
 import wishlistRoutes from './routes/wishlist.js';
 import checkoutRoutes from './routes/checkout.js';
+import ordersRoutes from './routes/orders.js';
 
 // Load environment variables
 dotenv.config();
@@ -22,7 +23,7 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'],
   credentials: true
 }));
 app.use(express.json());
@@ -66,6 +67,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/checkout', checkoutRoutes);
+app.use('/api/orders', ordersRoutes);
 
 // 404 handler
 app.use((req, res) => {
