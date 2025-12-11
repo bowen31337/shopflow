@@ -593,7 +593,7 @@
       "Step 5: Open cart drawer",
       "Step 6: Confirm all previous items are still in cart"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
