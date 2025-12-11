@@ -5,17 +5,41 @@ import useCartStore from '../stores/cartStore';
 import CartDrawer from './CartDrawer';
 import CategoryNavigation from './CategoryNavigation';
 import Autocomplete from './Autocomplete';
+import SearchHistory from './SearchHistory';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [searchHistory, setSearchHistory] = useState([]);
+  const [showSearchHistory, setShowSearchHistory] = useState(false);
   const { user, logout, isAuthenticated } = useAuthStore();
   const { fetchCart, getItemCount } = useCartStore();
   const location = useLocation();
   const navigate = useNavigate();
   const searchContainerRef = useRef(null);
+
+  // Load search history from localStorage
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('searchHistory');
+    if (savedHistory) {
+      try {
+        setSearchHistory(JSON.parse(savedHistory));
+      } catch (error) {
+        console.error('Failed to parse search history:', error);
+      }
+    }
+  }, []);
+
+  // Save search history to localStorage
+  const saveSearchHistory = (history) => {
+    try {
+      localStorage.setItem('searchHistory', JSON.stringify(history.slice(0, 10))); // Keep only last 10 searches
+    } catch (error) {
+      console.error('Failed to save search history:', error);
+    }
+  };
 
   // Fetch cart when user logs in or when header mounts
   useEffect(() => {
@@ -34,9 +58,16 @@ export default function Header() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    const trimmedQuery = searchQuery.trim();
+    if (trimmedQuery) {
+      // Add to search history
+      const newHistory = [trimmedQuery, ...searchHistory.filter(item => item.toLowerCase() !== trimmedQuery.toLowerCase())];
+      setSearchHistory(newHistory);
+      saveSearchHistory(newHistory);
+
+      navigate(`/products?search=${encodeURIComponent(trimmedQuery)}`);
       setIsMenuOpen(false);
+      setShowSearchHistory(false);
     }
   };
 
@@ -44,6 +75,28 @@ export default function Header() {
     if (e.key === 'Enter') {
       handleSearch(e);
     }
+  };
+
+  const handleSearchFocus = () => {
+    setIsSearchFocused(true);
+    // Show search history if query is empty
+    if (!searchQuery.trim()) {
+      setShowSearchHistory(true);
+    }
+  };
+
+  const handleSearchBlur = (e) => {
+    // Only close suggestions if clicking outside the search container
+    if (searchContainerRef.current && !searchContainerRef.current.contains(e.relatedTarget)) {
+      setIsSearchFocused(false);
+      setShowSearchHistory(false);
+    }
+  };
+
+  const handleSearchHistorySelect = (historyItem) => {
+    setSearchQuery(historyItem);
+    setShowSearchHistory(false);
+    handleSearch({ preventDefault: () => {}, key: '' });
   };
 
   return (
@@ -67,8 +120,8 @@ export default function Header() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyPress}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setIsSearchFocused(false)}
+                  onFocus={handleSearchFocus}
+                  onBlur={handleSearchBlur}
                   placeholder="Search products..."
                   className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
@@ -83,6 +136,12 @@ export default function Header() {
                 isVisible={isSearchFocused && searchQuery.length > 0}
                 query={searchQuery}
                 onNavigate={() => setIsSearchFocused(false)}
+              />
+              <SearchHistory
+                isVisible={showSearchHistory && searchHistory.length > 0}
+                history={searchHistory}
+                onSelect={handleSearchHistorySelect}
+                onClose={() => setShowSearchHistory(false)}
               />
             </div>
           </div>
@@ -173,10 +232,18 @@ export default function Header() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyPress}
+                  onFocus={handleSearchFocus}
+                  onBlur={handleSearchBlur}
                   placeholder="Search products..."
                   className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </form>
+              <SearchHistory
+                isVisible={showSearchHistory && searchHistory.length > 0}
+                history={searchHistory}
+                onSelect={handleSearchHistorySelect}
+                onClose={() => setShowSearchHistory(false)}
+              />
             </div>
             <nav className="flex flex-col space-y-3">
               {/* Mobile Categories */}

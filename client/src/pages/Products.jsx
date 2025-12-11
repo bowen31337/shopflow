@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { fetchProducts } from '../api/products';
 import ProductCard from '../components/ProductCard';
@@ -20,6 +20,12 @@ export default function Products() {
     totalPages: 0
   });
 
+  // Infinite scroll state
+  const [infiniteScroll, setInfiniteScroll] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const observer = useRef();
+
   // Filter states
   const [filters, setFilters] = useState({
     category: searchParams.get('category') || '',
@@ -29,6 +35,7 @@ export default function Products() {
     search: searchParams.get('search') || '',
     sort: searchParams.get('sort') || 'price_asc',
     view: searchParams.get('view') || 'grid',
+    infiniteScroll: searchParams.get('infiniteScroll') === 'true',
   });
 
   // Price range limits
@@ -99,6 +106,7 @@ export default function Products() {
       // Update pagination state
       if (data.pagination) {
         setPagination(data.pagination);
+        setHasMore(currentPage < data.pagination.totalPages);
       }
     } catch (err) {
       setError(err.message);
@@ -114,7 +122,9 @@ export default function Products() {
     } else {
       newParams.delete(key);
     }
-    newParams.delete('page'); // Reset to first page when filtering
+    if (key !== 'infiniteScroll') {
+      newParams.delete('page'); // Reset to first page when filtering (not for infinite scroll toggle)
+    }
     setSearchParams(newParams);
     setFilters(prev => ({ ...prev, [key]: value }));
   };
@@ -139,6 +149,40 @@ export default function Products() {
 
     // Scroll to top when page changes
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const loadMoreProducts = async () => {
+    if (loadingMore || !hasMore) return;
+
+    try {
+      setLoadingMore(true);
+      const params = {
+        category: filters.category || undefined,
+        brand: filters.brand || undefined,
+        minPrice: filters.minPrice || undefined,
+        maxPrice: filters.maxPrice || undefined,
+        search: filters.search || undefined,
+        sort: filters.sort || undefined,
+        page: (pagination.page + 1).toString(),
+        limit: '6',
+      };
+      const data = await fetchProducts(params);
+
+      if (data.products && data.products.length > 0) {
+        setProducts(prev => [...prev, ...data.products]);
+        setPagination(prev => ({
+          ...prev,
+          page: prev.page + 1
+        }));
+        setHasMore(prev => (prev.page + 1) < Math.ceil((prev.total || 0) / prev.limit));
+      } else {
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error('Failed to load more products:', err);
+    } finally {
+      setLoadingMore(false);
+    }
   };
 
   const formatPrice = (price) => {
@@ -254,6 +298,15 @@ export default function Products() {
                 <option value="created_desc">Newest</option>
                 <option value="rating_desc">Rating</option>
               </select>
+              <label className="flex items-center gap-2 text-sm text-gray-600">
+                <input
+                  type="checkbox"
+                  checked={filters.infiniteScroll}
+                  onChange={(e) => updateFilter('infiniteScroll', e.target.checked.toString())}
+                  className="rounded"
+                />
+                <span>Infinite Scroll</span>
+              </label>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => updateFilter('view', 'grid')}
@@ -428,7 +481,16 @@ export default function Products() {
                 <option value="created_desc">Newest</option>
                 <option value="rating_desc">Rating</option>
               </select>
-              <div className="flex items-center gap-2 ml-4">
+              <label className="flex items-center gap-2 text-sm text-gray-600 ml-4">
+                <input
+                  type="checkbox"
+                  checked={filters.infiniteScroll}
+                  onChange={(e) => updateFilter('infiniteScroll', e.target.checked.toString())}
+                  className="rounded"
+                />
+                <span>Infinite</span>
+              </label>
+              <div className="flex items-center gap-2 ml-2">
                 <button
                   onClick={() => updateFilter('view', 'grid')}
                   className={`p-2 rounded-lg transition ${filters.view === 'grid' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
@@ -496,28 +558,45 @@ export default function Products() {
               <>
                 {filters.view === 'grid' ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {products.map((product) => (
+                    {products.map((product, index) => (
                       <ProductCard key={product.id} product={product} />
                     ))}
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {products.map((product) => (
+                    {products.map((product, index) => (
                       <ProductCard key={product.id} product={product} view="list" />
                     ))}
                   </div>
                 )}
 
+                {/* Infinite Scroll Trigger */}
+                {filters.infiniteScroll && hasMore && (
+                  <div ref={(node) => {
+                    if (observer.current) observer.current.disconnect();
+                    observer.current = new IntersectionObserver((entries) => {
+                      if (entries[0].isIntersecting && !loadingMore) {
+                        loadMoreProducts();
+                      }
+                    });
+                    if (node) observer.current.observe(node);
+                  }} className="h-10 flex items-center justify-center text-gray-500">
+                    {loadingMore ? 'Loading more products...' : 'Scroll down for more products'}
+                  </div>
+                )}
+
                 {/* Pagination */}
-                <div className="mt-8">
-                  <Pagination
-                    currentPage={pagination.page}
-                    totalPages={pagination.totalPages}
-                    onPageChange={handlePageChange}
-                    total={pagination.total}
-                    limit={pagination.limit}
-                  />
-                </div>
+                {!filters.infiniteScroll && (
+                  <div className="mt-8">
+                    <Pagination
+                      currentPage={pagination.page}
+                      totalPages={pagination.totalPages}
+                      onPageChange={handlePageChange}
+                      total={pagination.total}
+                      limit={pagination.limit}
+                    />
+                  </div>
+                )}
               </>
             )}
 

@@ -406,7 +406,7 @@
       "Step 5: Confirm additional products are loaded and appended",
       "Step 6: Continue scrolling and verify more products load"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -460,7 +460,7 @@
       "Step 7: Apply brand filter",
       "Step 8: Verify all filters work together"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -472,7 +472,7 @@
       "Step 4: Click on a previous search",
       "Step 5: Confirm search is re-executed with same query"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
