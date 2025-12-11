@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useCartStore from '../stores/cartStore';
 import useAuthStore from '../stores/authStore';
+import AddressForm from '../components/AddressForm';
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -266,6 +267,7 @@ const ShippingAddressStep = ({ onAddressSelect }) => {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const [showAddAddress, setShowAddAddress] = useState(false);
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -289,6 +291,24 @@ const ShippingAddressStep = ({ onAddressSelect }) => {
     fetchAddresses();
   }, []);
 
+  const handleAddressAdded = async () => {
+    setShowAddAddress(false);
+    // Refetch addresses to get the updated list
+    try {
+      const response = await fetch('/api/user/addresses', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAddresses(data);
+      }
+    } catch (error) {
+      console.error('Error refetching addresses:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -299,6 +319,28 @@ const ShippingAddressStep = ({ onAddressSelect }) => {
             <div className="h-20 bg-gray-200 rounded"></div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (showAddAddress) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-900">Add New Shipping Address</h2>
+          <button
+            onClick={() => setShowAddAddress(false)}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <AddressForm
+          onSuccess={handleAddressAdded}
+          onCancel={() => setShowAddAddress(false)}
+        />
       </div>
     );
   }
@@ -343,11 +385,27 @@ const ShippingAddressStep = ({ onAddressSelect }) => {
               </label>
             </div>
           ))}
+
+          {/* Add New Address Button */}
+          <button
+            onClick={() => setShowAddAddress(true)}
+            className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 text-gray-600 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
+          >
+            <div className="flex items-center justify-center">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Add New Address
+            </div>
+          </button>
         </div>
       ) : (
         <div className="text-center py-8">
           <p className="text-gray-500 mb-4">No shipping addresses found</p>
-          <button className="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors">
+          <button
+            onClick={() => setShowAddAddress(true)}
+            className="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors"
+          >
             Add New Address
           </button>
         </div>

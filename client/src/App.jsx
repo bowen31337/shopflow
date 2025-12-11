@@ -12,6 +12,7 @@ import Profile from './pages/Profile';
 import OrderHistory from './pages/OrderHistory';
 import OrderDetail from './pages/OrderDetail';
 import Wishlist from './pages/Wishlist';
+import SharedWishlist from './pages/SharedWishlist';
 import useAuthStore from './stores/authStore';
 import api from './api';
 
@@ -37,6 +38,7 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/wishlist/shared/:userId" element={<SharedWishlist />} />
           <Route path="/orders" element={<OrderHistory />} />
           <Route path="/orders/:id" element={<OrderDetail />} />
         </Routes>

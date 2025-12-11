@@ -874,7 +874,7 @@
       "Step 7: Check that order status and tracking info are displayed",
       "Step 8: Confirm payment method and amounts are shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

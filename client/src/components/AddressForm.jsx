@@ -61,7 +61,18 @@ export default function AddressForm({ address, onSuccess, onCancel }) {
     if (!formData.streetAddress.trim()) newErrors.streetAddress = 'Street address is required';
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.state.trim()) newErrors.state = 'State is required';
-    if (!formData.postalCode.trim()) newErrors.postalCode = 'Postal code is required';
+
+    // Postal code validation
+    if (!formData.postalCode.trim()) {
+      newErrors.postalCode = 'Postal code is required';
+    } else {
+      // US ZIP code validation (5 digits or 5-4 format)
+      const zipRegex = /^\d{5}(-\d{4})?$/;
+      if (!zipRegex.test(formData.postalCode)) {
+        newErrors.postalCode = 'Invalid postal code format (use 12345 or 12345-6789)';
+      }
+    }
+
     if (!formData.country.trim()) newErrors.country = 'Country is required';
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
 
