@@ -735,7 +735,7 @@
       "Step 4: Check that 'Start Shopping' or similar CTA is present",
       "Step 5: Confirm checkout button is disabled"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
