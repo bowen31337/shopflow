@@ -57,6 +57,79 @@ export default function OrderDetail() {
     );
   };
 
+  const getStatusTimeline = (status) => {
+    const timeline = [
+      { key: 'pending', label: 'Order Placed', icon: '🛒' },
+      { key: 'processing', label: 'Processing', icon: '📦' },
+      { key: 'shipped', label: 'Shipped', icon: '🚚' },
+      { key: 'delivered', label: 'Delivered', icon: '✅' }
+    ];
+
+    const currentIndex = timeline.findIndex(item => item.key === status);
+
+    return (
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-gray-900 mb-3">Order Progress</h3>
+        <div className="flex items-center space-x-4">
+          {timeline.map((step, index) => {
+            const isCompleted = index < currentIndex;
+            const isCurrent = index === currentIndex;
+            const isCancelled = status === 'cancelled';
+
+            // For cancelled orders, show all steps as incomplete but with red styling
+            const shouldShowRed = isCancelled || (status === 'cancelled' && index <= currentIndex);
+
+            return (
+              <div key={step.key} className="flex items-center">
+                <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                  isCancelled ? 'bg-red-100 text-red-600' :
+                  isCompleted ? 'bg-green-100 text-green-600' :
+                  isCurrent ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'
+                }`}>
+                  <span className="text-sm">
+                    {isCancelled ? '❌' : isCompleted ? '✅' : step.icon}
+                  </span>
+                </div>
+                {index < timeline.length - 1 && (
+                  <div className={`w-16 h-1 mx-2 ${
+                    isCompleted ? 'bg-green-300' : 'bg-gray-200'
+                  }`} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex justify-between text-xs text-gray-500">
+          {timeline.map((step) => (
+            <span key={step.key}>{step.label}</span>
+          ))}
+        </div>
+        {status === 'cancelled' && (
+          <div className="text-xs text-red-600 font-medium">
+            This order has been cancelled and will not be delivered.
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const getEstimatedDelivery = (status, createdAt) => {
+    if (status === 'cancelled' || status === 'delivered') {
+      return null;
+    }
+
+    // Calculate estimated delivery date based on order age
+    const createdDate = new Date(createdAt);
+    const daysToAdd = status === 'pending' ? 7 : status === 'processing' ? 5 : 3;
+    const estimatedDate = new Date(createdDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
+
+    return estimatedDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   const handleCancelOrder = async () => {
     if (!window.confirm('Are you sure you want to cancel this order?')) {
       return;
@@ -160,6 +233,26 @@ export default function OrderDetail() {
               <p className="text-2xl font-bold text-gray-900 mt-2">{order.formatted_total}</p>
             </div>
           </div>
+
+          {/* Status Timeline */}
+          <div className="border-t pt-4">
+            {getStatusTimeline(order.status)}
+          </div>
+
+          {/* Estimated Delivery Date */}
+          {order.status !== 'cancelled' && order.status !== 'delivered' && (
+            <div className="border-t pt-4 mt-4">
+              <div className="flex items-start space-x-3">
+                <span className="text-2xl">📅</span>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Estimated Delivery</h3>
+                  <p className="text-gray-600">
+                    {getEstimatedDelivery(order.status, order.created_at)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {['pending', 'processing'].includes(order.status) && (
             <div className="flex space-x-3 pt-4 border-t">
