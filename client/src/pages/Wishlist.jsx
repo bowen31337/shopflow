@@ -243,7 +243,14 @@ export default function Wishlist() {
                     {/* Stock Status */}
                     <div className="mb-4">
                       {product.stock_quantity > 0 ? (
-                        <p className="text-sm text-green-600">In Stock</p>
+                        product.stock_quantity <= product.low_stock_threshold ? (
+                          <div className="flex items-center">
+                            <span className="text-sm text-amber-600 font-medium">⚠️ Low Stock</span>
+                            <span className="text-xs text-amber-500 ml-2">({product.stock_quantity} left)</span>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-green-600">In Stock</p>
+                        )
                       ) : (
                         <p className="text-sm text-red-600">Out of Stock</p>
                       )}
