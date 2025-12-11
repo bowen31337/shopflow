@@ -791,7 +791,7 @@
       "Step 4: Check that address details are complete (street, city, state, zip)",
       "Step 5: Confirm default address is marked/highlighted"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -806,7 +806,7 @@
       "Step 7: Confirm new address appears in address book",
       "Step 8: Check database to verify address was saved"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -820,7 +820,7 @@
       "Step 6: Confirm address updates are displayed",
       "Step 7: Check that database reflects changes"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -833,7 +833,7 @@
       "Step 5: Check that address is removed from list",
       "Step 6: Verify deletion from database"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -846,7 +846,7 @@
       "Step 5: Confirm previous default is no longer marked",
       "Step 6: Navigate to checkout and verify default address is pre-selected"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

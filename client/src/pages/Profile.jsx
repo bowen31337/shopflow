@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import useAuthStore from '../stores/authStore';
 import api from '../api';
+import AddressBook from '../components/AddressBook';
 
 export default function Profile() {
   const { user, token } = useAuthStore();
@@ -161,6 +162,8 @@ export default function Profile() {
       </div>
 
       <ChangePassword />
+
+      <AddressBook />
     </div>
   );
 }

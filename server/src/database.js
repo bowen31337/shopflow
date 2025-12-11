@@ -45,6 +45,7 @@ export function initializeDatabase() {
       country TEXT NOT NULL,
       phone TEXT,
       is_default INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )
   `);
