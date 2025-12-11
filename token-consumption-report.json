@@ -1,14 +1,14 @@
 {
   "project_name": "demo",
   "project_dir": "demo",
-  "report_generated": "2025-12-11T00:48:58.158785+00:00",
+  "report_generated": "2025-12-11T01:51:36.570607+00:00",
   "summary": {
-    "total_sessions": 24,
-    "total_api_calls": 24,
+    "total_sessions": 25,
+    "total_api_calls": 25,
     "total_input_tokens": 0,
     "total_output_tokens": 0,
     "total_tokens": 0,
-    "total_duration_seconds": 30839.7250020504,
+    "total_duration_seconds": 34592.385617017746,
     "estimated_cost_usd": 0.0
   },
   "endpoint_breakdown": {
@@ -20,7 +20,7 @@
       "estimated_cost_usd": 0.0
     },
     "https://vanchin.streamlake.ai/api/gateway/v1/endpoints/ep-fti2r8-1764583729284568237/claude-code-proxy": {
-      "calls": 5,
+      "calls": 6,
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
@@ -111,6 +111,20 @@
       "successful_calls": 1,
       "failed_calls": 0,
       "duration_seconds": 6661.804975032806
+    },
+    {
+      "session_id": 25,
+      "start_time": "2025-12-11T00:49:02.167886+00:00",
+      "end_time": "2025-12-11T01:51:36.569815+00:00",
+      "endpoint": "https://vanchin.streamlake.ai/api/gateway/v1/endpoints/ep-fti2r8-1764583729284568237/claude-code-proxy",
+      "model": "claude-sonnet-4-5-20250929",
+      "total_calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "successful_calls": 1,
+      "failed_calls": 0,
+      "duration_seconds": 3752.660614967346
     }
   ],
   "calls": [
@@ -171,6 +185,18 @@
       "total_tokens": 0,
       "session_id": 24,
       "duration_seconds": 6661.804975032806,
+      "success": true,
+      "error": null
+    },
+    {
+      "timestamp": "2025-12-11T01:51:36.526574+00:00",
+      "endpoint": "https://vanchin.streamlake.ai/api/gateway/v1/endpoints/ep-fti2r8-1764583729284568237/claude-code-proxy",
+      "model": "claude-sonnet-4-5-20250929",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "session_id": 25,
+      "duration_seconds": 3752.660614967346,
       "success": true,
       "error": null
     }

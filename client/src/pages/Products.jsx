@@ -605,13 +605,95 @@ export default function Products() {
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🛍️</div>
                 <p className="text-gray-500 text-lg">No products found</p>
-                <p className="text-gray-400 text-sm mt-2">Try adjusting your filters</p>
-                <button
-                  onClick={clearFilters}
-                  className="mt-4 bg-primary text-white px-6 py-2 rounded-full hover:bg-green-600 transition"
-                >
-                  Clear Filters
-                </button>
+                <p className="text-gray-400 text-sm mt-2">
+                  {filters.search
+                    ? "Try adjusting your search terms or filters"
+                    : "Try adjusting your filters"}
+                </p>
+
+                {/* Alternative suggestions */}
+                <div className="mt-8 bg-white rounded-lg p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    {filters.search ? "Try these suggestions:" : "Popular categories:"}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filters.search ? (
+                      <>
+                        <button
+                          onClick={() => {
+                            updateFilter('search', '');
+                            updateFilter('category', '');
+                            updateFilter('brand', '');
+                            updateFilter('minPrice', '');
+                            updateFilter('maxPrice', '');
+                          }}
+                          className="text-left p-4 border border-gray-200 rounded-lg hover:border-primary hover:shadow-md transition"
+                        >
+                          <div className="font-medium text-gray-900">Browse all products</div>
+                          <div className="text-sm text-gray-500 mt-1">See everything we offer</div>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            updateFilter('category', 'electronics');
+                            updateFilter('search', '');
+                          }}
+                          className="text-left p-4 border border-gray-200 rounded-lg hover:border-primary hover:shadow-md transition"
+                        >
+                          <div className="font-medium text-gray-900">Electronics</div>
+                          <div className="text-sm text-gray-500 mt-1">Latest gadgets and devices</div>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            updateFilter('category', 'fashion');
+                            updateFilter('search', '');
+                          }}
+                          className="text-left p-4 border border-gray-200 rounded-lg hover:border-primary hover:shadow-md transition"
+                        >
+                          <div className="font-medium text-gray-900">Fashion</div>
+                          <div className="text-sm text-gray-500 mt-1">Clothing and accessories</div>
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {categories.slice(0, 6).map((category) => (
+                          <button
+                            key={category.id}
+                            onClick={() => updateFilter('category', category.slug)}
+                            className="text-left p-4 border border-gray-200 rounded-lg hover:border-primary hover:shadow-md transition"
+                          >
+                            <div className="font-medium text-gray-900">{category.name}</div>
+                            <div className="text-sm text-gray-500 mt-1">Shop {category.name.toLowerCase()}</div>
+                          </button>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                  <button
+                    onClick={clearFilters}
+                    className="bg-primary text-white px-6 py-2 rounded-full hover:bg-green-600 transition"
+                  >
+                    Clear All Filters
+                  </button>
+                  {filters.search && (
+                    <button
+                      onClick={() => updateFilter('search', '')}
+                      className="bg-gray-200 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-300 transition"
+                    >
+                      Clear Search
+                    </button>
+                  )}
+                  <button
+                    onClick={() => window.location.href = '/products'}
+                    className="bg-gray-200 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-300 transition"
+                  >
+                    Start Over
+                  </button>
+                </div>
               </div>
             )}
           </main>
