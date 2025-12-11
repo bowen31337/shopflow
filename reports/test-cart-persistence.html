@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Persistence Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .pass { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .fail { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        .product-card { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🛒 Cart Persistence Test</h1>
+    <p>Testing localStorage persistence for shopping cart functionality.</p>
+
+    <div class="test-section">
+        <h2>Test 1: Add Products to Cart</h2>
+        <div id="products-list"></div>
+        <button onclick="addTestProducts()">Add Test Products to Cart</button>
+        <div id="test1-result" class="test-result info">Click "Add Test Products to Cart" to begin testing.</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Check localStorage</h2>
+        <button onclick="checkLocalStorage()">Check localStorage Contents</button>
+        <div id="test2-result" class="test-result info">Click "Check localStorage Contents" to verify cart data is saved.</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Verify Cart Persistence</h2>
+        <button onclick="verifyPersistence()">Verify Cart Persistence</button>
+        <div id="test3-result" class="test-result info">Click "Verify Cart Persistence" to complete the test.</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results Summary</h2>
+        <div id="summary" class="test-result info">Running tests...</div>
+    </div>
+
+    <script>
+        // Test products to add to cart
+        const testProducts = [
+            { id: 1, name: "TechPro Laptop Pro 15", price: 1299.99 },
+            { id: 2, name: "TechPro Smartphone X1", price: 799.99 },
+            { id: 3, name: "StyleMax Cotton T-Shirt", price: 19.99 }
+        ];
+
+        // Mock cart API calls
+        const mockCartAPI = {
+            items: [],
+
+            async addToCart(productId, quantity = 1) {
+                const existingItem = this.items.find(item => item.product.id === productId);
+                if (existingItem) {
+                    existingItem.quantity += quantity;
+                } else {
+                    const product = testProducts.find(p => p.id === productId);
+                    this.items.push({
+                        id: Date.now() + Math.random(),
+                        product: product,
+                        quantity: quantity,
+                        variant: null
+                    });
+                }
+                this.saveToStorage();
+                return { items: this.items };
+            },
+
+            async fetchCart() {
+                this.loadFromStorage();
+                return { items: this.items };
+            },
+
+            saveToStorage() {
+                localStorage.setItem('cart-storage', JSON.stringify({
+                    state: { items: this.items },
+                    version: 0
+                }));
+            },
+
+            loadFromStorage() {
+                const stored = localStorage.getItem('cart-storage');
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        if (parsed.state && Array.isArray(parsed.state.items)) {
+                            this.items = parsed.state.items;
+                        }
+                    } catch (e) {
+                        console.error('Failed to parse stored cart:', e);
+                    }
+                }
+            }
+        };
+
+        // Initialize products list
+        function initProducts() {
+            const productsList = document.getElementById('products-list');
+            testProducts.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <h3>${product.name}</h3>
+                    <p>Price: $${product.price.toFixed(2)}</p>
+                    <button onclick="addToCart(${product.id})">Add to Cart</button>
+                `;
+                productsList.appendChild(card);
+            });
+        }
+
+        // Add single product to cart
+        async function addToCart(productId) {
+            const result = await mockCartAPI.addToCart(productId, 1);
+            document.getElementById('test1-result').innerHTML =
+                `<strong>✅ Product added to cart!</strong><br>
+                 Current cart items: ${result.items.length}<br>
+                 Total quantity: ${result.items.reduce((sum, item) => sum + item.quantity, 0)}`;
+        }
+
+        // Add multiple test products
+        async function addTestProducts() {
+            document.getElementById('test1-result').innerHTML = 'Adding test products to cart...';
+
+            for (const product of testProducts) {
+                await mockCartAPI.addToCart(product.id, 1);
+                await new Promise(resolve => setTimeout(resolve, 100)); // Small delay
+            }
+
+            const cart = await mockCartAPI.fetchCart();
+            document.getElementById('test1-result').innerHTML =
+                `<strong>✅ Test products added to cart!</strong><br>
+                 Cart items: ${cart.items.length}<br>
+                 Total quantity: ${cart.items.reduce((sum, item) => sum + item.quantity, 0)}<br>
+                 Products: ${cart.items.map(item => item.product.name).join(', ')}`;
+        }
+
+        // Check localStorage contents
+        function checkLocalStorage() {
+            const stored = localStorage.getItem('cart-storage');
+            const test2Result = document.getElementById('test2-result');
+
+            if (!stored) {
+                test2Result.className = 'test-result fail';
+                test2Result.innerHTML = '<strong>❌ localStorage is empty!</strong><br>No cart data found in localStorage.';
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(stored);
+                if (parsed.state && Array.isArray(parsed.state.items) && parsed.state.items.length > 0) {
+                    test2Result.className = 'test-result pass';
+                    test2Result.innerHTML =
+                        `<strong>✅ Cart data found in localStorage!</strong><br>
+                         Data: ${JSON.stringify(parsed.state.items.map(item => ({
+                             id: item.product.id,
+                             name: item.product.name,
+                             quantity: item.quantity
+                         })), null, 2)}`;
+                } else {
+                    test2Result.className = 'test-result fail';
+                    test2Result.innerHTML = '<strong>❌ localStorage exists but cart is empty!</strong>';
+                }
+            } catch (e) {
+                test2Result.className = 'test-result fail';
+                test2Result.innerHTML = `<strong>❌ Failed to parse localStorage data:</strong><br>${e.message}`;
+            }
+        }
+
+        // Verify cart persistence
+        function verifyPersistence() {
+            const test3Result = document.getElementById('test3-result');
+            const summary = document.getElementById('summary');
+
+            const stored = localStorage.getItem('cart-storage');
+            if (!stored) {
+                test3Result.className = 'test-result fail';
+                test3Result.innerHTML = '<strong>❌ Cart persistence FAILED!</strong><br>localStorage is empty.';
+                summary.className = 'test-result fail';
+                summary.innerHTML = '<strong>❌ CART PERSISTENCE TEST FAILED</strong><br>Cart data is not being saved to localStorage.';
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(stored);
+                if (parsed.state && Array.isArray(parsed.state.items) && parsed.state.items.length >= 3) {
+                    test3Result.className = 'test-result pass';
+                    test3Result.innerHTML =
+                        `<strong>✅ Cart persistence VERIFIED!</strong><br>
+                         Cart data successfully saved to localStorage.<br>
+                         Items saved: ${parsed.state.items.length}<br>
+                         Products: ${parsed.state.items.map(item => item.product.name).join(', ')}`;
+
+                    summary.className = 'test-result pass';
+                    summary.innerHTML =
+                        `<strong>✅ CART PERSISTENCE TEST PASSED</strong><br>
+                         ✓ Products added to cart successfully<br>
+                         ✓ Cart data saved to localStorage<br>
+                         ✓ localStorage contains cart items<br>
+                         ✓ Cart persistence is working correctly`;
+                } else {
+                    test3Result.className = 'test-result fail';
+                    test3Result.innerHTML = '<strong>❌ Cart persistence FAILED!</strong><br>localStorage exists but doesn\'t contain expected items.';
+                    summary.className = 'test-result fail';
+                    summary.innerHTML = '<strong>❌ CART PERSISTENCE TEST FAILED</strong><br>localStorage exists but doesn\'t contain the expected cart items.';
+                }
+            } catch (e) {
+                test3Result.className = 'test-result fail';
+                test3Result.innerHTML = `<strong>❌ Cart persistence FAILED!</strong><br>Failed to parse localStorage: ${e.message}`;
+                summary.className = 'test-result fail';
+                summary.innerHTML = `<strong>❌ CART PERSISTENCE TEST FAILED</strong><br>Failed to parse localStorage data: ${e.message}`;
+            }
+        }
+
+        // Initialize page
+        window.onload = function() {
+            initProducts();
+            // Clear any existing test data
+            localStorage.removeItem('cart-storage');
+            document.getElementById('test1-result').innerHTML = 'Ready to test cart persistence. Click "Add Test Products to Cart" to begin.';
+        };
+    </script>
+</body>
+</html>

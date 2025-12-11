@@ -26,6 +26,12 @@ const useAuthStore = create(
 
           // Set auth header for future requests
           api.setAuthToken(token);
+
+          // Import cart store dynamically to avoid circular dependency
+          const useCartStore = (await import('../stores/cartStore.js')).default;
+
+          // Sync cart with server after login
+          await useCartStore.getState().syncCartWithServer(user.id);
         } catch (error) {
           set({
             error: error.response?.data?.message || 'Login failed',
@@ -51,6 +57,12 @@ const useAuthStore = create(
 
           // Set auth header for future requests
           api.setAuthToken(token);
+
+          // Import cart store dynamically to avoid circular dependency
+          const useCartStore = (await import('../stores/cartStore.js')).default;
+
+          // Sync cart with server after registration
+          await useCartStore.getState().syncCartWithServer(user.id);
         } catch (error) {
           set({
             error: error.response?.data?.message || 'Registration failed',

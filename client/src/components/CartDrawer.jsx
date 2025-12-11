@@ -1,7 +1,7 @@
 import useCartStore from '../stores/cartStore';
 
 export default function CartDrawer({ isOpen, onClose }) {
-  const { items, getItemCount, getTotal, removeFromCart, updateQuantity, isLoading, error } = useCartStore();
+  const { items, wishlistItems, getItemCount, getTotal, removeFromCart, updateQuantity, saveForLater, moveToCart, removeFromWishlist, isLoading, error } = useCartStore();
 
   const handleRemove = async (itemId) => {
     try {
@@ -17,6 +17,30 @@ export default function CartDrawer({ isOpen, onClose }) {
       await updateQuantity(itemId, newQuantity);
     } catch (error) {
       console.error('Failed to update quantity:', error);
+    }
+  };
+
+  const handleSaveForLater = async (itemId) => {
+    try {
+      await saveForLater(itemId);
+    } catch (error) {
+      console.error('Failed to save for later:', error);
+    }
+  };
+
+  const handleMoveToCart = async (productId, quantity = 1) => {
+    try {
+      await moveToCart(productId, quantity);
+    } catch (error) {
+      console.error('Failed to move to cart:', error);
+    }
+  };
+
+  const handleRemoveFromWishlist = async (productId) => {
+    try {
+      await removeFromWishlist(productId);
+    } catch (error) {
+      console.error('Failed to remove from wishlist:', error);
     }
   };
 
@@ -63,7 +87,7 @@ export default function CartDrawer({ isOpen, onClose }) {
               </div>
             )}
 
-            {!isLoading && items.length === 0 && (
+            {!isLoading && items.length === 0 && wishlistItems.length === 0 && (
               <div className="text-center py-8">
                 <div className="text-6xl mb-4">🛒</div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Your cart is empty</h3>
@@ -77,71 +101,145 @@ export default function CartDrawer({ isOpen, onClose }) {
               </div>
             )}
 
+            {/* Cart Items Section */}
             {!isLoading && items.length > 0 && (
-              <div className="space-y-4">
-                {items.map((item) => {
-                  const price = item.variant?.adjustedPrice || item.product.price;
-                  const totalPrice = price * item.quantity;
+              <div className="mb-6">
+                <h3 className="text-md font-semibold mb-3">Your Cart</h3>
+                <div className="space-y-4">
+                  {items.map((item) => {
+                    const price = item.variant?.adjustedPrice || item.product.price;
+                    const totalPrice = price * item.quantity;
 
-                  return (
-                    <div key={item.id} className="flex gap-3 border rounded-lg p-3">
-                      {/* Product Image */}
-                      <div className="w-20 h-20 flex-shrink-0">
-                        <img
-                          src={item.product.image}
-                          alt={item.product.name}
-                          className="w-full h-full object-cover rounded"
-                        />
-                      </div>
+                    return (
+                      <div key={item.id} className="flex gap-3 border rounded-lg p-3">
+                        {/* Product Image */}
+                        <div className="w-20 h-20 flex-shrink-0">
+                          <img
+                            src={item.product.image}
+                            alt={item.product.name}
+                            className="w-full h-full object-cover rounded"
+                          />
+                        </div>
 
-                      {/* Product Info */}
-                      <div className="flex-1">
-                        <h3 className="font-medium text-gray-900">{item.product.name}</h3>
-                        {item.variant && (
-                          <p className="text-sm text-gray-600">
-                            {item.variant.name}: {item.variant.value}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between mt-2">
-                          <p className="text-primary font-semibold">${price.toFixed(2)}</p>
+                        {/* Product Info */}
+                        <div className="flex-1">
+                          <h3 className="font-medium text-gray-900">{item.product.name}</h3>
+                          {item.variant && (
+                            <p className="text-sm text-gray-600">
+                              {item.variant.name}: {item.variant.value}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-between mt-2">
+                            <p className="text-primary font-semibold">${price.toFixed(2)}</p>
 
-                          {/* Quantity Controls */}
-                          <div className="flex items-center border rounded-lg overflow-hidden">
+                            {/* Quantity Controls */}
+                            <div className="flex items-center border rounded-lg overflow-hidden">
+                              <button
+                                onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                                className="px-2 py-1 hover:bg-gray-100"
+                                disabled={isLoading}
+                              >
+                                −
+                              </button>
+                              <span className="px-3 py-1 border-x bg-gray-50 min-w-[2rem] text-center">
+                                {item.quantity}
+                              </span>
+                              <button
+                                onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                                className="px-2 py-1 hover:bg-gray-100"
+                                disabled={isLoading}
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex flex-col items-end gap-2">
+                          <p className="font-semibold">${totalPrice.toFixed(2)}</p>
+                          <div className="flex gap-2">
                             <button
-                              onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                              className="px-2 py-1 hover:bg-gray-100"
+                              onClick={() => handleSaveForLater(item.id)}
+                              className="text-blue-500 hover:text-blue-700 text-sm"
                               disabled={isLoading}
                             >
-                              −
+                              Save for Later
                             </button>
-                            <span className="px-3 py-1 border-x bg-gray-50 min-w-[2rem] text-center">
-                              {item.quantity}
-                            </span>
                             <button
-                              onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                              className="px-2 py-1 hover:bg-gray-100"
+                              onClick={() => handleRemove(item.id)}
+                              className="text-red-500 hover:text-red-700 text-sm"
                               disabled={isLoading}
                             >
-                              +
+                              Remove
                             </button>
                           </div>
                         </div>
                       </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
-                      {/* Actions */}
-                      <div className="flex flex-col items-end gap-2">
-                        <p className="font-semibold">${totalPrice.toFixed(2)}</p>
-                        <button
-                          onClick={() => handleRemove(item.id)}
-                          className="text-red-500 hover:text-red-700 text-sm"
-                          disabled={isLoading}
-                        >
-                          Remove
-                        </button>
+            {/* Saved for Later Section */}
+            {!isLoading && wishlistItems.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-md font-semibold mb-3">Saved for Later</h3>
+                <div className="space-y-4">
+                  {wishlistItems.map((item) => {
+                    const price = item.product.price;
+
+                    return (
+                      <div key={item.id} className="flex gap-3 border rounded-lg p-3">
+                        {/* Product Image */}
+                        <div className="w-20 h-20 flex-shrink-0">
+                          <img
+                            src={item.product.image_url}
+                            alt={item.product.name}
+                            className="w-full h-full object-cover rounded"
+                          />
+                        </div>
+
+                        {/* Product Info */}
+                        <div className="flex-1">
+                          <h3 className="font-medium text-gray-900">{item.product.name}</h3>
+                          <p className="text-primary font-semibold">${price.toFixed(2)}</p>
+                          {item.product.compare_at_price && (
+                            <p className="text-red-500 line-through text-sm">
+                              ${item.product.compare_at_price.toFixed(2)}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex flex-col items-end gap-2">
+                          <button
+                            onClick={() => handleMoveToCart(item.product.id, 1)}
+                            className="bg-primary text-white px-3 py-1 rounded-full hover:bg-green-600 transition text-sm"
+                            disabled={isLoading}
+                          >
+                            Move to Cart
+                          </button>
+                          <button
+                            onClick={() => handleRemoveFromWishlist(item.product.id)}
+                            className="text-red-500 hover:text-red-700 text-sm"
+                            disabled={isLoading}
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Empty Wishlist Message */}
+            {!isLoading && items.length > 0 && wishlistItems.length === 0 && (
+              <div className="text-center py-4 text-gray-500 text-sm">
+                No items saved for later
               </div>
             )}
           </div>

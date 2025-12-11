@@ -10,11 +10,17 @@ export default function Cart() {
     items,
     isLoading,
     error,
+    promoCode,
     fetchCart,
     updateQuantity,
     removeFromCart,
+    applyPromoCode,
+    removePromoCode,
     clearError
   } = useCartStore();
+
+  const [promoCodeInput, setPromoCodeInput] = useState('');
+  const [promoCodeError, setPromoCodeError] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -39,14 +45,42 @@ export default function Cart() {
     }
   };
 
+  const handleApplyPromoCode = async (e) => {
+    e.preventDefault();
+    setPromoCodeError('');
+
+    if (!promoCodeInput.trim()) {
+      setPromoCodeError('Please enter a promo code');
+      return;
+    }
+
+    try {
+      await applyPromoCode(promoCodeInput.trim());
+      setPromoCodeInput('');
+      clearError();
+    } catch (error) {
+      setPromoCodeError(error.message || 'Failed to apply promo code');
+    }
+  };
+
+  const handleRemovePromoCode = async () => {
+    try {
+      await removePromoCode();
+      clearError();
+    } catch (error) {
+      setPromoCodeError(error.message || 'Failed to remove promo code');
+    }
+  };
+
   const subtotal = items.reduce((sum, item) => {
     const price = item.variant?.adjustedPrice || item.product.price;
     return sum + price * item.quantity;
   }, 0);
 
   const tax = subtotal * 0.08; // 8% tax
-  const shipping = subtotal > 50 ? 0 : 9.99; // Free shipping over $50
-  const total = subtotal + tax + shipping;
+  const shipping = subtotal >= 50 ? 0 : 9.99; // Free shipping over $50
+  const promoDiscount = promoCode?.discount || 0;
+  const total = subtotal + tax + shipping - promoDiscount;
 
   if (!user) {
     return (
@@ -172,6 +206,53 @@ export default function Cart() {
         <div className="lg:col-span-1">
           <div className="bg-white rounded-lg shadow p-6 sticky top-4">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+
+            {/* Promo Code Section */}
+            {items.length > 0 && (
+              <div className="mb-4">
+                {!promoCode ? (
+                  <form onSubmit={handleApplyPromoCode} className="space-y-3">
+                    <div className="flex space-x-2">
+                      <input
+                        type="text"
+                        value={promoCodeInput}
+                        onChange={(e) => setPromoCodeInput(e.target.value)}
+                        placeholder="Enter promo code"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                    {promoCodeError && (
+                      <p className="text-red-600 text-sm">{promoCodeError}</p>
+                    )}
+                    <p className="text-xs text-gray-500">
+                      Try: WELCOME10, SAVE20, FREESHIP
+                    </p>
+                  </form>
+                ) : (
+                  <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-md p-3">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-green-600">✓</span>
+                      <span className="text-green-800 font-medium">Applied: {promoCode.code}</span>
+                      <span className="text-green-700 text-sm">
+                        -{promoCode.type === 'percentage' ? `${promoCode.value}%` : `$${promoCode.value.toFixed(2)}`}
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleRemovePromoCode}
+                      className="text-green-600 hover:text-green-800 text-sm font-semibold"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-sm">

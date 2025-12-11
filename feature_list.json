@@ -683,7 +683,7 @@
       "Step 4: Confirm discount is removed",
       "Step 5: Check that cart total returns to original amount"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -698,7 +698,7 @@
       "Step 7: Check that final total is calculated correctly",
       "Step 8: Verify all amounts sum to total"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

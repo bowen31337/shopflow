@@ -15,7 +15,7 @@ export default function Header() {
   const [searchHistory, setSearchHistory] = useState([]);
   const [showSearchHistory, setShowSearchHistory] = useState(false);
   const { user, logout, isAuthenticated } = useAuthStore();
-  const { fetchCart, getItemCount } = useCartStore();
+  const { fetchCart, fetchWishlist, getItemCount } = useCartStore();
   const location = useLocation();
   const navigate = useNavigate();
   const searchContainerRef = useRef(null);
@@ -45,6 +45,7 @@ export default function Header() {
   useEffect(() => {
     if (isAuthenticated()) {
       fetchCart();
+      fetchWishlist();
     }
   }, [isAuthenticated(), location.pathname]);
 

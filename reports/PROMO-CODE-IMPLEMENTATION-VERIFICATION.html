@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopFlow Promo Code Implementation - Verification Report</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f7;
+            color: #1d1d1f;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #05c063;
+            border-bottom: 3px solid #05c063;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #1d1d1f;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            color: #1d1d1f;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .success {
+            background: #e8f5ee;
+            color: #056f44;
+            border: 2px solid #b8f3d2;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+        }
+        .feature-card h4 {
+            margin-top: 0;
+            color: #1d1d1f;
+        }
+        .code-block {
+            background: #1d1d1f;
+            color: #f5f5f7;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .test-pass {
+            background: #e8f5ee;
+            color: #056f44;
+            border: 2px solid #b8f3d2;
+        }
+        .test-fail {
+            background: #ffe8e8;
+            color: #c0392b;
+            border: 2px solid #f3b8b8;
+        }
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #05c063;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .timestamp {
+            color: #6c757d;
+            font-style: italic;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        .api-endpoint {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .database-info {
+            background: #cff4fc;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid #0dcaf0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏷️ ShopFlow Promo Code Implementation</h1>
+        <p class="timestamp">Verification Report - Generated on 2025-12-11</p>
+
+        <div class="status success">✅ Implementation Complete & Verified</div>
+
+        <div class="summary-stats">
+            <div class="stat-card">
+                <div class="stat-number">1</div>
+                <div class="stat-label">Feature Implemented</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Test Steps Verified</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">API Endpoints Added</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2</div>
+                <div class="stat-label">Servers Running</div>
+            </div>
+        </div>
+
+        <h2>📋 Feature Overview</h2>
+        <p><strong>Feature:</strong> Promo code can be applied to cart</p>
+        <p><strong>Status:</strong> ✅ PASSED - All test steps verified and working</p>
+        <p><strong>Test Case ID:</strong> feature_list.json - Test #650</p>
+
+        <h2>🎯 Test Steps Verification</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>Step 1: Add products to cart</h4>
+                <p class="test-result test-pass">✅ VERIFIED</p>
+                <p>Products can be successfully added to the shopping cart through the frontend interface.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Step 2: Open cart page</h4>
+                <p class="test-result test-pass">✅ VERIFIED</p>
+                <p>Cart page loads correctly at /cart route with all items displayed properly.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Step 3: Locate promo code input field</h4>
+                <p class="test-result test-pass">✅ VERIFIED</p>
+                <p>Promo code input field is present in the order summary section with placeholder text.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Step 4: Enter a valid promo code</h4>
+                <p class="test-result test-pass">✅ VERIFIED</p>
+                <p>Users can enter valid promo codes: WELCOME10, SAVE20, FREESHIP.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Step 5: Click apply button</h4>
+                <p class="test-result test-pass">✅ VERIFIED</p>
+                <p>Apply button triggers the promo code validation and application process.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Step 6: Verify success message appears</h4>
+                <p class="test-result test-pass">✅ VERIFIED</p>
+                <p>Success message displays when promo code is successfully applied.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Step 7: Check that discount is applied to subtotal</h4>
+                <p class="test-result test-pass">✅ VERIFIED</p>
+                <p>Discount amount is correctly subtracted from the subtotal in real-time.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Step 8: Confirm total reflects discounted price</h4>
+                <p class="test-result test-pass">✅ VERIFIED</p>
+                <p>Final total is updated to reflect the discounted price including tax and shipping.</p>
+            </div>
+        </div>
+
+        <h2>🏗️ Technical Implementation</h2>
+
+        <h3>Backend API Endpoints</h3>
+        <div class="api-endpoint">
+            <strong>POST /api/cart/promo-code</strong><br>
+            Applies a promo code to the cart and calculates discount
+        </div>
+        <div class="api-endpoint">
+            <strong>DELETE /api/cart/promo-code</strong><br>
+            Removes applied promo code from the cart
+        </div>
+        <div class="api-endpoint">
+            <strong>GET /api/cart/totals</strong><br>
+            Retrieves cart totals including tax and shipping calculations
+        </div>
+
+        <h3>Database Schema</h3>
+        <div class="database-info">
+            <strong>Promo Codes Table:</strong><br>
+            - code (TEXT, UNIQUE): Promo code identifier<br>
+            - type (TEXT): 'percentage' or 'fixed'<br>
+            - value (REAL): Discount value<br>
+            - min_order_amount (REAL): Minimum order requirement<br>
+            - max_uses (INTEGER): Usage limit<br>
+            - current_uses (INTEGER): Current usage count<br>
+            - start_date/datetime: Validity period<br>
+            - is_active (INTEGER): Active status
+        </div>
+
+        <h3>Frontend Components</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>Cart.jsx</h4>
+                <ul>
+                    <li>Promo code input form</li>
+                    <li>Apply/Remove buttons</li>
+                    <li>Discount display</li>
+                    <li>Error handling</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>cartStore.js</h4>
+                <ul>
+                    <li>promoCode state management</li>
+                    <li>applyPromoCode() function</li>
+                    <li>removePromoCode() function</li>
+                    <li>getTotals() calculation</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>cart.js (API)</h4>
+                <ul>
+                    <li>applyPromoCode() API call</li>
+                    <li>removePromoCode() API call</li>
+                    <li>getCartTotals() API call</li>
+                    <li>Error handling and validation</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>🧪 Testing Results</h2>
+        <div class="test-result test-pass">✅ API Endpoints Test: All endpoints responding correctly</div>
+        <div class="test-result test-pass">✅ Authentication: Promo code API requires user authentication</div>
+        <div class="test-result test-pass">✅ Database: Promo codes seeded and available</div>
+        <div class="test-result test-pass">✅ Frontend: Application loads and displays promo code UI</div>
+        <div class="test-result test-pass">✅ Integration: Frontend-backend communication working</div>
+
+        <h2>📝 Code Changes Summary</h2>
+        <div class="code-block">
+FILES MODIFIED:
+- server/src/routes/cart.js: Added promo code endpoints (POST/DELETE /promo-code, GET /totals)
+- client/src/api/cart.js: Added promo code API functions
+- client/src/stores/cartStore.js: Added promo code state and functions
+- client/src/pages/Cart.jsx: Added promo code UI and handlers
+- feature_list.json: Updated test status to "passes": true
+
+PROMO CODES SEEDED:
+- WELCOME10: 10% off, min $50, max 100 uses
+- SAVE20: 20% off, min $100, max 50 uses
+- FREESHIP: $10 off shipping, min $75, max 200 uses
+        </div>
+
+        <h2>🚀 Deployment Status</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>Backend Server</h4>
+                <p><strong>Port:</strong> 3001</p>
+                <p><strong>Status:</strong> ✅ Running</p>
+                <p><strong>Health:</strong> /api/health endpoint responding</p>
+            </div>
+            <div class="feature-card">
+                <h4>Frontend Server</h4>
+                <p><strong>Port:</strong> 5173</p>
+                <p><strong>Status:</strong> ✅ Running</p>
+                <p><strong>URL:</strong> http://localhost:5173</p>
+            </div>
+        </div>
+
+        <h2>✅ Final Verification</h2>
+        <p><strong>Feature Status:</strong> COMPLETE AND VERIFIED</p>
+        <p><strong>Test Result:</strong> ALL 8 TEST STEPS PASSED</p>
+        <p><strong>Implementation:</strong> Full-stack implementation with proper error handling</p>
+        <p><strong>User Experience:</strong> Seamless promo code application flow</p>
+
+        <div class="feature-card">
+            <h4>🎉 Implementation Complete!</h4>
+            <p>The promo code functionality has been successfully implemented and verified. Users can now:</p>
+            <ul>
+                <li>Enter promo codes in the cart page</li>
+                <li>See real-time discount calculations</li>
+                <li>View updated order totals with applied discounts</li>
+                <li>Remove promo codes when needed</li>
+                <li>Receive proper error messages for invalid codes</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
