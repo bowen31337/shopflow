@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { addToWishlist, removeFromWishlist } from '../api/wishlist';
 import useCartStore from '../stores/cartStore';
 import useAuthStore from '../stores/authStore';
 
 export default function ProductCard({ product, view = 'grid' }) {
+  const [isWishlistLoading, setIsWishlistLoading] = useState(false);
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -10,8 +14,8 @@ export default function ProductCard({ product, view = 'grid' }) {
     }).format(price);
   };
 
-  const { user } = useAuthStore();
-  const { addToCart, isLoading } = useCartStore();
+  const { user, isAuthenticated } = useAuthStore();
+  const { addToCart, isLoading, isInWishlist, fetchWishlist } = useCartStore();
 
   const renderStars = (rating) => {
     if (!rating) rating = 0;
@@ -38,6 +42,37 @@ export default function ProductCard({ product, view = 'grid' }) {
       // Show success message or toast
     } catch (error) {
       console.error('Failed to add to cart:', error);
+    }
+  };
+
+  const handleWishlistToggle = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      alert('Please login to add items to wishlist');
+      return;
+    }
+
+    setIsWishlistLoading(true);
+
+    try {
+      const isInWishlistCheck = isInWishlist(product.id);
+
+      if (isInWishlistCheck) {
+        await removeFromWishlist(product.id);
+        alert(`Removed ${product.name} from wishlist!`);
+      } else {
+        await addToWishlist(product.id);
+        alert(`Added ${product.name} to wishlist!`);
+      }
+
+      // Refresh wishlist data
+      await fetchWishlist();
+    } catch (error) {
+      alert(`Error updating wishlist: ${error.message}`);
+    } finally {
+      setIsWishlistLoading(false);
     }
   };
 
@@ -74,6 +109,21 @@ export default function ProductCard({ product, view = 'grid' }) {
                 Out of Stock
               </span>
             )}
+            {/* Wishlist Button */}
+            <button
+              onClick={handleWishlistToggle}
+              disabled={isWishlistLoading}
+              className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors disabled:opacity-50"
+              title={isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+            >
+              {isWishlistLoading ? (
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+              ) : (
+                <span className={isInWishlist(product.id) ? 'text-red-500' : ''}>
+                  {isInWishlist(product.id) ? '❤️' : '🤍'}
+                </span>
+              )}
+            </button>
           </div>
 
           {/* Product Info */}
@@ -197,6 +247,21 @@ export default function ProductCard({ product, view = 'grid' }) {
             Out of Stock
           </span>
         )}
+        {/* Wishlist Button */}
+        <button
+          onClick={handleWishlistToggle}
+          disabled={isWishlistLoading}
+          className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors disabled:opacity-50"
+          title={isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+        >
+          {isWishlistLoading ? (
+            <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+          ) : (
+            <span className={isInWishlist(product.id) ? 'text-red-500' : ''}>
+              {isInWishlist(product.id) ? '❤️' : '🤍'}
+            </span>
+          )}
+        </button>
       </div>
 
       {/* Product Info */}

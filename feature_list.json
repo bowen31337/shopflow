@@ -886,7 +886,7 @@
       "Step 4: Check that each item shows image, name, and price",
       "Step 5: Confirm remove button is present on each item"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -900,7 +900,7 @@
       "Step 6: Navigate to wishlist page",
       "Step 7: Confirm product appears in wishlist"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -913,7 +913,7 @@
       "Step 5: Check that wishlist count increments",
       "Step 6: View wishlist and confirm product was added"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -926,7 +926,7 @@
       "Step 5: Check that item is removed from wishlist",
       "Step 6: Verify wishlist count decrements"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { fetchCart, addToCart, updateCartItem, removeFromCart, addToWishlist, removeFromWishlist, applyPromoCode, removePromoCode, getCartTotals } from '../api/cart';
+import { fetchCart, addToCart, updateCartItem, removeFromCart, applyPromoCode, removePromoCode, getCartTotals } from '../api/cart';
+import { fetchWishlist, addToWishlist, removeFromWishlist } from '../api/wishlist';
 
 const useCartStore = create(
   persist(
@@ -377,6 +378,12 @@ const useCartStore = create(
       getItemCount: () => {
         const items = get().items;
         return items.reduce((count, item) => count + item.quantity, 0);
+      },
+
+      // Get wishlist count
+      getWishlistCount: () => {
+        const wishlistItems = get().wishlistItems;
+        return wishlistItems.length;
       },
 
       // Check if product is in cart

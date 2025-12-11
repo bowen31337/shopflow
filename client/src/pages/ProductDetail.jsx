@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchProductBySlug } from '../api/products';
+import { addToWishlist, removeFromWishlist } from '../api/wishlist';
 import useCartStore from '../stores/cartStore';
 import useRecentlyViewedStore from '../stores/recentlyViewedStore';
 import RecentlyViewedProducts from '../components/RecentlyViewedProducts';
@@ -14,12 +15,20 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [isZoomed, setIsZoomed] = useState(false);
   const [selectedVariants, setSelectedVariants] = useState({});
-  const { addToCart, isAuthenticated } = useCartStore();
+  const { addToCart, isAuthenticated, isInWishlist, fetchWishlist } = useCartStore();
   const { addToRecentlyViewed } = useRecentlyViewedStore();
+  const [isWishlistLoading, setIsWishlistLoading] = useState(false);
 
   useEffect(() => {
     loadProduct();
   }, [slug]);
+
+  // Load wishlist data when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchWishlist();
+    }
+  }, [isAuthenticated]);
 
   const loadProduct = async () => {
     try {
@@ -43,6 +52,36 @@ export default function ProductDetail() {
       style: 'currency',
       currency: 'USD',
     }).format(price);
+  };
+
+  const handleWishlistToggle = async () => {
+    if (!isAuthenticated) {
+      alert('Please login to add items to wishlist');
+      return;
+    }
+
+    if (!product) return;
+
+    setIsWishlistLoading(true);
+
+    try {
+      const isInWishlistCheck = isInWishlist(product.id);
+
+      if (isInWishlistCheck) {
+        await removeFromWishlist(product.id);
+        alert(`Removed ${product.name} from wishlist!`);
+      } else {
+        await addToWishlist(product.id);
+        alert(`Added ${product.name} to wishlist!`);
+      }
+
+      // Refresh wishlist data
+      await fetchWishlist();
+    } catch (error) {
+      alert(`Error updating wishlist: ${error.message}`);
+    } finally {
+      setIsWishlistLoading(false);
+    }
   };
 
   // Group variants by name (e.g., Size, Color)
@@ -355,13 +394,18 @@ export default function ProductDetail() {
                   {product.stock_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
                 </button>
                 <button
-                  className="px-6 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition"
-                  onClick={() => {
-                    // TODO: Add to wishlist functionality
-                    alert('Added to wishlist!');
-                  }}
+                  className="px-6 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  onClick={handleWishlistToggle}
+                  disabled={isWishlistLoading}
+                  title={isInWishlist(product?.id) ? 'Remove from wishlist' : 'Add to wishlist'}
                 >
-                  ❤️
+                  {isWishlistLoading ? (
+                    <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                  ) : (
+                    <span className={isInWishlist(product?.id) ? 'text-red-500' : ''}>
+                      {isInWishlist(product?.id) ? '❤️' : '🤍'}
+                    </span>
+                  )}
                 </button>
               </div>
 

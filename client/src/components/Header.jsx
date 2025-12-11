@@ -18,7 +18,7 @@ export default function Header() {
   return sessionStorage.getItem('previousPage') || '/products';
 });
   const { user, logout, isAuthenticated } = useAuthStore();
-  const { fetchCart, fetchWishlist, getItemCount } = useCartStore();
+  const { fetchCart, fetchWishlist, getItemCount, getWishlistCount } = useCartStore();
   const location = useLocation();
   const navigate = useNavigate();
   const searchContainerRef = useRef(null);
@@ -63,8 +63,9 @@ export default function Header() {
     }
   }, [isAuthenticated(), location.pathname]);
 
-  // Get cart item count
+  // Get cart and wishlist item counts
   const cartCount = getItemCount();
+  const wishlistCount = getWishlistCount();
 
   const handleLogout = () => {
     logout();
@@ -216,6 +217,13 @@ export default function Header() {
               </>
             )}
 
+            <Link to="/wishlist" className="relative text-gray-700 hover:text-primary transition">
+              <span className="text-2xl">❤️</span>
+              <span className="bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center absolute -top-2 -right-2">
+                {wishlistCount}
+              </span>
+            </Link>
+
             <Link to="/cart" className="relative text-gray-700 hover:text-primary transition">
               <button
                 onClick={() => setIsCartOpen(true)}
@@ -328,6 +336,16 @@ export default function Header() {
                   </Link>
                 </>
               )}
+
+              <Link
+                to="/wishlist"
+                className={`py-2 ${
+                  location.pathname === '/wishlist' ? 'text-primary font-semibold' : 'text-gray-700'
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                ❤️ Wishlist ({wishlistCount})
+              </Link>
 
               <Link
                 to="/cart"
