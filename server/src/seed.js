@@ -284,6 +284,71 @@ export async function seedDatabase() {
     });
     console.log('✓ Promo codes seeded');
 
+    // Seed Reviews
+    const reviews = [
+      {
+        product_id: 1, // TechPro Laptop
+        user_id: 2, // Test Customer
+        rating: 5,
+        title: 'Excellent laptop for work and entertainment',
+        content: 'This laptop has been amazing for both my work and personal use. The battery life is impressive and the performance is smooth.',
+        is_verified_purchase: 1
+      },
+      {
+        product_id: 1, // TechPro Laptop
+        user_id: 1, // Admin User
+        rating: 4,
+        title: 'Great performance, minor issues',
+        content: 'Overall a great laptop. The only issue I had was with the trackpad sensitivity, but after adjusting settings it works fine.',
+        is_verified_purchase: 0
+      },
+      {
+        product_id: 2, // Smartphone X
+        user_id: 2, // Test Customer
+        rating: 5,
+        title: 'Best smartphone I have owned',
+        content: 'The camera quality is outstanding and the battery lasts all day with heavy use. Highly recommended!',
+        is_verified_purchase: 1
+      },
+      {
+        product_id: 3, // Premium T-Shirt
+        user_id: 2, // Test Customer
+        rating: 4,
+        title: 'Comfortable and good quality',
+        content: 'The fabric is soft and comfortable. Fits true to size. Would buy again.',
+        is_verified_purchase: 1
+      },
+      {
+        product_id: 8, // Running Shoes
+        user_id: 2, // Test Customer
+        rating: 5,
+        title: 'Perfect for daily runs',
+        content: 'These shoes are lightweight and provide excellent support. My feet feel great even after long runs.',
+        is_verified_purchase: 1
+      }
+    ];
+
+    const insertReview = db.prepare(`
+      INSERT INTO reviews (product_id, user_id, rating, title, content, is_verified_purchase, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, datetime('now', ?))
+    `);
+
+    // Add reviews with staggered dates to make them look realistic
+    const timeOffsets = ['-30 days', '-25 days', '-20 days', '-15 days', '-10 days'];
+
+    reviews.forEach((review, index) => {
+      insertReview.run(
+        review.product_id,
+        review.user_id,
+        review.rating,
+        review.title,
+        review.content,
+        review.is_verified_purchase,
+        timeOffsets[index] || '-5 days'
+      );
+    });
+    console.log('✓ Reviews seeded');
+
     console.log('✓ Database seeding completed successfully!');
   } catch (error) {
     console.error('Error seeding database:', error);

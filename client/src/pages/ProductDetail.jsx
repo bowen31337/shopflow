@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchProductBySlug } from '../api/products';
 import { addToWishlist, removeFromWishlist } from '../api/wishlist';
+import { fetchProductReviews } from '../api/reviews';
 import useCartStore from '../stores/cartStore';
 import useRecentlyViewedStore from '../stores/recentlyViewedStore';
 import RecentlyViewedProducts from '../components/RecentlyViewedProducts';
@@ -9,6 +10,8 @@ import RecentlyViewedProducts from '../components/RecentlyViewedProducts';
 export default function ProductDetail() {
   const { slug } = useParams();
   const [product, setProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -40,10 +43,28 @@ export default function ProductDetail() {
 
       // Add to recently viewed after loading product
       addToRecentlyViewed(data.product);
+
+      // Load reviews for this product
+      if (data.product && data.product.id) {
+        await loadReviews(data.product.id);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadReviews = async (productId) => {
+    try {
+      setReviewsLoading(true);
+      const reviewsData = await fetchProductReviews(productId);
+      setReviews(reviewsData);
+    } catch (err) {
+      console.error('Error loading reviews:', err);
+      setReviews([]);
+    } finally {
+      setReviewsLoading(false);
     }
   };
 
@@ -447,6 +468,94 @@ export default function ProductDetail() {
                   </>
                 )}
               </div>
+            </div>
+
+            {/* Reviews Section */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-lg font-semibold mb-4">Customer Reviews</h2>
+
+              {reviewsLoading ? (
+                <div className="text-center py-8">
+                  <div className="w-8 h-8 border-2 border-gray-300 border-t-primary rounded-full animate-spin mx-auto"></div>
+                  <p className="text-gray-600 mt-2">Loading reviews...</p>
+                </div>
+              ) : reviews.length > 0 ? (
+                <div className="space-y-6">
+                  {reviews.map((review) => (
+                    <div key={review.id} className="border-b border-gray-100 pb-6 last:border-0">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="flex text-sm">
+                              {renderStars(review.rating)}
+                            </div>
+                            <span className="text-sm font-medium text-gray-900">{review.title}</span>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            By <span className="font-medium">{review.user_name}</span> • {new Date(review.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', 'day': 'numeric' })}
+                            {review.is_verified_purchase && (
+                              <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+                                ✓ Verified Purchase
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                        {review.helpful_count > 0 && (
+                          <span className="text-sm text-gray-500">
+                            {review.helpful_count} {review.helpful_count === 1 ? 'person' : 'people'} found this helpful
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-gray-700 mb-3">{review.content}</p>
+
+                      {review.images && review.images.length > 0 && (
+                        <div className="flex gap-2 mb-3">
+                          {review.images.map((image) => (
+                            <img
+                              key={image.id}
+                              src={image.url}
+                              alt="Review"
+                              className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                              onError={(e) => {
+                                e.target.src = 'https://via.placeholder.com/64x64?text=Image';
+                              }}
+                            />
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => {/* TODO: Implement helpful functionality */}}
+                          className="text-sm text-gray-600 hover:text-primary transition"
+                        >
+                          Helpful
+                        </button>
+                        {/* TODO: Add edit/delete functionality when user ID is available */}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">No reviews yet. Be the first to review this product!</p>
+                  {isAuthenticated ? (
+                    <button
+                      onClick={() => {/* TODO: Implement review form */}}
+                      className="mt-4 px-4 py-2 bg-primary text-white rounded-full hover:bg-green-600 transition"
+                    >
+                      Write a Review
+                    </button>
+                  ) : (
+                    <p className="mt-2 text-sm text-gray-500">
+                      <Link to="/login" className="text-primary hover:text-green-600">
+                        Login
+                      </Link> to write a review
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Related Products */}
