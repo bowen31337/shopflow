@@ -658,7 +658,7 @@
       "Step 7: Check that discount is applied to subtotal",
       "Step 8: Confirm total reflects discounted price"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -671,7 +671,7 @@
       "Step 5: Verify error message is displayed",
       "Step 6: Check that no discount is applied to cart"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
