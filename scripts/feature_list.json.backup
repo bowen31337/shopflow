@@ -1043,7 +1043,7 @@
       "Step 5: Confirm all address fields are auto-filled",
       "Step 6: Verify city, state, and postal code are populated"
     ],
-    "passes": true
+    "passes": false
   },
   {
     "category": "functional",

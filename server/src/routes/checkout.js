@@ -64,6 +64,137 @@ router.post('/validate-address', authenticateToken, (req, res) => {
   }
 });
 
+// GET /api/checkout/address-autocomplete
+router.get('/address-autocomplete', (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query || query.trim().length < 3) {
+      return res.json({
+        success: true,
+        suggestions: [],
+        count: 0
+      });
+    }
+
+    // Mock address suggestions for demo purposes
+    // In a real application, this would integrate with a geocoding service like Google Places
+    const mockAddresses = [
+      {
+        id: 'addr_1',
+        street_address: '123 Main Street',
+        city: 'New York',
+        state: 'NY',
+        postal_code: '10001',
+        country: 'United States',
+        formatted_address: '123 Main Street, New York, NY 10001, United States'
+      },
+      {
+        id: 'addr_2',
+        street_address: '456 Oak Avenue',
+        city: 'Los Angeles',
+        state: 'CA',
+        postal_code: '90001',
+        country: 'United States',
+        formatted_address: '456 Oak Avenue, Los Angeles, CA 90001, United States'
+      },
+      {
+        id: 'addr_3',
+        street_address: '789 Pine Road',
+        city: 'Chicago',
+        state: 'IL',
+        postal_code: '60601',
+        country: 'United States',
+        formatted_address: '789 Pine Road, Chicago, IL 60601, United States'
+      },
+      {
+        id: 'addr_4',
+        street_address: '101 Maple Drive',
+        city: 'Houston',
+        state: 'TX',
+        postal_code: '77001',
+        country: 'United States',
+        formatted_address: '101 Maple Drive, Houston, TX 77001, United States'
+      },
+      {
+        id: 'addr_5',
+        street_address: '202 Elm Street',
+        city: 'Phoenix',
+        state: 'AZ',
+        postal_code: '85001',
+        country: 'United States',
+        formatted_address: '202 Elm Street, Phoenix, AZ 85001, United States'
+      },
+      {
+        id: 'addr_6',
+        street_address: '303 Cedar Lane',
+        city: 'Philadelphia',
+        state: 'PA',
+        postal_code: '19101',
+        country: 'United States',
+        formatted_address: '303 Cedar Lane, Philadelphia, PA 19101, United States'
+      },
+      {
+        id: 'addr_7',
+        street_address: '404 Birch Boulevard',
+        city: 'San Antonio',
+        state: 'TX',
+        postal_code: '78201',
+        country: 'United States',
+        formatted_address: '404 Birch Boulevard, San Antonio, TX 78201, United States'
+      },
+      {
+        id: 'addr_8',
+        street_address: '505 Walnut Way',
+        city: 'San Diego',
+        state: 'CA',
+        postal_code: '92101',
+        country: 'United States',
+        formatted_address: '505 Walnut Way, San Diego, CA 92101, United States'
+      },
+      {
+        id: 'addr_9',
+        street_address: '606 Spruce Street',
+        city: 'Dallas',
+        state: 'TX',
+        postal_code: '75201',
+        country: 'United States',
+        formatted_address: '606 Spruce Street, Dallas, TX 75201, United States'
+      },
+      {
+        id: 'addr_10',
+        street_address: '707 Ash Avenue',
+        city: 'San Jose',
+        state: 'CA',
+        postal_code: '95101',
+        country: 'United States',
+        formatted_address: '707 Ash Avenue, San Jose, CA 95101, United States'
+      }
+    ];
+
+    // Filter addresses based on query (case-insensitive)
+    const searchQuery = query.toLowerCase().trim();
+    const suggestions = mockAddresses.filter(addr =>
+      addr.street_address.toLowerCase().includes(searchQuery) ||
+      addr.city.toLowerCase().includes(searchQuery) ||
+      addr.formatted_address.toLowerCase().includes(searchQuery)
+    ).slice(0, 5); // Limit to 5 suggestions
+
+    res.json({
+      success: true,
+      suggestions,
+      count: suggestions.length,
+      query: searchQuery
+    });
+  } catch (error) {
+    console.error('Error in address autocomplete:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to fetch address suggestions'
+    });
+  }
+});
+
 // GET /api/checkout/shipping-methods
 router.get('/shipping-methods', (req, res) => {
   try {

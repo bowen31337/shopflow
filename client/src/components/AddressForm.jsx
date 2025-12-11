@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../api';
 
 export default function AddressForm({ address, onSuccess, onCancel }) {
@@ -18,6 +18,13 @@ export default function AddressForm({ address, onSuccess, onCancel }) {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
+  // Address autocomplete state
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
+  const suggestionsRef = useRef(null);
+  const streetAddressInputRef = useRef(null);
+
   useEffect(() => {
     if (address) {
       setFormData({
@@ -36,8 +43,96 @@ export default function AddressForm({ address, onSuccess, onCancel }) {
     }
   }, [address]);
 
+  // Handle clicks outside suggestions dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target) &&
+          streetAddressInputRef.current && !streetAddressInputRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Fetch address suggestions
+  const fetchAddressSuggestions = async (query) => {
+    if (query.length < 3) {
+      setAddressSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    setIsFetchingSuggestions(true);
+    try {
+      const response = await api.get(`/api/checkout/address-autocomplete?query=${encodeURIComponent(query)}`);
+      if (response.data.success) {
+        setAddressSuggestions(response.data.suggestions);
+        setShowSuggestions(response.data.suggestions.length > 0);
+      }
+    } catch (error) {
+      console.error('Error fetching address suggestions:', error);
+      setAddressSuggestions([]);
+      setShowSuggestions(false);
+    } finally {
+      setIsFetchingSuggestions(false);
+    }
+  };
+
+  // Handle street address input change with debouncing
+  const handleStreetAddressChange = (e) => {
+    const value = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      streetAddress: value
+    }));
+
+    // Clear error for this field when user starts typing
+    if (errors.streetAddress) {
+      setErrors(prev => ({
+        ...prev,
+        streetAddress: ''
+      }));
+    }
+
+    // Fetch suggestions after a delay (debouncing)
+    if (value.trim().length >= 3) {
+      const timer = setTimeout(() => {
+        fetchAddressSuggestions(value);
+      }, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setAddressSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  // Handle address suggestion selection
+  const handleSuggestionSelect = (suggestion) => {
+    setFormData(prev => ({
+      ...prev,
+      streetAddress: suggestion.street_address,
+      city: suggestion.city,
+      state: suggestion.state,
+      postalCode: suggestion.postal_code,
+      country: suggestion.country
+    }));
+    setShowSuggestions(false);
+    setAddressSuggestions([]);
+  };
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+
+    // Special handling for street address to trigger autocomplete
+    if (name === 'streetAddress') {
+      handleStreetAddressChange(e);
+      return;
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -213,23 +308,61 @@ export default function AddressForm({ address, onSuccess, onCancel }) {
         </div>
       </div>
 
-      <div>
+      <div className="relative">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Street Address *
         </label>
-        <input
-          type="text"
-          name="streetAddress"
-          value={formData.streetAddress}
-          onChange={handleInputChange}
-          placeholder="123 Main St"
-          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-            errors.streetAddress ? 'border-red-500' : 'border-gray-300'
-          }`}
-          required
-        />
+        <div className="relative">
+          <input
+            ref={streetAddressInputRef}
+            type="text"
+            name="streetAddress"
+            value={formData.streetAddress}
+            onChange={handleInputChange}
+            onFocus={() => {
+              if (formData.streetAddress.length >= 3 && addressSuggestions.length > 0) {
+                setShowSuggestions(true);
+              }
+            }}
+            placeholder="123 Main St"
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+              errors.streetAddress ? 'border-red-500' : 'border-gray-300'
+            }`}
+            required
+            autoComplete="off"
+          />
+          {isFetchingSuggestions && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-600"></div>
+            </div>
+          )}
+        </div>
         {errors.streetAddress && (
           <p className="text-red-500 text-sm mt-1">{errors.streetAddress}</p>
+        )}
+
+        {/* Address Suggestions Dropdown */}
+        {showSuggestions && addressSuggestions.length > 0 && (
+          <div
+            ref={suggestionsRef}
+            className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+          >
+            <div className="py-1">
+              {addressSuggestions.map((suggestion) => (
+                <button
+                  key={suggestion.id}
+                  type="button"
+                  onClick={() => handleSuggestionSelect(suggestion)}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition-colors"
+                >
+                  <div className="font-medium text-gray-900">{suggestion.street_address}</div>
+                  <div className="text-sm text-gray-600">
+                    {suggestion.city}, {suggestion.state} {suggestion.postal_code}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
         )}
       </div>
 
