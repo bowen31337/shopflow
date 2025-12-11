@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const login = useAuthStore((state) => state.login);
   const isLoading = useAuthStore((state) => state.isLoading);
   const error = useAuthStore((state) => state.error);
@@ -20,7 +21,14 @@ export default function Login() {
 
     try {
       await login(formData.email, formData.password);
-      navigate('/');
+
+      // Redirect to return URL if provided, otherwise to homepage
+      const returnUrl = searchParams.get('return');
+      if (returnUrl) {
+        navigate(returnUrl);
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       // Error is handled by the store
       console.error('Login failed:', err);

@@ -56,7 +56,9 @@ export default function ProductDetail() {
 
   const handleWishlistToggle = async () => {
     if (!isAuthenticated) {
-      alert('Please login to add items to wishlist');
+      // Redirect to login page for guest users with return URL
+      const returnUrl = window.location.pathname;
+      window.location.href = `/login?return=${encodeURIComponent(returnUrl)}`;
       return;
     }
 
@@ -380,7 +382,9 @@ export default function ProductDetail() {
                       const selectedVariant = getSelectedVariant();
 
                       if (!isAuthenticated) {
-                        alert('Please login to add items to cart');
+                        // Redirect to login page for guest users with return URL
+                        const returnUrl = window.location.pathname;
+                        window.location.href = `/login?return=${encodeURIComponent(returnUrl)}`;
                         return;
                       }
 

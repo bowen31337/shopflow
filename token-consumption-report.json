@@ -1,14 +1,14 @@
 {
   "project_name": "demo",
   "project_dir": "demo",
-  "report_generated": "2025-12-11T21:58:41.086758+00:00",
+  "report_generated": "2025-12-11T22:12:13.776685+00:00",
   "summary": {
-    "total_sessions": 50,
-    "total_api_calls": 50,
+    "total_sessions": 52,
+    "total_api_calls": 52,
     "total_input_tokens": 0,
     "total_output_tokens": 0,
     "total_tokens": 0,
-    "total_duration_seconds": 106869.72596597672,
+    "total_duration_seconds": 107671.0350420475,
     "estimated_cost_usd": 0.0
   },
   "endpoint_breakdown": {
@@ -41,7 +41,7 @@
       "estimated_cost_usd": 0.0
     },
     "https://api.deepseek.com/anthropic": {
-      "calls": 4,
+      "calls": 6,
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
@@ -482,6 +482,34 @@
       "successful_calls": 1,
       "failed_calls": 0,
       "duration_seconds": 83.62263607978821
+    },
+    {
+      "session_id": 51,
+      "start_time": "2025-12-11T21:58:45.096204+00:00",
+      "end_time": "2025-12-11T22:10:30.259843+00:00",
+      "endpoint": "https://api.deepseek.com/anthropic",
+      "model": "claude-sonnet-4-5-20250929",
+      "total_calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "successful_calls": 1,
+      "failed_calls": 0,
+      "duration_seconds": 703.7437670230865
+    },
+    {
+      "session_id": 52,
+      "start_time": "2025-12-11T22:10:34.267728+00:00",
+      "end_time": "2025-12-11T22:12:13.776064+00:00",
+      "endpoint": "https://api.deepseek.com/anthropic",
+      "model": "claude-sonnet-4-5-20250929",
+      "total_calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "successful_calls": 1,
+      "failed_calls": 0,
+      "duration_seconds": 97.56530904769897
     }
   ],
   "calls": [
@@ -854,6 +882,30 @@
       "total_tokens": 0,
       "session_id": 50,
       "duration_seconds": 83.62263607978821,
+      "success": true,
+      "error": null
+    },
+    {
+      "timestamp": "2025-12-11T22:10:30.247133+00:00",
+      "endpoint": "https://api.deepseek.com/anthropic",
+      "model": "claude-sonnet-4-5-20250929",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "session_id": 51,
+      "duration_seconds": 703.7437670230865,
+      "success": true,
+      "error": null
+    },
+    {
+      "timestamp": "2025-12-11T22:12:13.766978+00:00",
+      "endpoint": "https://api.deepseek.com/anthropic",
+      "model": "claude-sonnet-4-5-20250929",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "session_id": 52,
+      "duration_seconds": 97.56530904769897,
       "success": true,
       "error": null
     }

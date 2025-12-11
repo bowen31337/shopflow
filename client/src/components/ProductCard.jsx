@@ -33,7 +33,9 @@ export default function ProductCard({ product, view = 'grid' }) {
   const handleAddToCart = async (e) => {
     e.preventDefault();
     if (!user) {
-      window.location.href = '/login';
+      // Redirect to login page for guest users with return URL
+      const returnUrl = window.location.pathname;
+      window.location.href = `/login?return=${encodeURIComponent(returnUrl)}`;
       return;
     }
 
@@ -50,7 +52,9 @@ export default function ProductCard({ product, view = 'grid' }) {
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      alert('Please login to add items to wishlist');
+      // Redirect to login page for guest users with return URL
+      const returnUrl = window.location.pathname;
+      window.location.href = `/login?return=${encodeURIComponent(returnUrl)}`;
       return;
     }
 

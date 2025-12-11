@@ -978,7 +978,7 @@
       "Step 5: Login with credentials",
       "Step 6: Confirm product is added to wishlist after login"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
