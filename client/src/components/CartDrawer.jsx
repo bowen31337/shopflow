@@ -1,6 +1,6 @@
 import useCartStore from '../stores/cartStore';
 
-export default function CartDrawer({ isOpen, onClose }) {
+export default function CartDrawer({ isOpen, onClose, continueShopping }) {
   const { items, wishlistItems, getItemCount, getTotal, removeFromCart, updateQuantity, saveForLater, moveToCart, removeFromWishlist, isLoading, error } = useCartStore();
 
   const handleRemove = async (itemId) => {
@@ -93,7 +93,10 @@ export default function CartDrawer({ isOpen, onClose }) {
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Your cart is empty</h3>
                 <p className="text-gray-600 mb-4">Add some products to get started</p>
                 <button
-                  onClick={onClose}
+                  onClick={() => {
+                    continueShopping && continueShopping();
+                    onClose();
+                  }}
                   className="bg-primary text-white px-6 py-2 rounded-full hover:bg-green-600 transition"
                 >
                   Continue Shopping
@@ -269,7 +272,10 @@ export default function CartDrawer({ isOpen, onClose }) {
 
               <div className="grid grid-cols-2 gap-3">
                 <button
-                  onClick={onClose}
+                  onClick={() => {
+                    continueShopping && continueShopping();
+                    onClose();
+                  }}
                   className="border border-gray-300 text-gray-700 px-4 py-2 rounded-full hover:bg-gray-50 transition"
                 >
                   Continue Shopping

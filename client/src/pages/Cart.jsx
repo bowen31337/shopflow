@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useCartStore from '../stores/cartStore';
 import useAuthStore from '../stores/authStore';
 
 export default function Cart() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuthStore();
   const {
     items,
@@ -21,10 +22,17 @@ export default function Cart() {
 
   const [promoCodeInput, setPromoCodeInput] = useState('');
   const [promoCodeError, setPromoCodeError] = useState('');
+  const [previousPage, setPreviousPage] = useState('/products');
 
   useEffect(() => {
     if (user) {
       fetchCart();
+    }
+
+    // Get the previous page from sessionStorage
+    const savedPreviousPage = sessionStorage.getItem('previousPage');
+    if (savedPreviousPage) {
+      setPreviousPage(savedPreviousPage);
     }
   }, [user]);
 
@@ -70,6 +78,10 @@ export default function Cart() {
     } catch (error) {
       setPromoCodeError(error.message || 'Failed to remove promo code');
     }
+  };
+
+  const handleContinueShopping = () => {
+    navigate(previousPage);
   };
 
   const subtotal = items.reduce((sum, item) => {
@@ -130,10 +142,10 @@ export default function Cart() {
               <h2 className="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h2>
               <p className="text-gray-600 mb-6">Add some products to get started</p>
               <button
-                onClick={() => navigate('/products')}
+                onClick={handleContinueShopping}
                 className="bg-emerald-600 text-white px-6 py-2 rounded-md hover:bg-emerald-700 transition-colors"
               >
-                Browse Products
+                Continue Shopping
               </button>
             </div>
           ) : (
@@ -294,7 +306,7 @@ export default function Cart() {
                   Proceed to Checkout
                 </button>
                 <button
-                  onClick={() => navigate('/products')}
+                  onClick={handleContinueShopping}
                   className="w-full border border-gray-300 text-gray-700 py-3 rounded-md hover:bg-gray-50 transition-colors"
                 >
                   Continue Shopping

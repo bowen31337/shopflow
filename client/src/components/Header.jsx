@@ -14,6 +14,9 @@ export default function Header() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchHistory, setSearchHistory] = useState([]);
   const [showSearchHistory, setShowSearchHistory] = useState(false);
+  const [previousPage, setPreviousPage] = useState(() => {
+  return sessionStorage.getItem('previousPage') || '/products';
+});
   const { user, logout, isAuthenticated } = useAuthStore();
   const { fetchCart, fetchWishlist, getItemCount } = useCartStore();
   const location = useLocation();
@@ -40,6 +43,17 @@ export default function Header() {
       console.error('Failed to save search history:', error);
     }
   };
+
+  // Track previous page for continue shopping functionality
+  useEffect(() => {
+    // Don't update previous page when navigating to cart, login, or register pages
+    const excludedPaths = ['/cart', '/login', '/register', '/checkout'];
+    if (!excludedPaths.includes(location.pathname)) {
+      const fullPath = location.pathname + location.search;
+      setPreviousPage(fullPath);
+      sessionStorage.setItem('previousPage', fullPath);
+    }
+  }, [location.pathname, location.search]);
 
   // Fetch cart when user logs in or when header mounts
   useEffect(() => {
@@ -98,6 +112,10 @@ export default function Header() {
     setSearchQuery(historyItem);
     setShowSearchHistory(false);
     handleSearch({ preventDefault: () => {}, key: '' });
+  };
+
+  const handleContinueShopping = () => {
+    navigate(previousPage);
   };
 
   return (
@@ -327,7 +345,11 @@ export default function Header() {
           </div>
         )}
       </div>
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        continueShopping={handleContinueShopping}
+      />
     </header>
   );
 }

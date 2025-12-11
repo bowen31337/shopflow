@@ -711,7 +711,7 @@
       "Step 5: Verify cart drawer closes",
       "Step 6: Confirm user returns to previous product page"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
