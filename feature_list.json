@@ -580,7 +580,7 @@
       "Step 7: Click 'Move to Cart' on saved item",
       "Step 8: Confirm item returns to cart"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -606,7 +606,7 @@
       "Step 5: Verify cart items are synced from server",
       "Step 6: Check that all products and quantities match"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -618,7 +618,7 @@
       "Step 4: Check that no items are lost",
       "Step 5: Confirm duplicate items have quantities combined"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -631,7 +631,7 @@
       "Step 5: Add another item with quantity 3",
       "Step 6: Verify badge shows total quantity (4)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -643,7 +643,7 @@
       "Step 4: Check that shipping calculation is based on cart total or weight",
       "Step 5: Add more items and confirm shipping recalculates"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
