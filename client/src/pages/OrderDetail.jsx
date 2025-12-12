@@ -365,7 +365,19 @@ export default function OrderDetail() {
                 {order.tracking_number && (
                   <div>
                     <h3 className="font-medium text-gray-900 mb-1">Tracking Number</h3>
-                    <p className="text-sm text-gray-600">{order.tracking_number}</p>
+                    <div className="flex items-center space-x-3">
+                      <p className="text-sm text-gray-600 font-mono">{order.tracking_number}</p>
+                      {order.status === 'shipped' && (
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded bg-blue-100 text-blue-800">
+                          📦 Shipped
+                        </span>
+                      )}
+                    </div>
+                    {order.status === 'shipped' && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Track your package with the tracking number above
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

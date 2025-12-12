@@ -1,6 +1,7 @@
 import express from 'express';
 import { authenticateToken } from '../middleware/auth.js';
 import db from '../database.js';
+import { generateTrackingNumber, getShippingCarrier } from '../utils/tracking.js';
 
 const router = express.Router();
 
@@ -286,6 +287,98 @@ router.post('/:id/cancel', authenticateToken, (req, res) => {
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to cancel order'
+    });
+  }
+});
+
+// POST /api/orders/:id/update-status - Update order status and generate tracking number
+router.post('/:id/update-status', authenticateToken, (req, res) => {
+  try {
+    const userId = req.user.id;
+    const orderId = parseInt(req.params.id);
+    const { status } = req.body;
+
+    if (isNaN(orderId)) {
+      return res.status(400).json({
+        error: 'Invalid order ID',
+        message: 'Order ID must be a valid number'
+      });
+    }
+
+    // Validate status
+    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+    if (!status || !validStatuses.includes(status)) {
+      return res.status(400).json({
+        error: 'Invalid status',
+        message: `Status must be one of: ${validStatuses.join(', ')}`
+      });
+    }
+
+    // Get order to check if user has permission
+    const order = db.prepare(`
+      SELECT id, status, user_id, shipping_method
+      FROM orders
+      WHERE id = ? AND user_id = ?
+    `).get(orderId, userId);
+
+    if (!order) {
+      return res.status(404).json({
+        error: 'Order not found',
+        message: 'Order not found or you do not have permission to update it'
+      });
+    }
+
+    // Check if status change is valid
+    const currentStatus = order.status;
+    let trackingNumber = null;
+
+    if (status === 'shipped' && currentStatus !== 'shipped') {
+      // Generate tracking number when order is shipped
+      trackingNumber = generateTrackingNumber(orderId);
+    }
+
+    // Update order status and tracking number if applicable
+    const result = db.prepare(`
+      UPDATE orders
+      SET status = ?, tracking_number = COALESCE(?, tracking_number), updated_at = CURRENT_TIMESTAMP
+      WHERE id = ? AND user_id = ?
+    `).run(trackingNumber || status, trackingNumber, orderId, userId);
+
+    if (result.changes === 0) {
+      return res.status(500).json({
+        error: 'Failed to update order',
+        message: 'Unable to update order status at this time'
+      });
+    }
+
+    // Get updated order
+    const updatedOrder = db.prepare(`
+      SELECT
+        id,
+        order_number,
+        status,
+        tracking_number,
+        updated_at
+      FROM orders
+      WHERE id = ? AND user_id = ?
+    `).get(orderId, userId);
+
+    res.json({
+      success: true,
+      message: `Order status updated to ${status}`,
+      order: {
+        id: updatedOrder.id,
+        orderNumber: updatedOrder.order_number,
+        status: updatedOrder.status,
+        trackingNumber: updatedOrder.tracking_number,
+        updatedAt: updatedOrder.updated_at
+      }
+    });
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to update order status'
     });
   }
 });

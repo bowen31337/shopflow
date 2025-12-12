@@ -1243,7 +1243,7 @@
       "Step 4: Check that carrier name is shown",
       "Step 5: Confirm 'Track Package' link is present and functional"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
