@@ -21,7 +21,7 @@ async function quickShopFlowVerification() {
 
     // Test 1: Homepage
     console.log('1. Testing Homepage...');
-    await page.goto('http://localhost:5173', { waitUntil: 'networkidle2', timeout: 10000 });
+    await page.goto('http://localhost:3000', { waitUntil: 'networkidle2', timeout: 10000 });
 
     const homepageText = await page.evaluate(() => document.body.innerText);
     const homepageSuccess = homepageText.includes('ShopFlow') && homepageText.includes('Welcome');

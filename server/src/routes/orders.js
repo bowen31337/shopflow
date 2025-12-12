@@ -1,4 +1,5 @@
 import express from 'express';
+import PDFDocument from 'pdfkit';
 import { authenticateToken } from '../middleware/auth.js';
 import db from '../database.js';
 import { generateTrackingNumber, getShippingCarrier } from '../utils/tracking.js';
@@ -517,6 +518,238 @@ router.post('/:id/reorder', authenticateToken, (req, res) => {
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to reorder items'
+    });
+  }
+});
+
+// GET /api/orders/:id/invoice - Generate PDF invoice for order
+router.get('/:id/invoice', authenticateToken, (req, res) => {
+  try {
+    const userId = req.user.id;
+    const orderId = parseInt(req.params.id);
+
+    if (isNaN(orderId)) {
+      return res.status(400).json({
+        error: 'Invalid order ID',
+        message: 'Order ID must be a valid number'
+      });
+    }
+
+    // Get order details
+    const order = db.prepare(`
+      SELECT
+        id,
+        order_number,
+        status,
+        shipping_address,
+        billing_address,
+        subtotal,
+        shipping_cost,
+        tax,
+        discount,
+        total,
+        payment_method,
+        payment_status,
+        shipping_method,
+        tracking_number,
+        notes,
+        created_at,
+        updated_at
+      FROM orders
+      WHERE id = ? AND user_id = ?
+    `).get(orderId, userId);
+
+    if (!order) {
+      return res.status(404).json({
+        error: 'Order not found',
+        message: 'Order not found or you do not have permission to view it'
+      });
+    }
+
+    // Get order items
+    const items = db.prepare(`
+      SELECT
+        oi.id,
+        oi.quantity,
+        oi.unit_price,
+        oi.total_price,
+        oi.product_snapshot,
+        p.name as current_product_name,
+        p.slug as current_product_slug,
+        pi.url as product_image
+      FROM order_items oi
+      LEFT JOIN products p ON oi.product_id = p.id
+      LEFT JOIN product_images pi ON oi.product_id = pi.product_id AND pi.is_primary = 1
+      WHERE oi.order_id = ?
+      ORDER BY oi.id
+    `).all(order.id);
+
+    // Set response headers for PDF download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="invoice-${order.order_number}.pdf"`);
+
+    // Create PDF document
+    const doc = new PDFDocument({
+      size: 'A4',
+      margin: 50
+    });
+
+    // Pipe PDF to response
+    doc.pipe(res);
+
+    // Add header
+    doc.font('Helvetica-Bold').fontSize(24).text('INVOICE', 0, 30, { align: 'center' });
+    doc.moveDown(0.5);
+
+    // Add company info
+    doc.font('Helvetica').fontSize(12).text('ShopFlow', 0, 70, { align: 'center' });
+    doc.text('123 E-Commerce Street', 0, 85, { align: 'center' });
+    doc.text('New York, NY 10001', 0, 100, { align: 'center' });
+    doc.text('Phone: (555) 123-4567', 0, 115, { align: 'center' });
+    doc.text('Email: support@shopflow.com', 0, 130, { align: 'center' });
+
+    // Add line separator
+    doc.moveDown(1);
+    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+    doc.moveDown(1);
+
+    // Add order information
+    doc.font('Helvetica-Bold').fontSize(14).text('Order Information', { underline: true });
+    doc.moveDown(0.5);
+
+    doc.font('Helvetica').fontSize(12);
+    doc.text(`Order Number: ${order.order_number}`);
+    doc.text(`Order Date: ${new Date(order.created_at).toLocaleDateString('en-US')}`);
+    doc.text(`Payment Method: ${order.payment_method}`);
+    doc.text(`Payment Status: ${order.payment_status}`);
+    doc.text(`Order Status: ${order.status}`);
+    if (order.tracking_number) {
+      doc.text(`Tracking Number: ${order.tracking_number}`);
+    }
+
+    doc.moveDown(1);
+
+    // Add addresses
+    const shippingAddress = JSON.parse(order.shipping_address);
+    const billingAddress = JSON.parse(order.billing_address);
+
+    doc.font('Helvetica-Bold').fontSize(14).text('Billing Address', { underline: true });
+    doc.moveDown(0.5);
+    doc.font('Helvetica').fontSize(12);
+    doc.text(`${billingAddress.first_name} ${billingAddress.last_name}`);
+    doc.text(billingAddress.street_address);
+    if (billingAddress.apartment) {
+      doc.text(billingAddress.apartment);
+    }
+    doc.text(`${billingAddress.city}, ${billingAddress.state} ${billingAddress.postal_code}`);
+    doc.text(billingAddress.country);
+    doc.text(billingAddress.phone);
+
+    doc.moveDown(1);
+
+    doc.font('Helvetica-Bold').fontSize(14).text('Shipping Address', { underline: true });
+    doc.moveDown(0.5);
+    doc.font('Helvetica').fontSize(12);
+    doc.text(`${shippingAddress.first_name} ${shippingAddress.last_name}`);
+    doc.text(shippingAddress.street_address);
+    if (shippingAddress.apartment) {
+      doc.text(shippingAddress.apartment);
+    }
+    doc.text(`${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.postal_code}`);
+    doc.text(shippingAddress.country);
+    doc.text(shippingAddress.phone);
+
+    doc.moveDown(1);
+
+    // Add items table header
+    doc.font('Helvetica-Bold').fontSize(12);
+    doc.text('ITEMS', 50, doc.y, { width: 450 });
+    doc.moveDown(1);
+
+    // Draw table header row
+    const tableY = doc.y;
+    doc.font('Helvetica-Bold').fontSize(10);
+    doc.text('Description', 50, tableY);
+    doc.text('Qty', 350, tableY);
+    doc.text('Unit Price', 400, tableY);
+    doc.text('Total', 480, tableY);
+    doc.moveTo(50, tableY + 15).lineTo(550, tableY + 15).stroke();
+
+    // Add items
+    doc.font('Helvetica').fontSize(10);
+    let currentY = tableY + 20;
+
+    items.forEach(item => {
+      const productSnapshot = JSON.parse(item.product_snapshot);
+      const name = productSnapshot.name || item.current_product_name;
+
+      // Add product name (may span multiple lines)
+      doc.text(name, 50, currentY, { width: 280 });
+
+      // Add quantity, unit price, and total on the same line
+      doc.text(item.quantity.toString(), 350, currentY);
+      doc.text(`$${item.unit_price.toFixed(2)}`, 400, currentY);
+      doc.text(`$${item.total_price.toFixed(2)}`, 480, currentY);
+
+      currentY += 20;
+
+      // Check if we need a new page
+      if (currentY > 750) {
+        doc.addPage();
+        currentY = 50;
+      }
+    });
+
+    // Add totals section
+    currentY += 20;
+    doc.moveTo(300, currentY).lineTo(550, currentY).stroke();
+    currentY += 10;
+
+    doc.font('Helvetica').fontSize(12);
+    doc.text(`Subtotal:`, 350, currentY);
+    doc.text(`$${order.subtotal.toFixed(2)}`, 480, currentY);
+
+    currentY += 20;
+    doc.text(`Shipping:`, 350, currentY);
+    doc.text(`$${order.shipping_cost.toFixed(2)}`, 480, currentY);
+
+    currentY += 20;
+    if (order.discount > 0) {
+      doc.text(`Discount:`, 350, currentY);
+      doc.text(`-$${order.discount.toFixed(2)}`, 480, currentY);
+      currentY += 20;
+    }
+
+    doc.text(`Tax:`, 350, currentY);
+    doc.text(`$${order.tax.toFixed(2)}`, 480, currentY);
+
+    currentY += 20;
+    doc.moveTo(300, currentY).lineTo(550, currentY).stroke();
+    currentY += 10;
+
+    doc.font('Helvetica-Bold').fontSize(14);
+    doc.text(`Total:`, 350, currentY);
+    doc.text(`$${order.total.toFixed(2)}`, 480, currentY);
+
+    // Add thank you message
+    currentY += 40;
+    if (currentY > 750) {
+      doc.addPage();
+      currentY = 50;
+    }
+
+    doc.font('Helvetica-Oblique').fontSize(12);
+    doc.text('Thank you for your purchase!', 0, currentY, { align: 'center' });
+    doc.text('If you have any questions about this invoice, please contact our support team.', 0, currentY + 15, { align: 'center' });
+
+    // Finalize PDF and end the stream
+    doc.end();
+
+  } catch (error) {
+    console.error('Error generating invoice:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to generate invoice'
     });
   }
 });

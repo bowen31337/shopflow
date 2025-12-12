@@ -161,6 +161,15 @@ export default function OrderDetail() {
     }
   };
 
+  const handleDownloadInvoice = async () => {
+    try {
+      // Open a new tab/window to trigger PDF download
+      window.open(`/api/orders/${id}/invoice`, '_blank');
+    } catch (error) {
+      alert('Failed to download invoice. Please try again.');
+    }
+  };
+
   if (!isAuthenticated()) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -285,6 +294,12 @@ export default function OrderDetail() {
               >
                 Cancel Order
               </button>
+              <button
+                onClick={handleDownloadInvoice}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                📄 Download Invoice
+              </button>
             </div>
           )}
 
@@ -295,6 +310,12 @@ export default function OrderDetail() {
                 className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
               >
                 🔄 Reorder
+              </button>
+              <button
+                onClick={handleDownloadInvoice}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                📄 Download Invoice
               </button>
             </div>
           )}

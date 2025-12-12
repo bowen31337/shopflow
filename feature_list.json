@@ -1268,7 +1268,7 @@
       "Step 4: Check that PDF download starts or opens",
       "Step 5: Confirm invoice contains order number, items, and totals"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1323,7 +1323,7 @@
       "Step 9: Confirm review appears in reviews list",
       "Step 10: Check database for review record"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

@@ -2,25 +2,111 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchProductBySlug } from '../api/products';
 import { addToWishlist, removeFromWishlist } from '../api/wishlist';
-import { fetchProductReviews } from '../api/reviews';
+import { fetchProductReviews, submitProductReview } from '../api/reviews';
 import useCartStore from '../stores/cartStore';
 import useRecentlyViewedStore from '../stores/recentlyViewedStore';
 import RecentlyViewedProducts from '../components/RecentlyViewedProducts';
 
+// TypeScript interfaces
+interface ProductImage {
+  id: number;
+  product_id: number;
+  url: string;
+  alt_text: string;
+  position: number;
+  is_primary: number;
+}
+
+interface ProductVariant {
+  id: number;
+  product_id: number;
+  name: string;
+  value: string;
+  price_adjustment: number;
+  stock_quantity: number;
+  sku: string;
+}
+
+interface Review {
+  id: number;
+  product_id: number;
+  user_id: number;
+  rating: number;
+  title: string | null;
+  content: string;
+  is_verified_purchase: number;
+  helpful_count: number;
+  created_at: string;
+  updated_at: string;
+  user_name: string;
+  user_email: string;
+  images: Array<{
+    id: number;
+    url: string;
+  }>;
+}
+
+interface Product {
+  id: number;
+  category_id: number;
+  brand_id: number;
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  compare_at_price: number | null;
+  sku: string;
+  barcode: string;
+  stock_quantity: number;
+  low_stock_threshold: number;
+  is_active: number;
+  is_featured: number;
+  weight: number | null;
+  dimensions: string | null;
+  created_at: string;
+  updated_at: string;
+  primary_image: string;
+  images: ProductImage[];
+  variants: ProductVariant[];
+  related_products: Array<{
+    id: number;
+    name: string;
+    slug: string;
+    price: number;
+    primary_image: string;
+  }>;
+  avg_rating: number;
+  review_count: number;
+}
+
+interface ReviewFormData {
+  rating: number;
+  title: string;
+  content: string;
+}
+
 export default function ProductDetail() {
   const { slug } = useParams();
-  const [product, setProduct] = useState(null);
-  const [reviews, setReviews] = useState([]);
-  const [reviewsLoading, setReviewsLoading] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [selectedVariants, setSelectedVariants] = useState({});
+  const [product, setProduct] = useState<Product | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<number>(0);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [isZoomed, setIsZoomed] = useState<boolean>(false);
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const { addToCart, isAuthenticated, isInWishlist, fetchWishlist } = useCartStore();
   const { addToRecentlyViewed } = useRecentlyViewedStore();
-  const [isWishlistLoading, setIsWishlistLoading] = useState(false);
+  const [isWishlistLoading, setIsWishlistLoading] = useState<boolean>(false);
+  const [isReviewFormOpen, setIsReviewFormOpen] = useState<boolean>(false);
+  const [reviewForm, setReviewForm] = useState<ReviewFormData>({
+    rating: 0,
+    title: '',
+    content: ''
+  });
+  const [reviewError, setReviewError] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
     loadProduct();
@@ -33,7 +119,7 @@ export default function ProductDetail() {
     }
   }, [isAuthenticated]);
 
-  const loadProduct = async () => {
+  const loadProduct = async (): Promise<void> => {
     try {
       setLoading(true);
       setError(null);
@@ -48,14 +134,14 @@ export default function ProductDetail() {
       if (data.product && data.product.id) {
         await loadReviews(data.product.id);
       }
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadReviews = async (productId) => {
+  const loadReviews = async (productId: number): Promise<void> => {
     try {
       setReviewsLoading(true);
       const reviewsData = await fetchProductReviews(productId);
@@ -68,14 +154,88 @@ export default function ProductDetail() {
     }
   };
 
-  const formatPrice = (price) => {
+  const formatPrice = (price: number): string => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(price);
   };
 
-  const handleWishlistToggle = async () => {
+  const renderStars = (rating: number, interactive: boolean = false, onRatingClick: ((rating: number) => void) | null = null): JSX.Element => {
+    return (
+      <div className="flex space-x-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => onRatingClick && onRatingClick(star)}
+            className={`text-2xl transition-colors ${
+              interactive
+                ? star <= rating
+                  ? 'text-yellow-400 hover:text-yellow-500'
+                  : 'text-gray-300 hover:text-yellow-400'
+                : star <= rating
+                ? 'text-yellow-400'
+                : 'text-gray-300'
+            }`}
+            disabled={!interactive}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  const handleReviewFormChange = (field: keyof ReviewFormData, value: string | number): void => {
+    setReviewForm(prev => ({ ...prev, [field]: value }));
+    if (reviewError) setReviewError('');
+  };
+
+  const handleSubmitReview = async (): Promise<void> => {
+    if (!product) return;
+
+    // Validate form
+    if (reviewForm.rating < 1 || reviewForm.rating > 5) {
+      setReviewError('Please select a rating (1-5 stars)');
+      return;
+    }
+
+    if (!reviewForm.content || reviewForm.content.trim().length < 10) {
+      setReviewError('Review content must be at least 10 characters long');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setReviewError('');
+
+    try {
+      const newReview = await submitProductReview(product.id, {
+        rating: reviewForm.rating,
+        title: reviewForm.title.trim(),
+        content: reviewForm.content.trim()
+      });
+
+      // Add the new review to the list
+      setReviews(prev => [newReview, ...prev]);
+      setIsReviewFormOpen(false);
+      setReviewForm({ rating: 0, title: '', content: '' });
+      alert('Thank you for your review!');
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      if (error?.response?.data?.message) {
+        setReviewError(error.response.data.message);
+      } else if (error?.message) {
+        setReviewError(error.message);
+      } else {
+        setReviewError('Failed to submit review. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleWishlistToggle = async (): Promise<void> => {
     if (!isAuthenticated) {
       // Redirect to login page for guest users with return URL
       const returnUrl = window.location.pathname;
@@ -100,7 +260,7 @@ export default function ProductDetail() {
 
       // Refresh wishlist data
       await fetchWishlist();
-    } catch (error) {
+    } catch (error: any) {
       alert(`Error updating wishlist: ${error.message}`);
     } finally {
       setIsWishlistLoading(false);
@@ -117,24 +277,11 @@ export default function ProductDetail() {
   }, {});
 
   // Get selected variant for add to cart
-  const getSelectedVariant = () => {
+  const getSelectedVariant = (): ProductVariant | undefined => {
     const variants = product?.variants || [];
     return variants.find(variant =>
       Object.keys(selectedVariants).every(key => selectedVariants[key] === variant.value)
     );
-  };
-
-  const renderStars = (rating) => {
-    if (!rating) rating = 0;
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <span key={i} className={i <= rating ? 'text-yellow-400' : 'text-gray-300'}>
-          ★
-        </span>
-      );
-    }
-    return stars;
   };
 
   if (loading) {
@@ -542,7 +689,7 @@ export default function ProductDetail() {
                   <p className="text-gray-600">No reviews yet. Be the first to review this product!</p>
                   {isAuthenticated ? (
                     <button
-                      onClick={() => {/* TODO: Implement review form */}}
+                      onClick={() => setIsReviewFormOpen(true)}
                       className="mt-4 px-4 py-2 bg-primary text-white rounded-full hover:bg-green-600 transition"
                     >
                       Write a Review
@@ -557,6 +704,94 @@ export default function ProductDetail() {
                 </div>
               )}
             </div>
+
+            {/* Review Form Modal */}
+            {isReviewFormOpen && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+                  <div className="flex items-center justify-between p-6 border-b">
+                    <h3 className="text-lg font-semibold">Write a Review</h3>
+                    <button
+                      onClick={() => {
+                        setIsReviewFormOpen(false);
+                        setReviewError('');
+                        setReviewForm({ rating: 0, title: '', content: '' });
+                      }}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="p-6 space-y-4">
+                    {reviewError && (
+                      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                        {reviewError}
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                      {renderStars(reviewForm.rating, true, (rating) => handleReviewFormChange('rating', rating))}
+                      <p className="text-sm text-gray-500 mt-1">Click stars to rate this product</p>
+                    </div>
+
+                    <div>
+                      <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                        Review Title (Optional)
+                      </label>
+                      <input
+                        id="title"
+                        type="text"
+                        value={reviewForm.title}
+                        onChange={(e) => handleReviewFormChange('title', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        placeholder="Enter a title for your review"
+                        maxLength={200}
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+                        Review Content *
+                      </label>
+                      <textarea
+                        id="content"
+                        rows={5}
+                        value={reviewForm.content}
+                        onChange={(e) => handleReviewFormChange('content', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        placeholder="Share your thoughts about this product..."
+                        maxLength={2000}
+                      />
+                      <p className="text-sm text-gray-500 mt-1">Minimum 10 characters</p>
+                    </div>
+
+                    <div className="flex gap-3 pt-4">
+                      <button
+                        onClick={() => {
+                          setIsReviewFormOpen(false);
+                          setReviewError('');
+                          setReviewForm({ rating: 0, title: '', content: '' });
+                        }}
+                        className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleSubmitReview}
+                        disabled={isSubmitting}
+                        className="flex-1 px-4 py-2 bg-primary text-white rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                      >
+                        {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Related Products */}
             {product.related_products && product.related_products.length > 0 && (

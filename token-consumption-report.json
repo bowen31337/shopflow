@@ -1,14 +1,14 @@
 {
   "project_name": "demo",
   "project_dir": "demo",
-  "report_generated": "2025-12-12T00:49:44.996345+00:00",
+  "report_generated": "2025-12-12T02:37:49.329250+00:00",
   "summary": {
-    "total_sessions": 69,
-    "total_api_calls": 69,
+    "total_sessions": 71,
+    "total_api_calls": 71,
     "total_input_tokens": 0,
     "total_output_tokens": 0,
     "total_tokens": 0,
-    "total_duration_seconds": 117027.33248853683,
+    "total_duration_seconds": 123499.46070051193,
     "estimated_cost_usd": 0.0
   },
   "endpoint_breakdown": {
@@ -20,7 +20,7 @@
       "estimated_cost_usd": 0.0
     },
     "https://vanchin.streamlake.ai/api/gateway/v1/endpoints/ep-fti2r8-1764583729284568237/claude-code-proxy": {
-      "calls": 18,
+      "calls": 20,
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
@@ -748,6 +748,34 @@
       "successful_calls": 1,
       "failed_calls": 0,
       "duration_seconds": 3378.762377023697
+    },
+    {
+      "session_id": 70,
+      "start_time": "2025-12-12T00:49:49.010494+00:00",
+      "end_time": "2025-12-12T02:08:48.094447+00:00",
+      "endpoint": "https://vanchin.streamlake.ai/api/gateway/v1/endpoints/ep-fti2r8-1764583729284568237/claude-code-proxy",
+      "model": "claude-sonnet-4-5-20250929",
+      "total_calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "successful_calls": 1,
+      "failed_calls": 0,
+      "duration_seconds": 4737.214668035507
+    },
+    {
+      "session_id": 71,
+      "start_time": "2025-12-12T02:08:52.109779+00:00",
+      "end_time": "2025-12-12T02:37:49.329069+00:00",
+      "endpoint": "https://vanchin.streamlake.ai/api/gateway/v1/endpoints/ep-fti2r8-1764583729284568237/claude-code-proxy",
+      "model": "claude-sonnet-4-5-20250929",
+      "total_calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "successful_calls": 1,
+      "failed_calls": 0,
+      "duration_seconds": 1734.9135439395905
     }
   ],
   "calls": [
@@ -1348,6 +1376,30 @@
       "total_tokens": 0,
       "session_id": 69,
       "duration_seconds": 3378.762377023697,
+      "success": true,
+      "error": null
+    },
+    {
+      "timestamp": "2025-12-12T02:08:48.073549+00:00",
+      "endpoint": "https://vanchin.streamlake.ai/api/gateway/v1/endpoints/ep-fti2r8-1764583729284568237/claude-code-proxy",
+      "model": "claude-sonnet-4-5-20250929",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "session_id": 70,
+      "duration_seconds": 4737.214668035507,
+      "success": true,
+      "error": null
+    },
+    {
+      "timestamp": "2025-12-12T02:37:49.308074+00:00",
+      "endpoint": "https://vanchin.streamlake.ai/api/gateway/v1/endpoints/ep-fti2r8-1764583729284568237/claude-code-proxy",
+      "model": "claude-sonnet-4-5-20250929",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "session_id": 71,
+      "duration_seconds": 1734.9135439395905,
       "success": true,
       "error": null
     }
