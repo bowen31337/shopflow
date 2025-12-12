@@ -1293,7 +1293,7 @@
       "Step 3: Check that message explains order cannot be cancelled",
       "Step 4: Confirm contact support option is available"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1336,7 +1336,7 @@
       "Step 5: Submit form",
       "Step 6: Check that review text validation error appears"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1364,7 +1364,7 @@
       "Step 5: Check that badge visually distinguishes verified reviews",
       "Step 6: Compare with non-verified reviews (no badge)"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
