@@ -741,7 +741,14 @@ export default function ProductDetail() {
                   <>
                     <div>
                       <span className="text-gray-500">Brand:</span>
-                      <p className="text-gray-900">{product.brand_name}</p>
+                      <p className="text-gray-900">
+                        <Link
+                          to={`/brands/${product.brand_slug}`}
+                          className="hover:text-primary transition-colors"
+                        >
+                          {product.brand_name}
+                        </Link>
+                      </p>
                     </div>
                     <div>
                       <span className="text-gray-500">Weight:</span>

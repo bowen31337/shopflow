@@ -135,7 +135,13 @@ export default function ProductCard({ product, view = 'grid' }) {
             {/* Brand */}
             {product.brand_name && (
               <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
-                {product.brand_name}
+                <Link
+                  to={`/brands/${product.brand_slug}`}
+                  className="hover:text-primary transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {product.brand_name}
+                </Link>
               </p>
             )}
 
@@ -273,7 +279,13 @@ export default function ProductCard({ product, view = 'grid' }) {
         {/* Brand */}
         {product.brand_name && (
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-            {product.brand_name}
+            <Link
+              to={`/brands/${product.brand_slug}`}
+              className="hover:text-primary transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {product.brand_name}
+            </Link>
           </p>
         )}
 

@@ -2,8 +2,43 @@ import express from 'express';
 import { authenticateToken } from '../middleware/auth.js';
 import db from '../database.js';
 import { body, param, validationResult } from 'express-validator';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 const router = express.Router();
+
+// Configure multer for image uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = 'uploads/reviews';
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  // Accept images only
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only images are allowed'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  }
+});
 
 // Helper function to handle validation errors
 const handleValidationErrors = (req, res) => {
@@ -20,13 +55,16 @@ const handleValidationErrors = (req, res) => {
 
 // GET /api/products/:id/reviews - Get reviews for a product
 router.get('/products/:id/reviews', [
-  param('id').isInt({ min: 1 })
+  param('id').isInt({ min: 1 }),
+  // Optional query parameters for filtering and sorting
+  // No additional validation for query params as they are optional
 ], (req, res) => {
   const validationError = handleValidationErrors(req, res);
   if (validationError) return validationError;
 
   try {
     const productId = parseInt(req.params.id);
+    const { rating, sort } = req.query;
 
     // Check if product exists
     const product = db.prepare('SELECT id, name FROM products WHERE id = ? AND is_active = 1').get(productId);
@@ -37,8 +75,39 @@ router.get('/products/:id/reviews', [
       });
     }
 
+    // Build WHERE clause for rating filter
+    let whereClause = 'WHERE r.product_id = ?';
+    let params = [productId];
+
+    if (rating && rating !== 'all') {
+      const ratingNum = parseInt(rating);
+      if (ratingNum >= 1 && ratingNum <= 5) {
+        whereClause += ' AND r.rating = ?';
+        params.push(ratingNum);
+      }
+    }
+
+    // Build ORDER BY clause for sorting
+    let orderByClause = 'ORDER BY r.created_at DESC'; // Default sort
+
+    if (sort) {
+      switch (sort) {
+        case 'date':
+          orderByClause = 'ORDER BY r.created_at DESC';
+          break;
+        case 'helpfulness':
+          orderByClause = 'ORDER BY r.helpful_count DESC, r.created_at DESC';
+          break;
+        case 'rating':
+          orderByClause = 'ORDER BY r.rating DESC, r.created_at DESC';
+          break;
+        default:
+          orderByClause = 'ORDER BY r.created_at DESC'; // Default fallback
+      }
+    }
+
     // Get reviews with user information
-    const reviews = db.prepare(`
+    const reviewsQuery = `
       SELECT
         r.id,
         r.product_id,
@@ -54,9 +123,11 @@ router.get('/products/:id/reviews', [
         u.email as user_email
       FROM reviews r
       JOIN users u ON r.user_id = u.id
-      WHERE r.product_id = ?
-      ORDER BY r.created_at DESC
-    `).all(productId);
+      ${whereClause}
+      ${orderByClause}
+    `;
+
+    const reviews = db.prepare(reviewsQuery).all(...params);
 
     // Get review images
     const reviewsWithImages = reviews.map(review => {
@@ -73,6 +144,38 @@ router.get('/products/:id/reviews', [
       };
     });
 
+    // Get average rating for the product
+    const avgRatingResult = db.prepare(`
+      SELECT AVG(rating) as average_rating, COUNT(*) as total_reviews
+      FROM reviews
+      WHERE product_id = ?
+    `).get(productId);
+
+    const averageRating = avgRatingResult.average_rating ? parseFloat(avgRatingResult.average_rating.toFixed(1)) : 0;
+    const totalReviews = avgRatingResult.total_reviews || 0;
+
+    // Get rating distribution
+    const ratingDistribution = db.prepare(`
+      SELECT rating, COUNT(*) as count
+      FROM reviews
+      WHERE product_id = ?
+      GROUP BY rating
+      ORDER BY rating DESC
+    `).all(productId);
+
+    // Create distribution object with all ratings (1-5)
+    const distribution = {
+      5: 0,
+      4: 0,
+      3: 0,
+      2: 0,
+      1: 0
+    };
+
+    ratingDistribution.forEach(item => {
+      distribution[item.rating] = item.count;
+    });
+
     res.json({
       success: true,
       product: {
@@ -80,7 +183,10 @@ router.get('/products/:id/reviews', [
         name: product.name
       },
       reviews: reviewsWithImages,
-      count: reviewsWithImages.length
+      count: reviewsWithImages.length,
+      average_rating: averageRating,
+      total_reviews: totalReviews,
+      rating_distribution: distribution
     });
   } catch (error) {
     console.error('Error fetching reviews:', error);
@@ -368,6 +474,95 @@ router.post('/reviews/:id/helpful', authenticateToken, [
     res.status(500).json({
       success: false,
       message: 'Failed to mark review as helpful'
+    });
+  }
+});
+
+// POST /api/reviews/:id/images - Upload images to a review
+router.post('/reviews/:id/images', authenticateToken, upload.array('images', 5), [
+  param('id').isInt({ min: 1 })
+], (req, res) => {
+  const validationError = handleValidationErrors(req, res);
+  if (validationError) return validationError;
+
+  try {
+    const reviewId = parseInt(req.params.id);
+    const userId = req.user.id;
+
+    // Check if review exists and belongs to user
+    const review = db.prepare('SELECT id, user_id FROM reviews WHERE id = ?').get(reviewId);
+    if (!review) {
+      return res.status(404).json({
+        success: false,
+        message: 'Review not found'
+      });
+    }
+
+    if (review.user_id !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: 'You can only upload images to your own reviews'
+      });
+    }
+
+    // Check if files were uploaded
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No images uploaded'
+      });
+    }
+
+    // Insert image records into database
+    const insertImage = db.prepare('INSERT INTO review_images (review_id, url) VALUES (?, ?)');
+    const transaction = db.transaction((images) => {
+      for (const file of images) {
+        insertImage.run(reviewId, `/uploads/reviews/${file.filename}`);
+      }
+    });
+
+    transaction(req.files);
+
+    // Get updated review with images
+    const updatedReview = db.prepare(`
+      SELECT
+        r.id,
+        r.product_id,
+        r.user_id,
+        r.rating,
+        r.title,
+        r.content,
+        r.is_verified_purchase,
+        r.helpful_count,
+        r.created_at,
+        r.updated_at,
+        u.name as user_name,
+        u.email as user_email
+      FROM reviews r
+      JOIN users u ON r.user_id = u.id
+      WHERE r.id = ?
+    `).get(reviewId);
+
+    const images = db.prepare(`
+      SELECT id, url
+      FROM review_images
+      WHERE review_id = ?
+      ORDER BY id
+    `).all(reviewId);
+
+    res.status(201).json({
+      success: true,
+      message: 'Images uploaded successfully',
+      review: {
+        ...updatedReview,
+        images
+      }
+    });
+  } catch (error) {
+    console.error('Error uploading review images:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to upload images'
     });
   }
 });
