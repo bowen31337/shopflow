@@ -1282,7 +1282,7 @@
       "Step 6: Verify order appears as cancelled in order history",
       "Step 7: Confirm database reflects cancelled status"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1351,7 +1351,7 @@
       "Step 7: Confirm review is posted with images",
       "Step 8: View review and verify images are displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1377,7 +1377,7 @@
       "Step 5: Click 'Not Helpful' on another review",
       "Step 6: Verify not helpful count increments"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1390,7 +1390,7 @@
       "Step 5: Confirm only 3-star reviews are shown",
       "Step 6: Clear filter and verify all reviews return"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1404,7 +1404,7 @@
       "Step 6: Select 'Highest Rating' sort option",
       "Step 7: Verify 5-star reviews appear first"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1416,7 +1416,7 @@
       "Step 4: Confirm total review count is displayed",
       "Step 5: Verify average rating on product listing card matches"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1428,7 +1428,7 @@
       "Step 4: Confirm visual bars represent proportions correctly",
       "Step 5: Click on a rating bar and verify reviews filter to that rating"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1443,7 +1443,7 @@
       "Step 7: Confirm review updates are displayed",
       "Step 8: Check database for updated review"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1457,7 +1457,7 @@
       "Step 6: Check that review is removed from list",
       "Step 7: Verify database record is deleted"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1468,7 +1468,7 @@
       "Step 3: Verify edit and delete buttons are not present on others' reviews",
       "Step 4: Confirm only your own reviews have edit/delete options"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",

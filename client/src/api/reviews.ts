@@ -26,18 +26,51 @@ interface Review {
   }>;
 }
 
+interface ReviewsResponse {
+  success: boolean;
+  product: {
+    id: number;
+    name: string;
+  };
+  reviews: Review[];
+  count: number;
+  average_rating: number;
+  total_reviews: number;
+  rating_distribution: {
+    1: number;
+    2: number;
+    3: number;
+    4: number;
+    5: number;
+  };
+}
+
 /**
  * Fetch reviews for a product
  * @param {number} productId - Product ID
- * @returns {Promise<Array>} Array of reviews
+ * @param {Object} options - Optional filtering and sorting options
+ * @param {number|string} options.rating - Filter by rating (1-5) or 'all'
+ * @param {string} options.sort - Sort by 'date', 'helpfulness', or 'rating'
+ * @returns {Promise<ReviewsResponse>} Reviews response with metadata
  */
-export async function fetchProductReviews(productId: number): Promise<Review[]> {
+export async function fetchProductReviews(productId: number, options?: { rating?: number | string; sort?: string }): Promise<ReviewsResponse> {
   try {
-    const response = await api.get(`/products/${productId}/reviews`);
-    return response.reviews || [];
+    const params = new URLSearchParams();
+    if (options?.rating && options.rating !== 'all') {
+      params.append('rating', String(options.rating));
+    }
+    if (options?.sort) {
+      params.append('sort', options.sort);
+    }
+
+    const queryString = params.toString();
+    const url = `/products/${productId}/reviews${queryString ? `?${queryString}` : ''}`;
+
+    const response = await api.get(url);
+    return response;
   } catch (error) {
     console.error('Error fetching product reviews:', error);
-    return [];
+    throw error;
   }
 }
 
