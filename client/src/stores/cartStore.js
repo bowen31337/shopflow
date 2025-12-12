@@ -156,6 +156,40 @@ const useCartStore = create(
         }
       },
 
+      // Reorder items from a previous order
+      reorderItems: async (orderId) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await fetch(`/api/orders/${orderId}/reorder`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to reorder items');
+          }
+
+          const data = await response.json();
+
+          set({
+            items: data.cart.items,
+            isLoading: false,
+            error: null
+          });
+
+          return data;
+        } catch (error) {
+          set({
+            error: error.message || 'Failed to reorder items',
+            isLoading: false
+          });
+          throw error;
+        }
+      },
+
       // Add item to cart
       addToCart: async (productId, quantity = 1, variantId = null) => {
         set({ isLoading: true, error: null });

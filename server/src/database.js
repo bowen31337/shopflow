@@ -181,6 +181,7 @@ export function initializeDatabase() {
       product_id INTEGER NOT NULL,
       variant_id INTEGER,
       quantity INTEGER NOT NULL DEFAULT 1,
+      unit_price REAL NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -257,6 +258,15 @@ export function initializeDatabase() {
     CREATE INDEX IF NOT EXISTS idx_reviews_product ON reviews(product_id);
     CREATE INDEX IF NOT EXISTS idx_wishlist_user ON wishlist(user_id);
   `);
+
+  // Add unit_price column to cart_items if it doesn't exist
+  try {
+    db.exec('ALTER TABLE cart_items ADD COLUMN unit_price REAL NOT NULL DEFAULT 0');
+    console.log('✓ Added unit_price column to cart_items table');
+  } catch (error) {
+    // Column might already exist
+    console.log('ℹ️ unit_price column already exists in cart_items table');
+  }
 
   console.log('✓ Database schema initialized successfully');
 }

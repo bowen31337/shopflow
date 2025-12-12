@@ -383,4 +383,142 @@ router.post('/:id/update-status', authenticateToken, (req, res) => {
   }
 });
 
+// POST /api/orders/:id/reorder - Reorder items from a previous order
+router.post('/:id/reorder', authenticateToken, (req, res) => {
+  try {
+    const userId = req.user.id;
+    const orderId = parseInt(req.params.id);
+
+    if (isNaN(orderId)) {
+      return res.status(400).json({
+        error: 'Invalid order ID',
+        message: 'Order ID must be a valid number'
+      });
+    }
+
+    // Get order to check if user has permission
+    const order = db.prepare(`
+      SELECT id, status, user_id
+      FROM orders
+      WHERE id = ? AND user_id = ?
+    `).get(orderId, userId);
+
+    if (!order) {
+      return res.status(404).json({
+        error: 'Order not found',
+        message: 'Order not found or you do not have permission to reorder it'
+      });
+    }
+
+    // Get order items
+    const items = db.prepare(`
+      SELECT
+        oi.product_id,
+        oi.quantity,
+        oi.product_snapshot
+      FROM order_items oi
+      WHERE oi.order_id = ?
+      ORDER BY oi.id
+    `).all(orderId);
+
+    if (items.length === 0) {
+      return res.status(400).json({
+        error: 'No items to reorder',
+        message: 'This order has no items to reorder'
+      });
+    }
+
+    // Check if products are still available and get current prices
+    const reorderItems = [];
+    let allProductsAvailable = true;
+
+    for (const item of items) {
+      const product = db.prepare(`
+        SELECT id, name, price, stock_quantity, is_active
+        FROM products
+        WHERE id = ? AND is_active = 1
+      `).get(item.product_id);
+
+      if (!product || product.stock_quantity < item.quantity) {
+        allProductsAvailable = false;
+        break;
+      }
+
+      reorderItems.push({
+        productId: product.id,
+        quantity: item.quantity,
+        unitPrice: product.price,
+        totalPrice: product.price * item.quantity,
+        name: product.name
+      });
+    }
+
+    if (!allProductsAvailable) {
+      return res.status(400).json({
+        error: 'Products unavailable',
+        message: 'Some products from this order are no longer available or have insufficient stock'
+      });
+    }
+
+    // Clear existing cart items for this user
+    db.prepare('DELETE FROM cart_items WHERE user_id = ?').run(userId);
+
+    // Add items to cart
+    const insertCartItem = db.prepare(`
+      INSERT INTO cart_items (user_id, product_id, quantity, unit_price)
+      VALUES (?, ?, ?, ?)
+    `);
+
+    for (const item of reorderItems) {
+      insertCartItem.run(userId, item.productId, item.quantity, item.unitPrice);
+    }
+
+    // Get updated cart
+    const cartItems = db.prepare(`
+      SELECT
+        ci.id,
+        ci.product_id,
+        ci.quantity,
+        ci.unit_price,
+        p.name,
+        p.slug,
+        p.stock_quantity,
+        pi.url as image
+      FROM cart_items ci
+      JOIN products p ON ci.product_id = p.id
+      LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+      WHERE ci.user_id = ?
+      ORDER BY ci.id
+    `).all(userId);
+
+    const cart = {
+      items: cartItems.map(item => ({
+        id: item.id,
+        productId: item.product_id,
+        name: item.name,
+        slug: item.slug,
+        quantity: item.quantity,
+        unitPrice: item.unit_price,
+        totalPrice: item.unit_price * item.quantity,
+        stockQuantity: item.stock_quantity,
+        image: item.image || '/images/placeholder.jpg'
+      })),
+      totalItems: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+      subtotal: cartItems.reduce((sum, item) => sum + (item.unit_price * item.quantity), 0)
+    };
+
+    res.json({
+      success: true,
+      message: 'Items added to cart successfully',
+      cart: cart
+    });
+  } catch (error) {
+    console.error('Error reordering:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to reorder items'
+    });
+  }
+});
+
 export default router;

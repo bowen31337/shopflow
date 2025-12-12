@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
+import useCartStore from '../stores/cartStore';
 import api from '../api';
 
 export default function OrderDetail() {
   const { id } = useParams();
   const { user, isAuthenticated } = useAuthStore();
+  const { reorderItems } = useCartStore();
+  const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -144,6 +147,20 @@ export default function OrderDetail() {
     }
   };
 
+  const handleReorder = async () => {
+    if (!window.confirm('Add all items from this order to your cart?')) {
+      return;
+    }
+
+    try {
+      await reorderItems(id);
+      alert('Items added to cart successfully!');
+      navigate('/cart');
+    } catch (error) {
+      alert(error.message || 'Failed to reorder items');
+    }
+  };
+
   if (!isAuthenticated()) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -257,10 +274,27 @@ export default function OrderDetail() {
           {['pending', 'processing'].includes(order.status) && (
             <div className="flex space-x-3 pt-4 border-t">
               <button
+                onClick={handleReorder}
+                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+              >
+                🔄 Reorder
+              </button>
+              <button
                 onClick={handleCancelOrder}
                 className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
               >
                 Cancel Order
+              </button>
+            </div>
+          )}
+
+          {['delivered', 'cancelled'].includes(order.status) && (
+            <div className="flex space-x-3 pt-4 border-t">
+              <button
+                onClick={handleReorder}
+                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+              >
+                🔄 Reorder
               </button>
             </div>
           )}

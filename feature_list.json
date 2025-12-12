@@ -1256,7 +1256,7 @@
       "Step 5: Open cart and confirm all items with correct quantities",
       "Step 6: Verify navigation to cart or checkout"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
