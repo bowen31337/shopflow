@@ -17,6 +17,8 @@ export default function Header() {
   const [previousPage, setPreviousPage] = useState(() => {
   return sessionStorage.getItem('previousPage') || '/products';
 });
+  const [categories, setCategories] = useState([]);
+  const [activeCategory, setActiveCategory] = useState(null);
   const { user, logout, isAuthenticated } = useAuthStore();
   const { fetchCart, fetchWishlist, getItemCount, getWishlistCount } = useCartStore();
   const location = useLocation();
@@ -34,6 +36,27 @@ export default function Header() {
       }
     }
   }, []);
+
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories');
+        const data = await response.json();
+        setCategories(data.categories || []);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Sync activeCategory with URL search params
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const categoryParam = params.get('category');
+    setActiveCategory(categoryParam || null);
+  }, [location.search]);
 
   // Save search history to localStorage
   const saveSearchHistory = (history) => {
@@ -485,7 +508,7 @@ export default function Header() {
             )}
 
             <div className="px-4 pt-4 space-y-2 border-t">
-              {isAuthenticated ? (
+              {isAuthenticated() ? (
                 <>
                   <Link
                     to="/account"
