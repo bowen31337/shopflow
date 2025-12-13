@@ -206,22 +206,34 @@ export async function seedDatabase() {
     });
     console.log('✓ Products seeded');
 
-    // Seed Product Images (placeholder URLs)
+    // Seed Product Images (using Lorem Picsum for placeholder images)
     const productImages = [
-      { product_id: 1, url: '/images/laptop-1.jpg', is_primary: 1, position: 0 },
-      { product_id: 1, url: '/images/laptop-2.jpg', is_primary: 0, position: 1 },
-      { product_id: 2, url: '/images/smartphone-1.jpg', is_primary: 1, position: 0 },
-      { product_id: 2, url: '/images/smartphone-2.jpg', is_primary: 0, position: 1 },
-      { product_id: 3, url: '/images/tshirt-1.jpg', is_primary: 1, position: 0 },
-      { product_id: 4, url: '/images/jeans-1.jpg', is_primary: 1, position: 0 },
-      { product_id: 5, url: '/images/dress-1.jpg', is_primary: 1, position: 0 },
-      { product_id: 6, url: '/images/pillow-1.jpg', is_primary: 1, position: 0 },
-      { product_id: 7, url: '/images/yogamat-1.jpg', is_primary: 1, position: 0 },
-      { product_id: 8, url: '/images/shoes-1.jpg', is_primary: 1, position: 0 },
-      { product_id: 9, url: '/images/mouse-1.jpg', is_primary: 1, position: 0 },
-      { product_id: 10, url: '/images/headphones-1.jpg', is_primary: 1, position: 0 },
-      { product_id: 11, url: '/images/cuttingboard-1.jpg', is_primary: 1, position: 0 },
-      { product_id: 12, url: '/images/bottle-1.jpg', is_primary: 1, position: 0 },
+      // Laptop - tech/office themed images
+      { product_id: 1, url: 'https://picsum.photos/seed/laptop1/400/400', is_primary: 1, position: 0 },
+      { product_id: 1, url: 'https://picsum.photos/seed/laptop2/400/400', is_primary: 0, position: 1 },
+      // Smartphone
+      { product_id: 2, url: 'https://picsum.photos/seed/phone1/400/400', is_primary: 1, position: 0 },
+      { product_id: 2, url: 'https://picsum.photos/seed/phone2/400/400', is_primary: 0, position: 1 },
+      // T-Shirt
+      { product_id: 3, url: 'https://picsum.photos/seed/tshirt/400/400', is_primary: 1, position: 0 },
+      // Jeans
+      { product_id: 4, url: 'https://picsum.photos/seed/jeans/400/400', is_primary: 1, position: 0 },
+      // Dress
+      { product_id: 5, url: 'https://picsum.photos/seed/dress/400/400', is_primary: 1, position: 0 },
+      // Pillow
+      { product_id: 6, url: 'https://picsum.photos/seed/pillow/400/400', is_primary: 1, position: 0 },
+      // Yoga Mat
+      { product_id: 7, url: 'https://picsum.photos/seed/yogamat/400/400', is_primary: 1, position: 0 },
+      // Running Shoes
+      { product_id: 8, url: 'https://picsum.photos/seed/shoes/400/400', is_primary: 1, position: 0 },
+      // Wireless Mouse
+      { product_id: 9, url: 'https://picsum.photos/seed/mouse/400/400', is_primary: 1, position: 0 },
+      // Headphones
+      { product_id: 10, url: 'https://picsum.photos/seed/headphones/400/400', is_primary: 1, position: 0 },
+      // Cutting Board
+      { product_id: 11, url: 'https://picsum.photos/seed/kitchen/400/400', is_primary: 1, position: 0 },
+      // Water Bottle
+      { product_id: 12, url: 'https://picsum.photos/seed/bottle/400/400', is_primary: 1, position: 0 },
     ];
 
     const insertImage = db.prepare('INSERT INTO product_images (product_id, url, is_primary, position) VALUES (?, ?, ?, ?)');

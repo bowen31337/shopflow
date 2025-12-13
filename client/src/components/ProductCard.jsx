@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { addToWishlist, removeFromWishlist } from '../api/wishlist';
 import useCartStore from '../stores/cartStore';
 import useAuthStore from '../stores/authStore';
@@ -10,6 +10,7 @@ export default function ProductCard({ product, view = 'grid' }) {
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
@@ -95,11 +96,11 @@ export default function ProductCard({ product, view = 'grid' }) {
           {/* Product Image */}
           <div className="relative w-32 h-32 md:w-40 md:h-40 flex-shrink-0 overflow-hidden bg-gray-100 rounded-lg">
             <img
-              src={product.primary_image || '/placeholder.jpg'}
+              src={product.primary_image || 'https://picsum.photos/seed/placeholder/400/400'}
               alt={product.name}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/400x400?text=Product+Image';
+                e.target.src = 'https://picsum.photos/seed/product/400/400';
               }}
             />
             {product.is_featured && (
@@ -167,13 +168,25 @@ export default function ProductCard({ product, view = 'grid' }) {
             {/* Brand */}
             {product.brand_name && (
               <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
-                <Link
-                  to={`/brands/${product.brand_slug}`}
-                  className="hover:text-primary transition-colors"
-                  onClick={(e) => e.stopPropagation()}
+                <span
+                  role="link"
+                  tabIndex={0}
+                  className="hover:text-primary transition-colors cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate(`/brands/${product.brand_slug}`);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      navigate(`/brands/${product.brand_slug}`);
+                    }
+                  }}
                 >
                   {product.brand_name}
-                </Link>
+                </span>
               </p>
             )}
 
@@ -253,12 +266,25 @@ export default function ProductCard({ product, view = 'grid' }) {
               >
                 {isLoading ? 'Adding...' : (product.stock_quantity === 0 ? 'Out of Stock' : 'Add to Cart')}
               </button>
-              <Link
-                to={`/products/${product.slug}`}
-                className="px-4 py-3 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 hover:border-gray-400 transition font-semibold"
+              <span
+                role="link"
+                tabIndex={0}
+                className="px-4 py-3 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 hover:border-gray-400 transition font-semibold cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigate(`/products/${product.slug}`);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate(`/products/${product.slug}`);
+                  }
+                }}
               >
                 View Details
-              </Link>
+              </span>
             </div>
           </div>
         </div>
@@ -280,13 +306,13 @@ export default function ProductCard({ product, view = 'grid' }) {
         {/* Product Image */}
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <img
-            src={product.primary_image || '/placeholder.jpg'}
+            src={product.primary_image || 'https://picsum.photos/seed/placeholder/400/400'}
             alt={product.name}
             className={`product-image w-full h-full object-cover transition-transform duration-500 ${
               isHovered ? 'scale-110' : 'scale-100'
             }`}
             onError={(e) => {
-              e.target.src = 'https://via.placeholder.com/400x400?text=Product+Image';
+              e.target.src = 'https://picsum.photos/seed/product/400/400';
             }}
           />
           {product.is_featured && (
@@ -354,13 +380,25 @@ export default function ProductCard({ product, view = 'grid' }) {
           {/* Brand */}
           {product.brand_name && (
             <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
-              <Link
-                to={`/brands/${product.brand_slug}`}
-                className="hover:text-primary transition-colors"
-                onClick={(e) => e.stopPropagation()}
+              <span
+                role="link"
+                tabIndex={0}
+                className="hover:text-primary transition-colors cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigate(`/brands/${product.brand_slug}`);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate(`/brands/${product.brand_slug}`);
+                  }
+                }}
               >
                 {product.brand_name}
-              </Link>
+              </span>
             </p>
           )}
 

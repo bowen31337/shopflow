@@ -185,7 +185,7 @@ export default function Wishlist() {
                   <div className="relative">
                     <Link to={`/products/${product.id}`}>
                       <img
-                        src={product.image_url || 'https://via.placeholder.com/300x300?text=No+Image'}
+                        src={product.image_url || 'https://picsum.photos/seed/wishlist/300/300'}
                         alt={product.alt_text || product.name}
                         className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
                       />

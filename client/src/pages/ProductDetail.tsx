@@ -503,14 +503,14 @@ export default function ProductDetail() {
           <div className="space-y-4">
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               <img
-                src={images[selectedImage] || '/placeholder.jpg'}
+                src={images[selectedImage] || 'https://picsum.photos/seed/placeholder/400/400'}
                 alt={product.name}
                 className={`w-full h-[500px] object-cover cursor-zoom-in transition-transform duration-300 ${isZoomed ? 'scale-125' : 'scale-100'}`}
                 onMouseEnter={() => setIsZoomed(true)}
                 onMouseLeave={() => setIsZoomed(false)}
                 onClick={() => setIsZoomed(!isZoomed)}
                 onError={(e) => {
-                  e.target.src = 'https://via.placeholder.com/600x600?text=Product+Image';
+                  e.target.src = 'https://picsum.photos/seed/product/600/600';
                 }}
               />
             </div>
@@ -529,7 +529,7 @@ export default function ProductDetail() {
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-20 object-cover"
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/100x100?text=Thumb';
+                        e.target.src = 'https://picsum.photos/seed/thumb/100/100';
                       }}
                     />
                   </button>
@@ -887,7 +887,7 @@ export default function ProductDetail() {
                               alt="Review"
                               className="w-16 h-16 object-cover rounded-lg border border-gray-200"
                               onError={(e) => {
-                                e.target.src = 'https://via.placeholder.com/64x64?text=Image';
+                                e.target.src = 'https://picsum.photos/seed/review/64/64';
                               }}
                             />
                           ))}
@@ -1062,7 +1062,7 @@ export default function ProductDetail() {
                   {product.related_products.map((relatedProduct) => (
                     <Link key={relatedProduct.id} to={`/products/${relatedProduct.slug}`} className="group">
                       <img
-                        src={relatedProduct.primary_image || '/placeholder.jpg'}
+                        src={relatedProduct.primary_image || 'https://picsum.photos/seed/placeholder/400/400'}
                         alt={relatedProduct.name}
                         className="w-full h-24 object-cover rounded-lg group-hover:scale-105 transition-transform"
                       />

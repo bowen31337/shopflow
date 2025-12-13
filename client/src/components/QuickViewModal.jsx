@@ -44,12 +44,12 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
       fetchProductBySlug(product.slug)
         .then((data) => {
           setFullProduct(data.product);
-          setSelectedImage(data.product.primary_image || '/placeholder.jpg');
+          setSelectedImage(data.product.primary_image || 'https://picsum.photos/seed/placeholder/400/400');
         })
         .catch((error) => {
           console.error('Failed to fetch product details:', error);
           setFullProduct(product);
-          setSelectedImage(product.primary_image || '/placeholder.jpg');
+          setSelectedImage(product.primary_image || 'https://picsum.photos/seed/placeholder/400/400');
         })
         .finally(() => {
           setIsLoading(false);
@@ -161,11 +161,11 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
               <div className="md:w-1/2 p-4 md:p-6">
                 <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
                   <img
-                    src={fullProduct?.primary_image || '/placeholder.jpg'}
+                    src={fullProduct?.primary_image || 'https://picsum.photos/seed/placeholder/400/400'}
                     alt={fullProduct?.name}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/600x600?text=Product+Image';
+                      e.target.src = 'https://picsum.photos/seed/product/600/600';
                     }}
                   />
                 </div>
@@ -173,17 +173,17 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
                 {/* Thumbnail gallery */}
                 <div className="mt-4 grid grid-cols-4 gap-2">
                   <button
-                    onClick={() => setSelectedImage(fullProduct?.primary_image || '/placeholder.jpg')}
+                    onClick={() => setSelectedImage(fullProduct?.primary_image || 'https://picsum.photos/seed/placeholder/400/400')}
                     className={`aspect-square overflow-hidden rounded bg-gray-100 ${
-                      selectedImage === (fullProduct?.primary_image || '/placeholder.jpg') ? 'ring-2 ring-primary' : ''
+                      selectedImage === (fullProduct?.primary_image || 'https://picsum.photos/seed/placeholder/400/400') ? 'ring-2 ring-primary' : ''
                     }`}
                   >
                     <img
-                      src={fullProduct?.primary_image || '/placeholder.jpg'}
+                      src={fullProduct?.primary_image || 'https://picsum.photos/seed/placeholder/400/400'}
                       alt={fullProduct?.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/150x150?text=Product+Image';
+                        e.target.src = 'https://picsum.photos/seed/thumb/150/150';
                       }}
                     />
                   </button>
@@ -201,7 +201,7 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
                           alt={`${fullProduct.name} ${index + 1}`}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/150x150?text=Product+Image';
+                            e.target.src = 'https://picsum.photos/seed/thumb/150/150';
                           }}
                         />
                       </button>

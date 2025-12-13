@@ -210,7 +210,7 @@ const Checkout = () => {
                 {items.map((item) => (
                   <div key={item.id} className="flex items-center space-x-4">
                     <img
-                      src={item.image || '/placeholder-product.jpg'}
+                      src={item.image || 'https://picsum.photos/seed/checkout/100/100'}
                       alt={item.name}
                       className="w-16 h-16 object-cover rounded-md"
                     />

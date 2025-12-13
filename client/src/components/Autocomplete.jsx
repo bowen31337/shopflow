@@ -107,7 +107,7 @@ const Autocomplete = ({ isVisible, query, onNavigate }) => {
               alt={product.name}
               className="w-8 h-8 object-cover rounded"
               onError={(e) => {
-                e.target.src = '/images/placeholder.jpg';
+                e.target.src = 'https://picsum.photos/seed/placeholder/400/400';
               }}
             />
             <div className="text-left">

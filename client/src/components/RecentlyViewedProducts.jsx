@@ -43,11 +43,11 @@ export default function RecentlyViewedProducts({ excludeProductId = null, classN
           >
             <div className="relative overflow-hidden rounded-lg bg-gray-50 aspect-square">
               <img
-                src={product.primary_image || '/images/placeholder.jpg'}
+                src={product.primary_image || 'https://picsum.photos/seed/placeholder/400/400'}
                 alt={product.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 onError={(e) => {
-                  e.target.src = '/images/placeholder.jpg';
+                  e.target.src = 'https://picsum.photos/seed/placeholder/400/400';
                 }}
               />
 
