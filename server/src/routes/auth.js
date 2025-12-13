@@ -45,24 +45,27 @@ router.post('/register',
       // Hash password
       const passwordHash = await bcrypt.hash(password, 10);
 
-      // Insert user
+      // Generate email verification token
+      const verifyToken = jwt.sign(
+        { email, type: 'verify_email' },
+        process.env.JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+
+      // Insert user with email_verified = 0
       const result = db.prepare(`
-        INSERT INTO users (email, password_hash, name, role)
-        VALUES (?, ?, ?, 'customer')
+        INSERT INTO users (email, password_hash, name, role, email_verified)
+        VALUES (?, ?, ?, 'customer', 0)
       `).run(email, passwordHash, name);
 
       const userId = result.lastInsertRowid;
 
-      // Generate tokens
-      const tokens = generateTokens(userId);
-
-      // Get user info
-      const user = db.prepare('SELECT id, email, name, role FROM users WHERE id = ?').get(userId);
+      // Log verification token (in production, send email)
+      console.log(`Email verification token for ${email}: ${verifyToken}`);
 
       res.status(201).json({
-        message: 'User registered successfully',
-        user,
-        ...tokens
+        message: 'User registered successfully. Please check your email for verification instructions.',
+        verificationToken: verifyToken
       });
     } catch (error) {
       console.error('Registration error:', error);
@@ -96,6 +99,14 @@ router.post('/login',
       const validPassword = await bcrypt.compare(password, user.password_hash);
       if (!validPassword) {
         return res.status(401).json({ error: 'Invalid email or password' });
+      }
+
+      // Check if email is verified
+      if (!user.email_verified) {
+        return res.status(403).json({
+          error: 'Please verify your email address before logging in',
+          needsVerification: true
+        });
       }
 
       // Generate tokens
@@ -266,5 +277,145 @@ router.post('/change-password',
 router.post('/logout', authenticateToken, (req, res) => {
   res.json({ message: 'Logout successful' });
 });
+
+// Google OAuth login (mock implementation)
+router.post('/google', async (req, res) => {
+  try {
+    // Mock Google OAuth - in a real app, this would redirect to Google's OAuth
+    // For demo purposes, we'll create or find a user and return tokens
+
+    const mockGoogleUser = {
+      email: 'demo.google@example.com',
+      name: 'Demo Google User',
+      picture: 'https://via.placeholder.com/150',
+      googleId: 'google_12345'
+    };
+
+    // Check if user already exists
+    let user = db.prepare('SELECT * FROM users WHERE email = ?').get(mockGoogleUser.email);
+
+    if (!user) {
+      // Create new user
+      const passwordHash = await bcrypt.hash('GoogleOAuth123!', 10);
+      const result = db.prepare(`
+        INSERT INTO users (email, password_hash, name, role, email_verified, avatar_url)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).run(
+        mockGoogleUser.email,
+        passwordHash,
+        mockGoogleUser.name,
+        'customer',
+        1, // email_verified
+        mockGoogleUser.picture
+      );
+
+      user = {
+        id: result.lastInsertRowid,
+        email: mockGoogleUser.email,
+        name: mockGoogleUser.name,
+        role: 'customer',
+        email_verified: 1,
+        avatar_url: mockGoogleUser.picture
+      };
+    }
+
+    // Generate tokens
+    const tokens = generateTokens(user.id);
+
+    // Remove password from response
+    const { password_hash, ...userWithoutPassword } = user;
+
+    res.json({
+      message: 'Google login successful',
+      user: userWithoutPassword,
+      ...tokens
+    });
+  } catch (error) {
+    console.error('Google login error:', error);
+    res.status(500).json({ error: 'Google login failed' });
+  }
+});
+
+// Verify email address
+router.post('/verify-email',
+  body('token').notEmpty(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { token } = req.body;
+
+      // Verify the token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      if (decoded.type !== 'verify_email') {
+        return res.status(400).json({ error: 'Invalid verification token' });
+      }
+
+      // Update user's email verification status
+      const result = db.prepare('UPDATE users SET email_verified = 1, updated_at = CURRENT_TIMESTAMP WHERE email = ?')
+        .run(decoded.email);
+
+      if (result.changes === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.json({ message: 'Email verified successfully' });
+    } catch (error) {
+      console.error('Email verification error:', error);
+      res.status(400).json({ error: 'Invalid or expired verification token' });
+    }
+  }
+);
+
+// Resend verification email
+router.post('/resend-verification',
+  body('email').isEmail().normalizeEmail(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { email } = req.body;
+
+      // Find user
+      const user = db.prepare('SELECT id, email_verified FROM users WHERE email = ?').get(email);
+
+      if (!user) {
+        // Always return success to prevent email enumeration
+        return res.json({
+          message: 'If an account exists with this email, a verification link has been sent'
+        });
+      }
+
+      if (user.email_verified) {
+        return res.status(400).json({ error: 'Email is already verified' });
+      }
+
+      // Generate new verification token
+      const verifyToken = jwt.sign(
+        { email, type: 'verify_email' },
+        process.env.JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+
+      // Log verification token (in production, send email)
+      console.log(`Resent email verification token for ${email}: ${verifyToken}`);
+
+      res.json({
+        message: 'Verification email sent successfully',
+        verificationToken: verifyToken
+      });
+    } catch (error) {
+      console.error('Resend verification error:', error);
+      res.status(500).json({ error: 'Failed to send verification email' });
+    }
+  }
+);
 
 export default router;

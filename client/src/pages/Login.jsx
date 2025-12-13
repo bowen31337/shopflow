@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
+import api from '../api';
 
 export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const login = useAuthStore((state) => state.login);
+  const googleLogin = useAuthStore((state) => state.googleLogin);
   const isLoading = useAuthStore((state) => state.isLoading);
   const error = useAuthStore((state) => state.error);
   const clearError = useAuthStore((state) => state.clearError);
@@ -32,6 +34,22 @@ export default function Login() {
     } catch (err) {
       // Error is handled by the store
       console.error('Login failed:', err);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await googleLogin();
+
+      // Redirect to return URL if provided, otherwise to homepage
+      const returnUrl = searchParams.get('return');
+      if (returnUrl) {
+        navigate(returnUrl);
+      } else {
+        navigate('/');
+      }
+    } catch (err) {
+      console.error('Google login failed:', err);
     }
   };
 
@@ -139,7 +157,8 @@ export default function Login() {
               <button
                 type="button"
                 className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                onClick={() => alert('Google login not implemented yet')}
+                onClick={handleGoogleLogin}
+                disabled={isLoading}
               >
                 <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
                   <path

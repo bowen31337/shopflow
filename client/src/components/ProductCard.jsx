@@ -3,9 +3,12 @@ import { Link } from 'react-router-dom';
 import { addToWishlist, removeFromWishlist } from '../api/wishlist';
 import useCartStore from '../stores/cartStore';
 import useAuthStore from '../stores/authStore';
+import HeartIcon from './HeartIcon';
+import QuickViewModal from './QuickViewModal';
 
 export default function ProductCard({ product, view = 'grid' }) {
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
@@ -117,16 +120,33 @@ export default function ProductCard({ product, view = 'grid' }) {
             <button
               onClick={handleWishlistToggle}
               disabled={isWishlistLoading}
-              className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="absolute bottom-2 right-12 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors disabled:opacity-50"
               title={isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
             >
               {isWishlistLoading ? (
                 <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
               ) : (
-                <span className={isInWishlist(product.id) ? 'text-red-500' : ''}>
-                  {isInWishlist(product.id) ? '❤️' : '🤍'}
-                </span>
+                <HeartIcon
+                  filled={isInWishlist(product.id)}
+                  className={isInWishlist(product.id) ? 'heart-filled' : 'heart-outline'}
+                />
               )}
+            </button>
+
+            {/* Quick View Button */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsQuickViewOpen(true);
+              }}
+              className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
+              title="Quick View"
+            >
+              <svg className="w-4 h-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
             </button>
           </div>
 
@@ -230,30 +250,30 @@ export default function ProductCard({ product, view = 'grid' }) {
   return (
     <Link
       to={`/products/${product.slug}`}
-      className="group bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100"
+      className="product-card group bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100"
     >
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden bg-gray-100">
         <img
           src={product.primary_image || '/placeholder.jpg'}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="product-image w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={(e) => {
             e.target.src = 'https://via.placeholder.com/400x400?text=Product+Image';
           }}
         />
         {product.is_featured && (
-          <span className="absolute top-2 left-2 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">
+          <span className="badge badge-primary absolute top-2 left-2 text-xs">
             Featured
           </span>
         )}
         {product.stock_quantity < product.low_stock_threshold && product.stock_quantity > 0 && (
-          <span className="absolute top-2 right-2 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+          <span className="badge badge-warning absolute top-2 right-2 text-xs">
             Low Stock
           </span>
         )}
         {product.stock_quantity === 0 && (
-          <span className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+          <span className="badge badge-danger absolute top-2 right-2 text-xs">
             Out of Stock
           </span>
         )}
@@ -261,16 +281,33 @@ export default function ProductCard({ product, view = 'grid' }) {
         <button
           onClick={handleWishlistToggle}
           disabled={isWishlistLoading}
-          className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors disabled:opacity-50"
+          className="absolute bottom-2 right-12 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors disabled:opacity-50"
           title={isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
         >
           {isWishlistLoading ? (
             <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
           ) : (
-            <span className={isInWishlist(product.id) ? 'text-red-500' : ''}>
-              {isInWishlist(product.id) ? '❤️' : '🤍'}
-            </span>
+            <HeartIcon
+              filled={isInWishlist(product.id)}
+              className={isInWishlist(product.id) ? 'heart-filled' : 'heart-outline'}
+            />
           )}
+        </button>
+
+        {/* Quick View Button */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsQuickViewOpen(true);
+          }}
+          className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
+          title="Quick View"
+        >
+          <svg className="w-4 h-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
         </button>
       </div>
 
@@ -290,14 +327,14 @@ export default function ProductCard({ product, view = 'grid' }) {
         )}
 
         {/* Product Name */}
-        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition">
+        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
           {product.name}
         </h3>
 
         {/* Rating */}
         {product.avg_rating > 0 && (
           <div className="flex items-center gap-1 mb-2">
-            <div className="flex text-sm">
+            <div className="stars flex text-sm">
               {renderStars(Math.round(product.avg_rating))}
             </div>
             <span className="text-xs text-gray-600">
@@ -320,7 +357,7 @@ export default function ProductCard({ product, view = 'grid' }) {
 
         {/* Add to Cart Button */}
         <button
-          className="mt-3 w-full bg-primary text-white py-2 rounded-full hover:bg-green-600 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="product-card-add-to-cart-btn mt-3 w-full btn btn-primary py-2 rounded-full disabled:bg-gray-300 disabled:cursor-not-allowed"
           disabled={product.stock_quantity === 0 || isLoading}
           onClick={handleAddToCart}
         >
@@ -328,5 +365,15 @@ export default function ProductCard({ product, view = 'grid' }) {
         </button>
       </div>
     </Link>
+
+    {isQuickViewOpen && (
+      <QuickViewModal
+        product={product}
+        isOpen={isQuickViewOpen}
+        onClose={() => setIsQuickViewOpen(false)}
+      />
+    )}
   );
 }
+
+export default ProductCard;

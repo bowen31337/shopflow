@@ -120,12 +120,12 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
+    <header className="header bg-white shadow-sm sticky top-0 z-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center shadow-md">
               <span className="text-white text-xl font-bold">SF</span>
             </div>
             <span className="text-2xl font-bold text-gray-900">ShopFlow</span>
@@ -143,11 +143,12 @@ export default function Header() {
                   onFocus={handleSearchFocus}
                   onBlur={handleSearchBlur}
                   placeholder="Search products..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="search-input w-full px-4 py-2 border-2 border-gray-200 rounded-full focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_rgba(34,197,94,0.1)] transition-all duration-200 bg-white"
                 />
                 <button
                   type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full hover:bg-green-600 transition"
+                  className="search-button absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white px-4 py-2 rounded-full hover:bg-primary-600 transition-all duration-200 font-semibold"
+                  aria-label="Search"
                 >
                   Search
                 </button>
@@ -172,8 +173,8 @@ export default function Header() {
 
             <Link
               to="/products"
-              className={`text-gray-700 hover:text-primary transition ${
-                location.pathname === '/products' ? 'font-semibold' : ''
+              className={`nav-link text-gray-700 transition-all duration-200 hover:text-primary hover:bg-primary-50 hover:-translate-y-1 rounded-md px-3 py-2 ${
+                location.pathname === '/products' ? 'text-primary font-semibold bg-primary-50' : ''
               }`}
             >
               Products
@@ -183,15 +184,15 @@ export default function Header() {
               <>
                 <Link
                   to="/profile"
-                  className={`text-gray-700 hover:text-primary transition ${
-                    location.pathname === '/profile' ? 'font-semibold' : ''
+                  className={`nav-link text-gray-700 transition-all duration-200 hover:text-primary hover:bg-primary-50 hover:-translate-y-1 rounded-md px-3 py-2 ${
+                    location.pathname === '/profile' ? 'text-primary font-semibold bg-primary-50' : ''
                   }`}
                 >
                   Profile
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-700 hover:text-primary transition"
+                  className="nav-link text-gray-700 transition-all duration-200 hover:text-primary hover:bg-primary-50 hover:-translate-y-1 rounded-md px-3 py-2"
                 >
                   Logout
                 </button>
@@ -200,16 +201,16 @@ export default function Header() {
               <>
                 <Link
                   to="/login"
-                  className={`text-gray-700 hover:text-primary transition ${
-                    location.pathname === '/login' ? 'font-semibold' : ''
+                  className={`nav-link text-gray-700 transition-all duration-200 hover:text-primary hover:bg-primary-50 hover:-translate-y-1 rounded-md px-3 py-2 ${
+                    location.pathname === '/login' ? 'text-primary font-semibold bg-primary-50' : ''
                   }`}
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className={`text-gray-700 hover:text-primary transition ${
-                    location.pathname === '/register' ? 'font-semibold' : ''
+                  className={`nav-link text-gray-700 transition-all duration-200 hover:text-primary hover:bg-primary-50 hover:-translate-y-1 rounded-md px-3 py-2 ${
+                    location.pathname === '/register' ? 'text-primary font-semibold bg-primary-50' : ''
                   }`}
                 >
                   Register
@@ -217,21 +218,21 @@ export default function Header() {
               </>
             )}
 
-            <Link to="/wishlist" className="relative text-gray-700 hover:text-primary transition">
+            <Link to="/wishlist" className="nav-link relative text-gray-700 transition-all duration-200 hover:text-primary hover:bg-primary-50 hover:-translate-y-1 rounded-md p-2">
               <span className="text-2xl">❤️</span>
-              <span className="bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center absolute -top-2 -right-2">
+              <span className="badge badge-primary absolute -top-1 -right-1 text-xs min-w-[20px] h-5 flex items-center justify-center">
                 {wishlistCount}
               </span>
             </Link>
 
-            <Link to="/cart" className="relative text-gray-700 hover:text-primary transition">
+            <Link to="/cart" className="nav-link relative text-gray-700 transition-all duration-200 hover:text-primary hover:bg-primary-50 hover:-translate-y-1 rounded-md p-2">
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="flex items-center gap-2"
                 aria-label="Open cart"
               >
                 <span className="text-2xl">🛒</span>
-                <span className="bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="badge badge-primary text-xs min-w-[20px] h-5 flex items-center justify-center">
                   {cartCount}
                 </span>
               </button>
@@ -240,10 +241,11 @@ export default function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-2 rounded-md hover:bg-gray-100 transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
@@ -251,7 +253,7 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t">
+          <div className="md:hidden py-4 border-t border-gray-200">
             <div className="mb-4">
               <form onSubmit={handleSearch}>
                 <input
@@ -262,7 +264,7 @@ export default function Header() {
                   onFocus={handleSearchFocus}
                   onBlur={handleSearchBlur}
                   placeholder="Search products..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="search-input w-full px-4 py-2 border-2 border-gray-200 rounded-full focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_rgba(34,197,94,0.1)] transition-all duration-200 bg-white"
                 />
               </form>
               <SearchHistory
@@ -276,7 +278,7 @@ export default function Header() {
               {/* Mobile Categories */}
               <div className="py-2">
                 <button
-                  className="text-gray-700 font-semibold text-left w-full flex items-center justify-between"
+                  className="text-gray-700 font-semibold text-left w-full flex items-center justify-between hover:text-primary transition-colors"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                 >
                   <span>Categories</span>
@@ -288,9 +290,9 @@ export default function Header() {
 
               <Link
                 to="/products"
-                className={`py-2 ${
+                className={`py-2 px-2 ${
                   location.pathname === '/products' ? 'text-primary font-semibold' : 'text-gray-700'
-                }`}
+                } hover:text-primary hover:bg-primary-50 rounded-md transition-colors`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Products
@@ -300,16 +302,16 @@ export default function Header() {
                 <>
                   <Link
                     to="/profile"
-                    className={`py-2 ${
+                    className={`py-2 px-2 ${
                       location.pathname === '/profile' ? 'text-primary font-semibold' : 'text-gray-700'
-                    }`}
+                    } hover:text-primary hover:bg-primary-50 rounded-md transition-colors`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Profile
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="text-gray-700 text-left py-2"
+                    className="text-gray-700 text-left py-2 px-2 hover:text-primary hover:bg-primary-50 rounded-md transition-colors"
                   >
                     Logout
                   </button>
@@ -318,18 +320,18 @@ export default function Header() {
                 <>
                   <Link
                     to="/login"
-                    className={`py-2 ${
+                    className={`py-2 px-2 ${
                       location.pathname === '/login' ? 'text-primary font-semibold' : 'text-gray-700'
-                    }`}
+                    } hover:text-primary hover:bg-primary-50 rounded-md transition-colors`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
-                    className={`py-2 ${
+                    className={`py-2 px-2 ${
                       location.pathname === '/register' ? 'text-primary font-semibold' : 'text-gray-700'
-                    }`}
+                    } hover:text-primary hover:bg-primary-50 rounded-md transition-colors`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Register
@@ -339,9 +341,9 @@ export default function Header() {
 
               <Link
                 to="/wishlist"
-                className={`py-2 ${
+                className={`py-2 px-2 ${
                   location.pathname === '/wishlist' ? 'text-primary font-semibold' : 'text-gray-700'
-                }`}
+                } hover:text-primary hover:bg-primary-50 rounded-md transition-colors`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 ❤️ Wishlist ({wishlistCount})
@@ -349,9 +351,9 @@ export default function Header() {
 
               <Link
                 to="/cart"
-                className={`py-2 ${
+                className={`py-2 px-2 ${
                   location.pathname === '/cart' ? 'text-primary font-semibold' : 'text-gray-700'
-                }`}
+                } hover:text-primary hover:bg-primary-50 rounded-md transition-colors`}
                 onClick={() => {
                   setIsMenuOpen(false);
                   setIsCartOpen(true);

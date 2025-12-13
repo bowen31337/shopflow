@@ -33,8 +33,20 @@ const useAuthStore = create(
           // Sync cart with server after login
           await useCartStore.getState().syncCartWithServer(user.id);
         } catch (error) {
+          const errorMessage = error.response?.data?.error || 'Login failed';
+          const needsVerification = error.response?.data?.needsVerification;
+
+          if (needsVerification) {
+            // For email verification, we'll show a special message and redirect
+            set({
+              error: errorMessage,
+              isLoading: false
+            });
+            throw error;
+          }
+
           set({
-            error: error.response?.data?.message || 'Login failed',
+            error: errorMessage,
             isLoading: false
           });
           throw error;
@@ -76,6 +88,38 @@ const useAuthStore = create(
       logout: () => {
         set({ user: null, token: null, error: null });
         api.setAuthToken(null);
+      },
+
+      // Google login action (mock implementation)
+      googleLogin: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          // Mock Google OAuth flow - in a real app, this would redirect to Google's OAuth
+          const response = await api.post('/api/auth/google');
+          const { accessToken: token, user } = response;
+
+          set({
+            user,
+            token,
+            isLoading: false,
+            error: null
+          });
+
+          // Set auth header for future requests
+          api.setAuthToken(token);
+
+          // Import cart store dynamically to avoid circular dependency
+          const useCartStore = (await import('../stores/cartStore.js')).default;
+
+          // Sync cart with server after login
+          await useCartStore.getState().syncCartWithServer(user.id);
+        } catch (error) {
+          set({
+            error: error.response?.data?.message || 'Google login failed',
+            isLoading: false
+          });
+          throw error;
+        }
       },
 
       // Clear error

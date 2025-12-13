@@ -5,7 +5,9 @@ import {
   DollarSign,
   ShoppingCart,
   Users,
-  TrendingUp
+  TrendingUp,
+  Package,
+  BarChart3
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -203,6 +205,27 @@ const AdminDashboard = () => {
               >
                 <div className="font-medium">Manage Categories</div>
                 <div className="text-sm opacity-90">Organize your product categories</div>
+              </button>
+              <button
+                onClick={() => navigate('/admin/inventory')}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-3 rounded-md text-left"
+              >
+                <div className="font-medium">Manage Inventory</div>
+                <div className="text-sm opacity-90">Track and manage product stock levels</div>
+              </button>
+              <button
+                onClick={() => navigate('/admin/analytics')}
+                className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-3 rounded-md text-left"
+              >
+                <div className="font-medium">View Analytics</div>
+                <div className="text-sm opacity-90">Sales metrics and performance insights</div>
+              </button>
+              <button
+                onClick={() => navigate('/admin/reports')}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-md text-left"
+              >
+                <div className="font-medium">Generate Reports</div>
+                <div className="text-sm opacity-90">Create detailed revenue and sales reports</div>
               </button>
             </div>
           </div>

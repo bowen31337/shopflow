@@ -1,9 +1,12 @@
-import api from './api';
+import api from './index.js';
 
 // Admin Dashboard API
 export const adminApi = {
   // Dashboard metrics
   getMetrics: () => api.get('/admin/metrics'),
+
+  // Analytics
+  getAnalytics: (params = {}) => api.get('/admin/analytics', { params }),
 
   // Products
   getProducts: (params = {}) => api.get('/admin/products', { params }),
@@ -23,6 +26,11 @@ export const adminApi = {
   createCategory: (data) => api.post('/admin/categories', data),
   updateCategory: (id, data) => api.put(`/admin/categories/${id}`, data),
   deleteCategory: (id) => api.delete(`/admin/categories/${id}`),
+
+  // Inventory tracking
+  getInventory: (params = {}) => api.get('/admin/inventory', { params }),
+  getProductInventory: (id) => api.get(`/admin/inventory/${id}`),
+  updateStock: (id, data) => api.put(`/admin/inventory/${id}`, data),
 
   // Promo codes
   getPromoCodes: () => api.get('/admin/promo-codes'),

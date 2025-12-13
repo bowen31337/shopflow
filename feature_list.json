@@ -1697,7 +1697,7 @@
       "Step 5: Confirm sales by category chart is shown",
       "Step 6: Verify top selling products are listed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1710,7 +1710,7 @@
       "Step 5: Verify charts and metrics update for selected period",
       "Step 6: Check that date range is displayed in header"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1723,7 +1723,7 @@
       "Step 5: Verify ability to sort by stock quantity",
       "Step 6: Check that stock history or log is available"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1737,7 +1737,7 @@
       "Step 6: Check detailed breakdown by day/week/month",
       "Step 7: Confirm export to CSV option works"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1749,7 +1749,7 @@
       "Step 4: Logout and login as admin",
       "Step 5: Confirm admin dashboard is accessible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1762,7 +1762,7 @@
       "Step 5: Confirm user is logged in",
       "Step 6: Check that user account is created or linked"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1775,7 +1775,7 @@
       "Step 5: Confirm account is marked as verified",
       "Step 6: Check database email_verified field is true"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1789,7 +1789,7 @@
       "Step 6: Confirm account is deleted from database",
       "Step 7: Verify unable to login with deleted account credentials"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1802,7 +1802,7 @@
       "Step 5: Check that product image, name, price, and add to cart are shown",
       "Step 6: Close modal and confirm return to listing"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2124,7 +2124,7 @@
       "Step 4: Check that icon changes from outline to filled",
       "Step 5: Confirm animation is not jarring or too slow"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",

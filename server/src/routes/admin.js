@@ -609,6 +609,231 @@ router.delete('/categories/:id', (req, res) => {
   }
 });
 
+// INVENTORY TRACKING ROUTES
+
+// GET /api/admin/inventory - Get inventory tracking data
+router.get('/inventory', (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    const search = req.query.search || '';
+    const lowStockOnly = req.query.lowStockOnly === 'true';
+    const outOfStockOnly = req.query.outOfStockOnly === 'true';
+
+    // Build filters
+    let whereClause = '';
+    let params = [];
+    let filterConditions = [];
+
+    if (search) {
+      filterConditions.push('(p.name LIKE ? OR p.sku LIKE ? OR b.name LIKE ?)');
+      params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+    }
+
+    if (lowStockOnly) {
+      filterConditions.push('p.stock_quantity <= p.low_stock_threshold AND p.stock_quantity > 0');
+    }
+
+    if (outOfStockOnly) {
+      filterConditions.push('p.stock_quantity = 0');
+    }
+
+    if (filterConditions.length > 0) {
+      whereClause = 'WHERE ' + filterConditions.join(' AND ');
+    }
+
+    // Get inventory data with pagination
+    const inventory = db.prepare(`
+      SELECT
+        p.id,
+        p.name,
+        p.sku,
+        p.stock_quantity,
+        p.low_stock_threshold,
+        p.is_active,
+        c.name as category_name,
+        b.name as brand_name,
+        p.price,
+        CASE
+          WHEN p.stock_quantity = 0 THEN 'out_of_stock'
+          WHEN p.stock_quantity <= p.low_stock_threshold THEN 'low_stock'
+          ELSE 'in_stock'
+        END as stock_status
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN brands b ON p.brand_id = b.id
+      ${whereClause}
+      ORDER BY
+        CASE
+          WHEN p.stock_quantity = 0 THEN 1
+          WHEN p.stock_quantity <= p.low_stock_threshold THEN 2
+          ELSE 3
+        END,
+        p.stock_quantity ASC
+      LIMIT ? OFFSET ?
+    `).all(...params, limit, offset);
+
+    // Get total count
+    const totalCount = db.prepare(`
+      SELECT COUNT(*) as count
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN brands b ON p.brand_id = b.id
+      ${whereClause}
+    `).get(...params).count;
+
+    // Get summary stats
+    const summary = db.prepare(`
+      SELECT
+        COUNT(*) as total_products,
+        SUM(CASE WHEN stock_quantity = 0 THEN 1 ELSE 0 END) as out_of_stock_count,
+        SUM(CASE WHEN stock_quantity <= low_stock_threshold AND stock_quantity > 0 THEN 1 ELSE 0 END) as low_stock_count,
+        SUM(CASE WHEN stock_quantity > low_stock_threshold THEN 1 ELSE 0 END) as in_stock_count
+      FROM products
+    `).get();
+
+    res.json({
+      inventory,
+      pagination: {
+        page,
+        limit,
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit)
+      },
+      summary
+    });
+  } catch (error) {
+    console.error('Error fetching inventory:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to fetch inventory data'
+    });
+  }
+});
+
+// GET /api/admin/inventory/:id - Get specific product inventory details
+router.get('/inventory/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Get product details
+    const product = db.prepare(`
+      SELECT
+        p.id,
+        p.name,
+        p.description,
+        p.sku,
+        p.stock_quantity,
+        p.low_stock_threshold,
+        p.is_active,
+        p.created_at,
+        p.updated_at,
+        c.name as category_name,
+        b.name as brand_name,
+        p.price
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN brands b ON p.brand_id = b.id
+      WHERE p.id = ?
+    `).get(id);
+
+    if (!product) {
+      return res.status(404).json({
+        error: 'Not found',
+        message: 'Product not found'
+      });
+    }
+
+    // Get recent orders for this product
+    const recentOrders = db.prepare(`
+      SELECT
+        o.order_number,
+        o.total,
+        oi.quantity,
+        o.status,
+        o.created_at
+      FROM order_items oi
+      JOIN orders o ON oi.order_id = o.id
+      WHERE oi.product_id = ? AND o.status != 'cancelled'
+      ORDER BY o.created_at DESC
+      LIMIT 10
+    `).all(id);
+
+    // Get stock movement history (simplified - would need additional table for full tracking)
+    const stockHistory = db.prepare(`
+      SELECT
+        'Order' as type,
+        oi.quantity as change,
+        oi.unit_price as price,
+        o.order_number as reference,
+        o.created_at as date
+      FROM order_items oi
+      JOIN orders o ON oi.order_id = o.id
+      WHERE oi.product_id = ? AND o.status != 'cancelled'
+      UNION ALL
+      SELECT
+        'Stock Update' as type,
+        p.stock_quantity as change,
+        p.price as price,
+        'Manual Update' as reference,
+        p.updated_at as date
+      FROM products p
+      WHERE p.id = ?
+      ORDER BY date DESC
+      LIMIT 20
+    `).all(id, id);
+
+    res.json({
+      product,
+      recentOrders,
+      stockHistory
+    });
+  } catch (error) {
+    console.error('Error fetching product inventory:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to fetch product inventory details'
+    });
+  }
+});
+
+// PUT /api/admin/inventory/:id - Update product stock
+router.put('/inventory/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { stock_quantity, low_stock_threshold } = req.body;
+
+    // Check if product exists
+    const existingProduct = db.prepare('SELECT id FROM products WHERE id = ?').get(id);
+    if (!existingProduct) {
+      return res.status(404).json({
+        error: 'Not found',
+        message: 'Product not found'
+      });
+    }
+
+    // Update stock
+    db.prepare(`
+      UPDATE products
+      SET stock_quantity = COALESCE(?, stock_quantity),
+          low_stock_threshold = COALESCE(?, low_stock_threshold),
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(stock_quantity, low_stock_threshold, id);
+
+    res.json({
+      message: 'Stock updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating stock:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to update stock'
+    });
+  }
+});
+
 // GET /api/admin/promo-codes - Get all promo codes
 router.get('/promo-codes', (req, res) => {
   try {
@@ -746,6 +971,130 @@ router.delete('/promo-codes/:id', (req, res) => {
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to delete promo code'
+    });
+  }
+});
+
+// GET /api/admin/analytics - Get sales analytics data
+router.get('/analytics', (req, res) => {
+  try {
+    const { period, startDate, endDate } = req.query;
+
+    let whereClause = 'WHERE status != \'cancelled\'';
+    let startDateParam = null;
+    let endDateParam = null;
+
+    // Handle custom date range
+    if (startDate && endDate) {
+      startDateParam = new Date(startDate);
+      endDateParam = new Date(endDate);
+
+      // Validate dates
+      if (isNaN(startDateParam) || isNaN(endDateParam)) {
+        return res.status(400).json({
+          error: 'Invalid date format',
+          message: 'Start and end dates must be valid ISO date strings'
+        });
+      }
+
+      if (startDateParam > endDateParam) {
+        return res.status(400).json({
+          error: 'Invalid date range',
+          message: 'Start date must be before end date'
+        });
+      }
+
+      whereClause += ` AND created_at >= datetime('${startDateParam.toISOString()}') AND created_at <= datetime('${endDateParam.toISOString()}')`;
+    } else {
+      // Handle preset periods
+      const periodValue = period || 'week';
+      const days = periodValue === 'day' ? 1 : periodValue === 'week' ? 7 : periodValue === 'month' ? 30 : 365;
+      whereClause += ` AND created_at >= datetime('now', '-${days} days')`;
+    }
+
+    // Get revenue by day
+    const revenueByDay = db.prepare(`
+      SELECT
+        DATE(created_at) as date,
+        SUM(total) as revenue,
+        COUNT(*) as orders
+      FROM orders
+      ${whereClause}
+      GROUP BY DATE(created_at)
+      ORDER BY date ASC
+    `).all();
+
+    // Get sales by category
+    const salesByCategory = db.prepare(`
+      SELECT
+        c.name as category,
+        SUM(oi.quantity) as units_sold,
+        SUM(oi.total_price) as revenue
+      FROM order_items oi
+      JOIN products p ON oi.product_id = p.id
+      JOIN categories c ON p.category_id = c.id
+      JOIN orders o ON oi.order_id = o.id
+      ${whereClause}
+      GROUP BY c.name
+      ORDER BY revenue DESC
+      LIMIT 10
+    `).all();
+
+    // Get top selling products
+    const topProducts = db.prepare(`
+      SELECT
+        p.name as product,
+        pi.url as image,
+        SUM(oi.quantity) as units_sold,
+        SUM(oi.total_price) as revenue
+      FROM order_items oi
+      JOIN products p ON oi.product_id = p.id
+      LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+      JOIN orders o ON oi.order_id = o.id
+      ${whereClause}
+      GROUP BY p.id
+      ORDER BY units_sold DESC
+      LIMIT 10
+    `).all();
+
+    // Get total revenue for period
+    const totalRevenue = db.prepare(`
+      SELECT COALESCE(SUM(total), 0) as revenue
+      FROM orders
+      ${whereClause}
+    `).get().revenue;
+
+    // Get total orders for period
+    const totalOrders = db.prepare(`
+      SELECT COUNT(*) as count
+      FROM orders
+      ${whereClause}
+    `).get().count;
+
+    // Get average order value
+    const avgOrderValue = totalOrders > 0 ? (totalRevenue / totalOrders) : 0;
+
+    // Build response data
+    const responseData = {
+      period: startDate && endDate ? 'custom' : (period || 'week'),
+      startDate: startDateParam ? startDateParam.toISOString().split('T')[0] : null,
+      endDate: endDateParam ? endDateParam.toISOString().split('T')[0] : null,
+      revenueByDay,
+      salesByCategory,
+      topProducts,
+      totals: {
+        totalRevenue,
+        totalOrders,
+        avgOrderValue
+      }
+    };
+
+    res.json(responseData);
+  } catch (error) {
+    console.error('Error fetching analytics:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to fetch analytics data'
     });
   }
 });

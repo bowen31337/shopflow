@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -31,16 +32,22 @@ export default function Register() {
     }
 
     try {
-      // TODO: Implement actual registration
-      console.log('Registration attempt:', formData);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await api.post('/auth/register', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      });
 
-      // For now, just navigate to home
-      navigate('/login');
-      alert('Registration successful! Please login. (Mock implementation)');
+      // Store verification token and redirect to verification page
+      if (response.verificationToken) {
+        navigate(`/verify-email/${response.verificationToken}`);
+      } else {
+        // Fallback: show verification message and redirect to login
+        alert('Registration successful! Please check your email for verification instructions.');
+        navigate('/login');
+      }
     } catch (err) {
-      setError(err.message || 'Registration failed');
+      setError(err.response?.data?.error || 'Registration failed');
     } finally {
       setLoading(false);
     }
