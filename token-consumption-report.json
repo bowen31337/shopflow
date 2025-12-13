@@ -1,14 +1,14 @@
 {
   "project_name": "demo",
   "project_dir": "demo",
-  "report_generated": "2025-12-13T06:32:57.339985+00:00",
+  "report_generated": "2025-12-13T06:39:41.763589+00:00",
   "summary": {
-    "total_sessions": 113,
-    "total_api_calls": 113,
+    "total_sessions": 114,
+    "total_api_calls": 114,
     "total_input_tokens": 0,
     "total_output_tokens": 0,
     "total_tokens": 0,
-    "total_duration_seconds": 204439.70601820946,
+    "total_duration_seconds": 204838.73724126816,
     "estimated_cost_usd": 0.0
   },
   "endpoint_breakdown": {
@@ -41,7 +41,7 @@
       "estimated_cost_usd": 0.0
     },
     "https://api.deepseek.com/anthropic": {
-      "calls": 19,
+      "calls": 20,
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
@@ -566,6 +566,20 @@
       "successful_calls": 1,
       "failed_calls": 0,
       "duration_seconds": 425.50443482398987
+    },
+    {
+      "session_id": 114,
+      "start_time": "2025-12-13T06:33:01.350872+00:00",
+      "end_time": "2025-12-13T06:39:41.763113+00:00",
+      "endpoint": "https://api.deepseek.com/anthropic",
+      "model": "deepseek-chat",
+      "total_calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "successful_calls": 1,
+      "failed_calls": 0,
+      "duration_seconds": 399.03122305870056
     }
   ],
   "calls": [
@@ -1010,6 +1024,18 @@
       "total_tokens": 0,
       "session_id": 113,
       "duration_seconds": 425.50443482398987,
+      "success": true,
+      "error": null
+    },
+    {
+      "timestamp": "2025-12-13T06:39:41.742967+00:00",
+      "endpoint": "https://api.deepseek.com/anthropic",
+      "model": "deepseek-chat",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "session_id": 114,
+      "duration_seconds": 399.03122305870056,
       "success": true,
       "error": null
     }
