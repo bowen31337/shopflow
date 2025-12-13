@@ -17,7 +17,7 @@
 <body>
     <div class="header">
         <h1>Core Functionality Verification Report</h1>
-        <p><strong>Date:</strong> 2025-12-13T03:14:32.542Z</p>
+        <p><strong>Date:</strong> 2025-12-13T05:55:06.834Z</p>
         <p class="summary">Overall Results: 0 passed, 5 failed</p>
     </div>
 
@@ -25,35 +25,35 @@
         <div class="test failed">
             <h3>1. User Registration & Login - ❌ FAILED</h3>
             <ul class="details">
-                <li>❌ Error during login test: net::ERR_CONNECTION_REFUSED at http://localhost:3002</li>
+                <li>Login page loaded successfully</li><li>❌ Missing login form elements</li>
             </ul>
         </div>
     
         <div class="test failed">
             <h3>2. Product Browsing - ❌ FAILED</h3>
             <ul class="details">
-                <li>❌ Error during product browsing test: net::ERR_CONNECTION_REFUSED at http://localhost:3002/products</li>
+                <li>Products page loaded successfully</li><li>Found 0 product elements</li><li>❌ No products found on the page</li>
             </ul>
         </div>
     
         <div class="test failed">
             <h3>3. Add to Cart - ❌ FAILED</h3>
             <ul class="details">
-                <li>❌ Error during add to cart test: net::ERR_CONNECTION_REFUSED at http://localhost:3002/products</li>
+                <li>❌ Error during add to cart test: SyntaxError: Failed to execute 'querySelector' on 'Document': '[data-testid="add-to-cart"], .add-to-cart, button:has-text("Add to Cart"), button:contains("Add to Cart")' is not a valid selector.</li>
             </ul>
         </div>
     
         <div class="test failed">
             <h3>4. Checkout Flow - ❌ FAILED</h3>
             <ul class="details">
-                <li>❌ Error during checkout flow test: net::ERR_CONNECTION_REFUSED at http://localhost:3002/cart</li>
+                <li>❌ No items in cart for checkout test</li>
             </ul>
         </div>
     
         <div class="test failed">
             <h3>5. Admin Dashboard - ❌ FAILED</h3>
             <ul class="details">
-                <li>❌ Error during admin dashboard test: net::ERR_CONNECTION_REFUSED at http://localhost:3002/admin</li>
+                <li>Admin page URL: http://localhost:3002/admin</li><li>⚠️  Admin dashboard elements not found (may require admin privileges)</li><li>❌ Error during admin dashboard test: SyntaxError: Failed to execute 'querySelector' on 'Document': '[data-testid="product-management"], .product-management, a:has-text("Products")' is not a valid selector.</li>
             </ul>
         </div>
     
