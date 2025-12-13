@@ -1,0 +1,71 @@
+{
+  "passed": 6,
+  "failed": 2,
+  "tests": [
+    {
+      "name": "Backend API Health Check",
+      "passed": true,
+      "details": [
+        "✅ Backend API is healthy",
+        "✅ Status: ok",
+        "✅ Message: ShopFlow API is running"
+      ]
+    },
+    {
+      "name": "Products API",
+      "passed": true,
+      "details": [
+        "✅ Found 12 products",
+        "✅ First product: TechPro Laptop Pro 15",
+        "✅ Product has price: $1299.99"
+      ]
+    },
+    {
+      "name": "Categories API",
+      "passed": true,
+      "details": [
+        "✅ Found 4 categories",
+        "✅ Categories: Electronics, Clothing, Home & Garden, Sports & Outdoors"
+      ]
+    },
+    {
+      "name": "Brands API",
+      "passed": true,
+      "details": [
+        "✅ Found 5 brands",
+        "✅ Brands: EcoLife, HomeComfort, SportFlex, StyleMax, TechPro"
+      ]
+    },
+    {
+      "name": "Authentication API",
+      "passed": false,
+      "details": [
+        "❌ Login successful but no token returned"
+      ]
+    },
+    {
+      "name": "Cart API",
+      "passed": true,
+      "details": [
+        "✅ Cart API is accessible",
+        "✅ Proper authentication required"
+      ]
+    },
+    {
+      "name": "Orders API",
+      "passed": true,
+      "details": [
+        "✅ Orders API is accessible",
+        "✅ Proper authentication required"
+      ]
+    },
+    {
+      "name": "Frontend Basic Load",
+      "passed": false,
+      "details": [
+        "❌ Failed to load frontend: page.waitForTimeout is not a function"
+      ]
+    }
+  ],
+  "timestamp": "2025-12-13T00:45:40.630Z"
+}

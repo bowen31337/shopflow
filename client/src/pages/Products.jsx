@@ -26,6 +26,9 @@ export default function Products() {
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef();
 
+  // Mobile filters modal
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
   // Filter states
   const [filters, setFilters] = useState({
     category: searchParams.get('category') || '',
@@ -481,6 +484,12 @@ export default function Products() {
                 <option value="created_desc">Newest</option>
                 <option value="rating_desc">Rating</option>
               </select>
+              <button
+                onClick={() => setIsFiltersOpen(true)}
+                className="ml-4 px-4 py-3 bg-primary text-white rounded-full hover:bg-green-600 transition"
+              >
+                📱 Filters
+              </button>
               <label className="flex items-center gap-2 text-sm text-gray-600 ml-4">
                 <input
                   type="checkbox"
@@ -704,6 +713,196 @@ export default function Products() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <RecentlyViewedProducts />
       </div>
+
+      {/* Mobile Filters Modal */}
+      {isFiltersOpen && (
+        <div className="md:hidden fixed inset-0 z-50">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black bg-opacity-50"
+            onClick={() => setIsFiltersOpen(false)}
+          />
+
+          {/* Modal */}
+          <div className="absolute right-0 top-0 h-full w-full max-w-xs bg-white shadow-xl transform transition-transform">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="text-lg font-semibold">Filters</h2>
+              <button
+                onClick={() => setIsFiltersOpen(false)}
+                className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+                aria-label="Close filters"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Filters Content */}
+            <div className="overflow-y-auto max-h-[calc(100%-4rem)] p-4 space-y-6">
+              {/* Category Filter */}
+              <div>
+                <h3 className="font-medium text-gray-900 mb-3">Category</h3>
+                <select
+                  value={filters.category}
+                  onChange={(e) => updateFilter('category', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">All Categories</option>
+                  {categories.filter(cat => !cat.parent_id).map((category) => (
+                    <option key={category.id} value={category.slug}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Subcategory Filter - only show if parent category is selected */}
+                {filters.category && (() => {
+                  const selectedCategory = categories.find(cat => cat.slug === filters.category);
+                  if (selectedCategory && selectedCategory.subcategories && selectedCategory.subcategories.length > 0) {
+                    return (
+                      <div className="mt-3">
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Subcategories</h4>
+                        <div className="space-y-2">
+                          {selectedCategory.subcategories.map((subcategory) => (
+                            <label key={subcategory.id} className="flex items-center">
+                              <input
+                                type="radio"
+                                name="subcategory"
+                                value={subcategory.slug}
+                                checked={filters.category === subcategory.slug}
+                                onChange={(e) => updateFilter('category', e.target.value)}
+                                className="mr-2 text-primary focus:ring-primary"
+                              />
+                              <span className="text-sm text-gray-600">
+                                {subcategory.name} ({subcategory.product_count || 0})
+                              </span>
+                            </label>
+                          ))}
+                          <label className="flex items-center">
+                            <input
+                              type="radio"
+                              name="subcategory"
+                              value={selectedCategory.slug}
+                              checked={filters.category === selectedCategory.slug}
+                              onChange={(e) => updateFilter('category', e.target.value)}
+                              className="mr-2 text-primary focus:ring-primary"
+                            />
+                            <span className="text-sm text-gray-600">
+                              All {selectedCategory.name}
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+              </div>
+
+              {/* Brand Filter */}
+              <div>
+                <h3 className="font-medium text-gray-900 mb-3">Brand</h3>
+                <select
+                  value={filters.brand}
+                  onChange={(e) => updateFilter('brand', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">All Brands</option>
+                  {brands.map((brand) => (
+                    <option key={brand.id} value={brand.slug}>
+                      {brand.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Price Range Filter */}
+              <div>
+                <h3 className="font-medium text-gray-900 mb-3">Price Range</h3>
+                <PriceRangeSlider
+                  minPrice={filters.minPrice ? parseInt(filters.minPrice) : priceLimits.min}
+                  maxPrice={filters.maxPrice ? parseInt(filters.maxPrice) : priceLimits.max}
+                  minLimit={priceLimits.min}
+                  maxLimit={priceLimits.max}
+                  onMinChange={(value) => updateFilter('minPrice', value.toString())}
+                  onMaxChange={(value) => updateFilter('maxPrice', value.toString())}
+                />
+              </div>
+
+              {/* Active Filters */}
+              <div>
+                <h3 className="font-medium text-gray-900 mb-3">Active Filters</h3>
+                <div className="flex flex-wrap gap-2">
+                  {filters.category && (
+                    <span className="px-3 py-1 bg-primary text-white text-sm rounded-full">
+                      {filters.category}
+                      <button onClick={() => updateFilter('category', '')} className="ml-2">×</button>
+                    </span>
+                  )}
+                  {filters.brand && (
+                    <span className="px-3 py-1 bg-primary text-white text-sm rounded-full">
+                      {filters.brand}
+                      <button onClick={() => updateFilter('brand', '')} className="ml-2">×</button>
+                    </span>
+                  )}
+                  {(filters.minPrice || filters.maxPrice) && (
+                    <span className="px-3 py-1 bg-primary text-white text-sm rounded-full">
+                      ${filters.minPrice || '0'} - ${filters.maxPrice || '∞'}
+                      <button onClick={() => { updateFilter('minPrice', ''); updateFilter('maxPrice', ''); }} className="ml-2">×</button>
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    setIsFiltersOpen(false);
+                    // Apply filters
+                    const newParams = new URLSearchParams(searchParams);
+                    if (filters.category) newParams.set('category', filters.category);
+                    if (filters.brand) newParams.set('brand', filters.brand);
+                    if (filters.minPrice) newParams.set('minPrice', filters.minPrice);
+                    if (filters.maxPrice) newParams.set('maxPrice', filters.maxPrice);
+                    newParams.delete('page'); // Reset to first page
+                    setSearchParams(newParams);
+                  }}
+                  className="w-full bg-primary text-white py-3 px-4 rounded-full hover:bg-green-600 transition"
+                >
+                  Apply Filters
+                </button>
+                <button
+                  onClick={() => {
+                    // Clear all filters
+                    const newParams = new URLSearchParams(searchParams);
+                    newParams.delete('category');
+                    newParams.delete('brand');
+                    newParams.delete('minPrice');
+                    newParams.delete('maxPrice');
+                    newParams.delete('page');
+                    setSearchParams(newParams);
+                    setFilters({
+                      category: '',
+                      brand: '',
+                      minPrice: '',
+                      maxPrice: '',
+                      search: filters.search,
+                      sort: filters.sort,
+                      view: filters.view,
+                      infiniteScroll: filters.infiniteScroll,
+                    });
+                  }}
+                  className="w-full bg-gray-200 text-gray-700 py-3 px-4 rounded-full hover:bg-gray-300 transition"
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

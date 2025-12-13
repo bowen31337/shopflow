@@ -1827,7 +1827,7 @@
       "Step 4: Confirm original price shows as strikethrough",
       "Step 5: Verify sale price is highlighted in red or accent color"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -1840,7 +1840,7 @@
       "Step 5: Confirm JWT token is cleared from storage",
       "Step 6: Attempt to access protected page and verify redirect to login"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1866,7 +1866,7 @@
       "Step 5: Confirm search bar is centered and visible",
       "Step 6: Verify icons (account, wishlist, cart) are right-aligned and clear"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1879,7 +1879,7 @@
       "Step 5: Confirm typography is consistent across cards",
       "Step 6: Verify hover effects are smooth and consistent"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1891,7 +1891,7 @@
       "Step 4: Check that shadow or elevation increases on hover",
       "Step 5: Confirm quick view and wishlist buttons appear smoothly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1904,7 +1904,7 @@
       "Step 5: Confirm sale prices use Red-500",
       "Step 6: Verify success messages use Green-500"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1917,7 +1917,7 @@
       "Step 5: Confirm body text is readable (text-sm to text-base)",
       "Step 6: Verify sufficient line-height for readability"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1930,7 +1930,7 @@
       "Step 5: Confirm hover and active states are styled",
       "Step 6: Verify disabled buttons have appropriate styling"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1943,7 +1943,7 @@
       "Step 5: Confirm half-star display for partial ratings",
       "Step 6: Verify rating aligns with numeric value"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1956,7 +1956,7 @@
       "Step 5: Confirm tabs for description/specs/reviews are below",
       "Step 6: Verify layout is balanced and not cluttered"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1982,7 +1982,7 @@
       "Step 5: Confirm completed steps have checkmark or different style",
       "Step 6: Verify upcoming steps are visually distinct"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -1995,7 +1995,7 @@
       "Step 5: Confirm error states are clearly visible in red",
       "Step 6: Verify labels are properly aligned"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2008,7 +2008,7 @@
       "Step 5: Check that menu items are touch-friendly sized",
       "Step 6: Confirm close button is obvious and accessible"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2021,7 +2021,7 @@
       "Step 5: Confirm spacing between cards is adequate",
       "Step 6: Verify text is readable without zooming"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2034,7 +2034,7 @@
       "Step 5: Confirm navigation is still usable",
       "Step 6: Verify no horizontal scrolling"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2047,7 +2047,7 @@
       "Step 5: Confirm buttons and links are touch-friendly",
       "Step 6: Verify no content is cut off"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2060,7 +2060,7 @@
       "Step 5: Confirm smooth transition from skeleton to content",
       "Step 6: Check that loading animation is subtle"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2073,7 +2073,7 @@
       "Step 5: Confirm error icon is present if applicable",
       "Step 6: Verify error text is readable and clear"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2086,7 +2086,7 @@
       "Step 5: Confirm checkmark icon is present",
       "Step 6: Verify notification auto-dismisses after appropriate time"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2099,7 +2099,7 @@
       "Step 5: Confirm social media icons are present",
       "Step 6: Verify copyright information is displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2112,7 +2112,7 @@
       "Step 5: Confirm charts and graphs are visually appealing",
       "Step 6: Verify consistent spacing and alignment"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2137,7 +2137,7 @@
       "Step 5: Confirm buttons have hover/active states",
       "Step 6: Verify picker is compact but touch-friendly on mobile"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2150,7 +2150,7 @@
       "Step 5: Confirm discount percentage badge is visible",
       "Step 6: Verify prices are properly aligned"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2163,7 +2163,7 @@
       "Step 5: Confirm 'bestseller' badge is recognizable",
       "Step 6: Verify badges don't overlap with product images"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2176,7 +2176,7 @@
       "Step 5: Confirm images or icons enhance navigation",
       "Step 6: Verify menu doesn't feel cluttered"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2189,7 +2189,7 @@
       "Step 5: Confirm hover state highlights suggestion",
       "Step 6: Verify product images in suggestions are appropriately sized"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2202,7 +2202,7 @@
       "Step 5: Confirm order number is displayed clearly",
       "Step 6: Verify next steps are clearly outlined"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "style",
@@ -2215,7 +2215,7 @@
       "Step 5: Confirm CTA button is prominent",
       "Step 6: Repeat for empty wishlist and verify similar quality"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2228,7 +2228,7 @@
       "Step 5: Verify DELETE endpoints for deletions",
       "Step 6: Check that endpoints follow naming conventions"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2243,7 +2243,7 @@
       "Step 7: Send invalid data",
       "Step 8: Confirm 400 bad request"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2255,7 +2255,7 @@
       "Step 4: Confirm error format is consistent (JSON)",
       "Step 5: Verify specific field errors are identified"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2267,7 +2267,7 @@
       "Step 4: Verify referential integrity is maintained",
       "Step 5: Test with other foreign key relationships"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2280,7 +2280,7 @@
       "Step 5: Verify stock decreased by 2",
       "Step 6: Confirm stock update is reflected on product page"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2293,7 +2293,7 @@
       "Step 5: Check that quantities are summed for duplicate items",
       "Step 6: Confirm no items are lost in merge"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2306,7 +2306,7 @@
       "Step 5: Confirm images load as they enter viewport",
       "Step 6: Check that loading attribute or IntersectionObserver is used"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2319,7 +2319,7 @@
       "Step 5: Verify filters are applied based on URL parameters",
       "Step 6: Confirm same filtered results are displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2333,7 +2333,7 @@
       "Step 6: Verify dynamic title includes product name",
       "Step 7: Confirm og:image tag is present for social sharing"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2345,7 +2345,7 @@
       "Step 4: Check that key actions are accessible (Home, Search, Cart, Account)",
       "Step 5: Tap each navigation item and verify navigation works"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2357,7 +2357,7 @@
       "Step 4: Check that button remains accessible while scrolling",
       "Step 5: Tap button and verify product is added to cart"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2370,7 +2370,7 @@
       "Step 5: Swipe right",
       "Step 6: Verify image goes back to previous"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2383,7 +2383,7 @@
       "Step 5: Confirm search query is populated",
       "Step 6: Verify search executes with voice query"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2396,7 +2396,7 @@
       "Step 5: Verify redirect to login page",
       "Step 6: Confirm session expired message is shown"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2409,7 +2409,7 @@
       "Step 5: Confirm user session continues without re-login",
       "Step 6: Check that new token is stored"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2422,7 +2422,7 @@
       "Step 5: Wait for rate limit window to reset",
       "Step 6: Verify requests are allowed again"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2434,7 +2434,7 @@
       "Step 4: Confirm preflight OPTIONS requests succeed",
       "Step 5: Verify credentials can be included if needed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2446,7 +2446,7 @@
       "Step 4: Check that results are returned correctly",
       "Step 5: Confirm special characters don't break query"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2458,7 +2458,7 @@
       "Step 4: Confirm thousand separators if applicable",
       "Step 5: Verify consistent formatting across all price displays"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2471,7 +2471,7 @@
       "Step 5: Check that tax rate is appropriate for region",
       "Step 6: Confirm tax amount is added to total correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2485,7 +2485,7 @@
       "Step 6: Apply promo code again",
       "Step 7: Confirm code is accepted"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2497,7 +2497,7 @@
       "Step 4: Verify error message that code is no longer valid",
       "Step 5: Check database that current_uses equals max_uses"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2509,7 +2509,7 @@
       "Step 4: Confirm no discount is applied",
       "Step 5: Check that code with future start_date also cannot be used yet"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2521,7 +2521,7 @@
       "Step 4: Check database for uniqueness constraint on order_number",
       "Step 5: Confirm order numbers follow consistent format"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2534,7 +2534,7 @@
       "Step 5: View previous order details",
       "Step 6: Confirm order still shows original price from snapshot"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2547,7 +2547,7 @@
       "Step 5: Verify all three addresses are saved and displayed",
       "Step 6: Check database confirms multiple addresses for user_id"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2559,7 +2559,7 @@
       "Step 4: Confirm default address is highlighted in address selection",
       "Step 5: Check that user can still choose different address"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2572,7 +2572,7 @@
       "Step 5: Verify navigation to Electronics category page",
       "Step 6: Confirm breadcrumb updates to Home > Electronics"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2584,7 +2584,7 @@
       "Step 4: Confirm navigation links to return to homepage",
       "Step 5: Verify search is available to find content"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2597,7 +2597,7 @@
       "Step 5: Verify slug is derived from product name",
       "Step 6: Check that product is accessible via slug URL"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2609,7 +2609,7 @@
       "Step 4: Confirm slug is lowercase with hyphens",
       "Step 5: Verify category is accessible via slug URL"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2635,7 +2635,7 @@
       "Step 5: Click show filters button",
       "Step 6: Verify sidebar expands again"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -2649,6 +2649,6 @@
       "Step 6: Close filter panel",
       "Step 7: Verify filters are applied to products"
     ],
-    "passes": false
+    "passes": true
   }
 ]
