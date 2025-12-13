@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useCartStore from '../stores/cartStore';
 import useAuthStore from '../stores/authStore';
 
 export default function Cart() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { user } = useAuthStore();
   const {
     items,
@@ -22,19 +21,14 @@ export default function Cart() {
 
   const [promoCodeInput, setPromoCodeInput] = useState('');
   const [promoCodeError, setPromoCodeError] = useState('');
-  const [previousPage, setPreviousPage] = useState('/products');
+  // Initialize from sessionStorage (lazy initialization)
+  const [previousPage] = useState(() => sessionStorage.getItem('previousPage') || '/products');
 
   useEffect(() => {
     if (user) {
       fetchCart();
     }
-
-    // Get the previous page from sessionStorage
-    const savedPreviousPage = sessionStorage.getItem('previousPage');
-    if (savedPreviousPage) {
-      setPreviousPage(savedPreviousPage);
-    }
-  }, [user]);
+  }, [user, fetchCart]);
 
   const handleQuantityChange = async (itemId, newQuantity) => {
     if (newQuantity < 1 || newQuantity > 99) return;

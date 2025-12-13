@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 import useCartStore from '../stores/cartStore';
@@ -6,32 +6,34 @@ import api from '../api';
 
 export default function OrderDetail() {
   const { id } = useParams();
-  const { user, isAuthenticated } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const { reorderItems } = useCartStore();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (isAuthenticated() && id) {
-      fetchOrderDetails();
-    }
-  }, [isAuthenticated(), id]);
+  const isUserAuthenticated = isAuthenticated();
 
-  const fetchOrderDetails = async () => {
+  const fetchOrderDetails = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
       const response = await api.get(`/api/orders/${id}`);
       setOrder(response.data.order);
-    } catch (error) {
-      console.error('Error fetching order details:', error);
-      setError(error.response?.data?.message || 'Failed to fetch order details');
+    } catch (err) {
+      console.error('Error fetching order details:', err);
+      setError(err.response?.data?.message || 'Failed to fetch order details');
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (isUserAuthenticated && id) {
+      fetchOrderDetails();
+    }
+  }, [isUserAuthenticated, id, fetchOrderDetails]);
 
   const getStatusBadge = (status) => {
     const statusStyles = {
@@ -78,9 +80,6 @@ export default function OrderDetail() {
             const isCompleted = index < currentIndex;
             const isCurrent = index === currentIndex;
             const isCancelled = status === 'cancelled';
-
-            // For cancelled orders, show all steps as incomplete but with red styling
-            const shouldShowRed = isCancelled || (status === 'cancelled' && index <= currentIndex);
 
             return (
               <div key={step.key} className="flex items-center">
@@ -162,12 +161,8 @@ export default function OrderDetail() {
   };
 
   const handleDownloadInvoice = async () => {
-    try {
-      // Open a new tab/window to trigger PDF download
-      window.open(`/api/orders/${id}/invoice`, '_blank');
-    } catch (error) {
-      alert('Failed to download invoice. Please try again.');
-    }
+    // Open a new tab/window to trigger PDF download
+    window.open(`/api/orders/${id}/invoice`, '_blank');
   };
 
   if (!isAuthenticated()) {

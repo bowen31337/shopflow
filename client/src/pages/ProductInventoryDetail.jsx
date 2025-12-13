@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { adminApi } from '../api/admin';
-import { ArrowLeft, Box, TrendingDown, AlertTriangle, DollarSign, Calendar, Package } from 'lucide-react';
+import { ArrowLeft, Box, TrendingDown, AlertTriangle, Calendar, Package } from 'lucide-react';
 
 const ProductInventoryDetail = () => {
   const { id } = useParams();
@@ -13,11 +13,7 @@ const ProductInventoryDetail = () => {
   const [stockQuantity, setStockQuantity] = useState('');
   const [lowStockThreshold, setLowStockThreshold] = useState('');
 
-  useEffect(() => {
-    fetchProductInventory();
-  }, [id]);
-
-  const fetchProductInventory = async () => {
+  const fetchProductInventory = useCallback(async () => {
     setLoading(true);
     try {
       const response = await adminApi.getProductInventory(id);
@@ -31,7 +27,11 @@ const ProductInventoryDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchProductInventory();
+  }, [fetchProductInventory]);
 
   const handleStockUpdate = async () => {
     try {

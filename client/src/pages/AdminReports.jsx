@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { adminApi } from '../api/admin';
-import { Download, Calendar, Clock, TrendingUp, DollarSign, BarChart3, FileText } from 'lucide-react';
+import { Download, Calendar, Clock, TrendingUp, DollarSign, BarChart3 } from 'lucide-react';
 
 const AdminReports = () => {
-  const [activeReport, setActiveReport] = useState('revenue');
   const [loading, setLoading] = useState(false);
-  const [reportData, setReportData] = useState(null);
 
   // Date range state
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [period, setPeriod] = useState('week');
 
   // Report data
   const [revenueData, setRevenueData] = useState(null);
@@ -24,7 +21,6 @@ const AdminReports = () => {
         const params = { period: 'week' };
         const data = await adminApi.getAnalytics(params);
         setRevenueData(data);
-        setReportData(data);
         setDetailedData(data.revenueByDay || []);
       } catch (error) {
         console.error('Failed to fetch initial report data:', error);
@@ -66,7 +62,6 @@ const AdminReports = () => {
       const data = await adminApi.getAnalytics(params);
 
       setRevenueData(data);
-      setReportData(data);
       setDetailedData(data.revenueByDay || []);
     } catch (error) {
       console.error('Failed to fetch report data:', error);

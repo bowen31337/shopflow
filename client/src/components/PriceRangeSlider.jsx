@@ -1,27 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 const PriceRangeSlider = ({ minPrice, maxPrice, onMinChange, onMaxChange, minLimit = 0, maxLimit = 1000 }) => {
-  const [localMin, setLocalMin] = useState(minPrice || minLimit);
-  const [localMax, setLocalMax] = useState(maxPrice || maxLimit);
-
-  // Sync with external values
-  useEffect(() => {
-    setLocalMin(minPrice || minLimit);
-  }, [minPrice, minLimit]);
-
-  useEffect(() => {
-    setLocalMax(maxPrice || maxLimit);
-  }, [maxPrice, maxLimit]);
+  // Use props directly as the source of truth - no need for local state sync
+  const localMin = minPrice ?? minLimit;
+  const localMax = maxPrice ?? maxLimit;
 
   const handleMinChange = (value) => {
     const newMin = Math.min(parseInt(value), localMax);
-    setLocalMin(newMin);
     onMinChange(newMin);
   };
 
   const handleMaxChange = (value) => {
     const newMax = Math.max(parseInt(value), localMin);
-    setLocalMax(newMax);
     onMaxChange(newMax);
   };
 

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../api/admin';
-import { Search, Filter, Eye, Edit, AlertTriangle, Box, TrendingDown } from 'lucide-react';
+import { Search, Eye, Edit, AlertTriangle, Box, TrendingDown } from 'lucide-react';
 
 const AdminInventory = () => {
   const navigate = useNavigate();
@@ -22,11 +22,7 @@ const AdminInventory = () => {
     in_stock_count: 0
   });
 
-  useEffect(() => {
-    fetchInventory();
-  }, [pagination.page, search, lowStockOnly, outOfStockOnly]);
-
-  const fetchInventory = async (page = pagination.page) => {
+  const fetchInventory = useCallback(async (page = pagination.page) => {
     setLoading(true);
     try {
       const response = await adminApi.getInventory({
@@ -43,7 +39,11 @@ const AdminInventory = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, search, lowStockOnly, outOfStockOnly]);
+
+  useEffect(() => {
+    fetchInventory();
+  }, [fetchInventory]);
 
   const handleStockUpdate = async (productId, stockData) => {
     try {

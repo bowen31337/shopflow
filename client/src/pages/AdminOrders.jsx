@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../api/admin';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -27,17 +27,7 @@ const AdminOrders = () => {
     totalCount: 0
   });
 
-  useEffect(() => {
-    fetchOrders();
-  }, [pagination.page]);
-
-  useEffect(() => {
-    // Reset to first page when search or status changes
-    setPagination(prev => ({ ...prev, page: 1 }));
-    fetchOrders(1);
-  }, [search, status]);
-
-  const fetchOrders = async (page = pagination.page) => {
+  const fetchOrders = useCallback(async (page = pagination.page) => {
     setLoading(true);
     try {
       const response = await adminApi.getOrders({
@@ -52,7 +42,11 @@ const AdminOrders = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, search, status]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const handleStatusUpdate = async (orderId, newStatus) => {
     try {

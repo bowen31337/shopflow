@@ -5,7 +5,7 @@ import api from '../api';
 import AddressBook from '../components/AddressBook';
 
 export default function Profile() {
-  const { user, token } = useAuthStore();
+  const { user } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -208,7 +208,6 @@ export default function Profile() {
 }
 
 function ChangePassword() {
-  const { token } = useAuthStore();
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',

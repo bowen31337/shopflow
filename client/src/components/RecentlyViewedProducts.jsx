@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import useRecentlyViewedStore from '../stores/recentlyViewedStore';
 
 export default function RecentlyViewedProducts({ excludeProductId = null, className = '' }) {
-  const { recentlyViewed, getRecentlyViewed } = useRecentlyViewedStore();
+  const { getRecentlyViewed } = useRecentlyViewedStore();
 
   const filteredProducts = getRecentlyViewed(excludeProductId);
 

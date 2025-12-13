@@ -1,50 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import ProductCard from '../components/ProductCard';
 
-export default function QuickViewTest() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+// Test data defined outside component to avoid recreation
+const TEST_PRODUCTS = [
+  {
+    id: 1,
+    name: "Test Product 1",
+    slug: "test-product-1",
+    price: 29.99,
+    compare_at_price: 39.99,
+    stock_quantity: 10,
+    low_stock_threshold: 5,
+    description: "This is a test product for Quick View functionality",
+    primary_image: "https://via.placeholder.com/400x400",
+    brand_name: "Test Brand",
+    brand_slug: "test-brand",
+    category_name: "Electronics",
+    category_slug: "electronics",
+    avg_rating: 4.5,
+    review_count: 12
+  },
+  {
+    id: 2,
+    name: "Test Product 2",
+    slug: "test-product-2",
+    price: 49.99,
+    stock_quantity: 5,
+    low_stock_threshold: 3,
+    description: "Another test product for Quick View functionality",
+    primary_image: "https://via.placeholder.com/400x400",
+    brand_name: "Test Brand",
+    brand_slug: "test-brand",
+    category_name: "Accessories",
+    category_slug: "accessories",
+    avg_rating: 0,
+    review_count: 0
+  }
+];
 
-  useEffect(() => {
-    // Simple test data for Quick View
-    setProducts([
-      {
-        id: 1,
-        name: "Test Product 1",
-        slug: "test-product-1",
-        price: 29.99,
-        compare_at_price: 39.99,
-        stock_quantity: 10,
-        low_stock_threshold: 5,
-        description: "This is a test product for Quick View functionality",
-        primary_image: "https://via.placeholder.com/400x400",
-        brand_name: "Test Brand",
-        brand_slug: "test-brand",
-        category_name: "Electronics",
-        category_slug: "electronics",
-        avg_rating: 4.5,
-        review_count: 12
-      },
-      {
-        id: 2,
-        name: "Test Product 2",
-        slug: "test-product-2",
-        price: 49.99,
-        stock_quantity: 5,
-        low_stock_threshold: 3,
-        description: "Another test product for Quick View functionality",
-        primary_image: "https://via.placeholder.com/400x400",
-        brand_name: "Test Brand",
-        brand_slug: "test-brand",
-        category_name: "Accessories",
-        category_slug: "accessories",
-        avg_rating: 0,
-        review_count: 0
-      }
-    ]);
-    setLoading(false);
-  }, []);
+export default function QuickViewTest() {
+  // Use memoized static data - no need for useEffect
+  const products = useMemo(() => TEST_PRODUCTS, []);
+  const [loading] = useState(false);
+  const [error] = useState(null);
 
   if (loading) {
     return (

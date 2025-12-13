@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useCartStore from '../stores/cartStore';
-import useAuthStore from '../stores/authStore';
 import AddressForm from '../components/AddressForm';
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { items, getTotalPrice } = useCartStore();
-  const { user } = useAuthStore();
   const [currentStep, setCurrentStep] = useState(1);
   const [orderData, setOrderData] = useState({
     shippingAddress: null,
@@ -262,8 +260,6 @@ const Checkout = () => {
 
 // Shipping Address Step Component
 const ShippingAddressStep = ({ onAddressSelect }) => {
-  const authStore = useAuthStore();
-  const user = authStore.user;
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -596,17 +592,8 @@ const PaymentStep = ({ onPaymentSelect }) => {
 
 // Review Step Component
 const ReviewStep = ({ orderData, onPlaceOrder }) => {
-  const cartStore = useCartStore();
-  const items = cartStore.items;
-  const getTotalPrice = cartStore.getTotalPrice;
+  const { items } = useCartStore();
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-
-  const calculateTotal = () => {
-    const subtotal = getTotalPrice();
-    const shipping = orderData.shippingMethod?.cost || 0;
-    const tax = subtotal * 0.08;
-    return subtotal + shipping + tax;
-  };
 
   const handlePlaceOrder = async () => {
     setIsPlacingOrder(true);

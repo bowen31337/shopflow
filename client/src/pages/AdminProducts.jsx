@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../api/admin';
 import { Search, Plus, Edit, Trash2, Eye, Image as ImageIcon } from 'lucide-react';
@@ -16,18 +16,7 @@ const AdminProducts = () => {
     totalCount: 0
   });
 
-  useEffect(() => {
-    fetchProducts();
-    fetchCategories();
-  }, [pagination.page]);
-
-  useEffect(() => {
-    // Reset to first page when search or category changes
-    setPagination(prev => ({ ...prev, page: 1 }));
-    fetchProducts(1);
-  }, [search, category]);
-
-  const fetchProducts = async (page = pagination.page) => {
+  const fetchProducts = useCallback(async (page = pagination.page) => {
     setLoading(true);
     try {
       const response = await adminApi.getProducts({
@@ -42,16 +31,23 @@ const AdminProducts = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, search, category]);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await adminApi.getCategories();
-      setCategories(response.categories);
-    } catch (error) {
-      console.error('Failed to fetch categories:', error);
-    }
-  };
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await adminApi.getCategories();
+        setCategories(response.categories);
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleDelete = async (productId) => {
     if (confirm('Are you sure you want to delete this product?')) {

@@ -59,7 +59,7 @@ export default function AddressBook() {
 
   const handleSetDefault = async (addressId) => {
     try {
-      const response = await api.put(`/api/user/addresses/${addressId}`, {
+      await api.put(`/api/user/addresses/${addressId}`, {
         ...addresses.find(addr => addr.id === addressId),
         isDefault: true
       });

@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 import api from '../api';
 
 export default function OrderHistory() {
-  const { user, isAuthenticated } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -15,13 +15,9 @@ export default function OrderHistory() {
     totalPages: 0
   });
 
-  useEffect(() => {
-    if (isAuthenticated()) {
-      fetchOrders();
-    }
-  }, [isAuthenticated(), pagination.page]);
+  const isUserAuthenticated = isAuthenticated();
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -31,13 +27,19 @@ export default function OrderHistory() {
         ...prev,
         ...response.data.pagination
       }));
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      setError(error.response?.data?.message || 'Failed to fetch orders');
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+      setError(err.response?.data?.message || 'Failed to fetch orders');
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit]);
+
+  useEffect(() => {
+    if (isUserAuthenticated) {
+      fetchOrders();
+    }
+  }, [isUserAuthenticated, fetchOrders]);
 
   const getStatusBadge = (status) => {
     const statusStyles = {

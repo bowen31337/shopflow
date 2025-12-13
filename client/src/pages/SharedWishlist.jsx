@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getSharedWishlist } from '../api/wishlist';
 
@@ -9,11 +9,7 @@ export default function SharedWishlist() {
   const [error, setError] = useState('');
   const [shareableUserInfo, setShareableUserInfo] = useState({});
 
-  useEffect(() => {
-    loadSharedWishlist();
-  }, [userId]);
-
-  const loadSharedWishlist = async () => {
+  const loadSharedWishlist = useCallback(async () => {
     try {
       setIsLoading(true);
       setError('');
@@ -24,12 +20,16 @@ export default function SharedWishlist() {
         displayName: 'Someone', // In a real app, you might fetch user info
         itemCount: response.count || 0
       });
-    } catch (error) {
-      setError(error.message || 'Failed to load shared wishlist');
+    } catch (err) {
+      setError(err.message || 'Failed to load shared wishlist');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    loadSharedWishlist();
+  }, [loadSharedWishlist]);
 
   if (isLoading) {
     return (

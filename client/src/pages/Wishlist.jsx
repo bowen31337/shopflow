@@ -54,7 +54,7 @@ export default function Wishlist() {
       setWishlistItems(prev => prev.filter(item => item.product.id !== productId));
       setSuccess('Item moved to cart!');
       setTimeout(() => setSuccess(''), 3000);
-    } catch (error) {
+    } catch (err) {
       // If move to cart fails, try regular add to cart
       try {
         await addToCart(productId, quantity);
@@ -62,8 +62,8 @@ export default function Wishlist() {
         setWishlistItems(prev => prev.filter(item => item.product.id !== productId));
         setSuccess('Item added to cart!');
         setTimeout(() => setSuccess(''), 3000);
-      } catch (fallbackError) {
-        setError(error.message || 'Failed to move item to cart');
+      } catch {
+        setError(err.message || 'Failed to move item to cart');
       }
     } finally {
       setActionLoading(prev => ({ ...prev, [productId]: null }));
@@ -78,7 +78,7 @@ export default function Wishlist() {
           text: 'Check out my wishlist!',
           url: `${window.location.origin}/wishlist/shared/${user.id}`
         });
-      } catch (error) {
+      } catch {
         console.log('Share cancelled');
       }
     } else {
@@ -88,7 +88,7 @@ export default function Wishlist() {
         await navigator.clipboard.writeText(shareUrl);
         setSuccess('Share link copied to clipboard!');
         setTimeout(() => setSuccess(''), 3000);
-      } catch (error) {
+      } catch {
         setError('Failed to copy share link');
       }
     }

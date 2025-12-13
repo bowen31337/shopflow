@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 import useCartStore from '../stores/cartStore';
@@ -8,34 +8,33 @@ import Autocomplete from './Autocomplete';
 import SearchHistory from './SearchHistory';
 
 export default function Header() {
+  // Initialize state from storage (lazy initialization avoids useEffect for simple reads)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [searchHistory, setSearchHistory] = useState([]);
+  const [searchHistory, setSearchHistory] = useState(() => {
+    try {
+      const savedHistory = localStorage.getItem('searchHistory');
+      return savedHistory ? JSON.parse(savedHistory) : [];
+    } catch {
+      return [];
+    }
+  });
   const [showSearchHistory, setShowSearchHistory] = useState(false);
-  const [previousPage, setPreviousPage] = useState(() => {
-  return sessionStorage.getItem('previousPage') || '/products';
-});
+  const previousPageRef = useRef(sessionStorage.getItem('previousPage') || '/products');
   const [categories, setCategories] = useState([]);
-  const [activeCategory, setActiveCategory] = useState(null);
-  const { user, logout, isAuthenticated } = useAuthStore();
+  const { logout, isAuthenticated } = useAuthStore();
   const { fetchCart, fetchWishlist, getItemCount, getWishlistCount } = useCartStore();
   const location = useLocation();
   const navigate = useNavigate();
   const searchContainerRef = useRef(null);
 
-  // Load search history from localStorage
-  useEffect(() => {
-    const savedHistory = localStorage.getItem('searchHistory');
-    if (savedHistory) {
-      try {
-        setSearchHistory(JSON.parse(savedHistory));
-      } catch (error) {
-        console.error('Failed to parse search history:', error);
-      }
-    }
-  }, []);
+  // Derive activeCategory from URL (no need for useState + useEffect)
+  const activeCategory = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('category') || null;
+  }, [location.search]);
 
   // Fetch categories
   useEffect(() => {
@@ -51,13 +50,6 @@ export default function Header() {
     fetchCategories();
   }, []);
 
-  // Sync activeCategory with URL search params
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const categoryParam = params.get('category');
-    setActiveCategory(categoryParam || null);
-  }, [location.search]);
-
   // Save search history to localStorage
   const saveSearchHistory = (history) => {
     try {
@@ -68,23 +60,28 @@ export default function Header() {
   };
 
   // Track previous page for continue shopping functionality
+  const locationPathname = location.pathname;
+  const locationSearch = location.search;
   useEffect(() => {
     // Don't update previous page when navigating to cart, login, or register pages
     const excludedPaths = ['/cart', '/login', '/register', '/checkout'];
-    if (!excludedPaths.includes(location.pathname)) {
-      const fullPath = location.pathname + location.search;
-      setPreviousPage(fullPath);
+    if (!excludedPaths.includes(locationPathname)) {
+      const fullPath = locationPathname + locationSearch;
+      previousPageRef.current = fullPath;
       sessionStorage.setItem('previousPage', fullPath);
     }
-  }, [location.pathname, location.search]);
+  }, [locationPathname, locationSearch]);
+
+  // Memoize isAuthenticated result to use as stable dependency
+  const isUserAuthenticated = isAuthenticated();
 
   // Fetch cart when user logs in or when header mounts
   useEffect(() => {
-    if (isAuthenticated()) {
+    if (isUserAuthenticated) {
       fetchCart();
       fetchWishlist();
     }
-  }, [isAuthenticated(), location.pathname]);
+  }, [isUserAuthenticated, locationPathname, fetchCart, fetchWishlist]);
 
   // Get cart and wishlist item counts
   const cartCount = getItemCount();
@@ -140,7 +137,7 @@ export default function Header() {
   };
 
   const handleContinueShopping = () => {
-    navigate(previousPage);
+    navigate(previousPageRef.current);
   };
 
   return (
@@ -477,7 +474,6 @@ export default function Header() {
                           activeCategory === category.slug ? 'text-primary font-semibold bg-primary-50' : 'text-gray-700'
                         } hover:text-primary hover:bg-primary-50 transition-colors`}
                         onClick={() => {
-                          setActiveCategory(category.slug);
                           setIsMenuOpen(false);
                         }}
                       >

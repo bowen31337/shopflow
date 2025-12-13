@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { adminApi } from '../api/admin';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -23,17 +23,7 @@ const AdminCustomers = () => {
     totalCount: 0
   });
 
-  useEffect(() => {
-    fetchCustomers();
-  }, [pagination.page]);
-
-  useEffect(() => {
-    // Reset to first page when search changes
-    setPagination(prev => ({ ...prev, page: 1 }));
-    fetchCustomers(1);
-  }, [search]);
-
-  const fetchCustomers = async (page = pagination.page) => {
+  const fetchCustomers = useCallback(async (page = pagination.page) => {
     setLoading(true);
     try {
       const response = await adminApi.getCustomers({
@@ -47,7 +37,11 @@ const AdminCustomers = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, search]);
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">

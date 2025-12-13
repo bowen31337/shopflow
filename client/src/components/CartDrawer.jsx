@@ -1,7 +1,7 @@
 import useCartStore from '../stores/cartStore';
 
 export default function CartDrawer({ isOpen, onClose, continueShopping }) {
-  const { items, wishlistItems, getItemCount, getTotal, removeFromCart, updateQuantity, saveForLater, moveToCart, removeFromWishlist, isLoading, error } = useCartStore();
+  const { items, wishlistItems, getTotal, removeFromCart, updateQuantity, saveForLater, moveToCart, removeFromWishlist, isLoading, error } = useCartStore();
 
   const handleRemove = async (itemId) => {
     try {

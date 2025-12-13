@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Autocomplete = ({ isVisible, query, onNavigate }) => {
@@ -36,6 +36,13 @@ const Autocomplete = ({ isVisible, query, onNavigate }) => {
     return () => clearTimeout(timeoutId);
   }, [query]);
 
+  const navigateToProduct = useCallback((product) => {
+    setSuggestions([]);
+    setSelectedIndex(-1);
+    onNavigate?.();
+    navigate(`/products/${product.slug}`);
+  }, [navigate, onNavigate]);
+
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -65,7 +72,7 @@ const Autocomplete = ({ isVisible, query, onNavigate }) => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isVisible, suggestions, selectedIndex, navigate, onNavigate]);
+  }, [isVisible, suggestions, selectedIndex, navigateToProduct]);
 
   // Handle clicks outside to close suggestions
   useEffect(() => {
@@ -79,13 +86,6 @@ const Autocomplete = ({ isVisible, query, onNavigate }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const navigateToProduct = (product) => {
-    setSuggestions([]);
-    setSelectedIndex(-1);
-    onNavigate?.();
-    navigate(`/products/${product.slug}`);
-  };
 
   if (!isVisible || suggestions.length === 0) {
     return null;

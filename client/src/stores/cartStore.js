@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { fetchCart, addToCart, updateCartItem, removeFromCart, applyPromoCode, removePromoCode, getCartTotals } from '../api/cart';
-import { fetchWishlist, addToWishlist, removeFromWishlist } from '../api/wishlist';
+import { addToWishlist, removeFromWishlist } from '../api/wishlist';
 
 const useCartStore = create(
   persist(
@@ -106,7 +106,6 @@ const useCartStore = create(
         const mergedItems = [...localItems];
 
         serverItems.forEach(serverItem => {
-          const key = `${serverItem.productId}-${serverItem.variantId || 'null'}`;
           const existingIndex = mergedItems.findIndex(item =>
             item.productId === serverItem.productId &&
             (item.variantId || null) === (serverItem.variantId || null)
@@ -306,7 +305,7 @@ const useCartStore = create(
           get().fetchCart();
           get().fetchWishlist();
 
-          return response;
+          return;
         } catch (error) {
           set({
             error: error.message || 'Failed to move to cart',

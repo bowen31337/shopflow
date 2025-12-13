@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
-import api from '../api';
 
 export default function Login() {
   const navigate = useNavigate();

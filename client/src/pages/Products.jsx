@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { fetchProducts } from '../api/products';
 import ProductCard from '../components/ProductCard';
@@ -21,7 +21,6 @@ export default function Products() {
   });
 
   // Infinite scroll state
-  const [infiniteScroll, setInfiniteScroll] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef();
@@ -47,11 +46,41 @@ export default function Products() {
     max: 1000
   });
 
+  const loadProducts = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const currentPage = parseInt(searchParams.get('page')) || 1;
+      const params = {
+        category: filters.category || undefined,
+        brand: filters.brand || undefined,
+        minPrice: filters.minPrice || undefined,
+        maxPrice: filters.maxPrice || undefined,
+        search: filters.search || undefined,
+        sort: filters.sort || undefined,
+        page: currentPage.toString(),
+        limit: '6',
+      };
+      const data = await fetchProducts(params);
+      setProducts(data.products || []);
+
+      // Update pagination state
+      if (data.pagination) {
+        setPagination(data.pagination);
+        setHasMore(currentPage < data.pagination.totalPages);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchParams, filters.category, filters.brand, filters.minPrice, filters.maxPrice, filters.search, filters.sort]);
+
   // Load filters and products
   useEffect(() => {
     loadFilters();
     loadProducts();
-  }, [searchParams]);
+  }, [loadProducts]);
 
   const loadFilters = async () => {
     try {
@@ -85,36 +114,6 @@ export default function Products() {
       }
     } catch (err) {
       console.error('Failed to load filters:', err);
-    }
-  };
-
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const currentPage = parseInt(searchParams.get('page')) || 1;
-      const params = {
-        category: filters.category || undefined,
-        brand: filters.brand || undefined,
-        minPrice: filters.minPrice || undefined,
-        maxPrice: filters.maxPrice || undefined,
-        search: filters.search || undefined,
-        sort: filters.sort || undefined,
-        page: currentPage.toString(),
-        limit: '6',
-      };
-      const data = await fetchProducts(params);
-      setProducts(data.products || []);
-
-      // Update pagination state
-      if (data.pagination) {
-        setPagination(data.pagination);
-        setHasMore(currentPage < data.pagination.totalPages);
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -186,13 +185,6 @@ export default function Products() {
     } finally {
       setLoadingMore(false);
     }
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(price);
   };
 
   return (
@@ -567,13 +559,13 @@ export default function Products() {
               <>
                 {filters.view === 'grid' ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {products.map((product, index) => (
+                    {products.map((product) => (
                       <ProductCard key={product.id} product={product} />
                     ))}
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {products.map((product, index) => (
+                    {products.map((product) => (
                       <ProductCard key={product.id} product={product} view="list" />
                     ))}
                   </div>

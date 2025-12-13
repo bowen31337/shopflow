@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 import api from '../api';
@@ -7,36 +7,35 @@ const EmailVerification = () => {
   const { token } = useParams();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const [status, setStatus] = useState('verifying'); // 'verifying', 'success', 'error', 'expired'
+  // Initialize status based on user's current verification state
+  const isAlreadyVerified = user && user.email_verified;
+  const [status, setStatus] = useState(() => isAlreadyVerified ? 'success' : 'verifying'); // 'verifying', 'success', 'error', 'expired'
   const [error, setError] = useState('');
   const [resendStatus, setResendStatus] = useState('idle'); // 'idle', 'sending', 'success', 'error'
 
-  useEffect(() => {
-    if (user && user.email_verified) {
-      setStatus('success');
-      return;
-    }
-
-    if (token) {
-      verifyEmail();
-    }
-  }, [token, user]);
-
-  const verifyEmail = async () => {
+  const verifyEmail = useCallback(async () => {
     try {
       setStatus('verifying');
-      const response = await api.post('/auth/verify-email', { token });
+      await api.post('/auth/verify-email', { token });
       setStatus('success');
-    } catch (error) {
-      console.error('Verification error:', error);
-      if (error.response?.status === 400) {
+    } catch (err) {
+      console.error('Verification error:', err);
+      if (err.response?.status === 400) {
         setStatus('expired');
       } else {
         setStatus('error');
-        setError(error.response?.data?.error || 'Verification failed');
+        setError(err.response?.data?.error || 'Verification failed');
       }
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    // Skip verification if already verified or no token
+    if (isAlreadyVerified || !token) {
+      return;
+    }
+    verifyEmail();
+  }, [token, isAlreadyVerified, verifyEmail]);
 
   const handleResendVerification = async () => {
     if (!user) {
@@ -46,14 +45,14 @@ const EmailVerification = () => {
 
     try {
       setResendStatus('sending');
-      const response = await api.post('/auth/resend-verification', {
+      await api.post('/auth/resend-verification', {
         email: user.email
       });
       setResendStatus('success');
-    } catch (error) {
-      console.error('Resend error:', error);
+    } catch (err) {
+      console.error('Resend error:', err);
       setResendStatus('error');
-      setError(error.response?.data?.error || 'Failed to resend verification email');
+      setError(err.response?.data?.error || 'Failed to resend verification email');
     }
   };
 
