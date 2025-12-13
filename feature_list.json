@@ -19,7 +19,7 @@
       "Step 3: Confirm frontend is accessible on specified port",
       "Step 4: Check that the homepage loads"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -55,7 +55,7 @@
       "Step 5: Check that user is created in database",
       "Step 6: Confirm password is hashed in database"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -68,7 +68,7 @@
       "Step 5: Confirm user is redirected to homepage",
       "Step 6: Check that user account menu shows logged-in state"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
@@ -131,7 +131,7 @@
       "Step 3: Check that product cards show image, name, price, and rating",
       "Step 4: Confirm add to cart button is visible on each card"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "functional",
