@@ -8,6 +8,8 @@ yarn.lock
 .env
 .env.local
 .env.*.local
+client/.env*
+server/.env*
 
 # Database
 *.db
@@ -18,11 +20,14 @@ server/database/*.db
 # Build outputs
 dist/
 build/
+client/dist/
 *.log
+*.log.gz
 
 # IDE
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 *~
@@ -30,15 +35,30 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
 
 # Uploads
 uploads/
 server/uploads/
 
+# Logs and reports
+logs/
+reports/
+test-results/
+screenshots/
+
 # Testing
 coverage/
+.nyc_output/
 
 # Temporary files
 *.tmp
 tmp/
 temp/
+*.bak
+*.cache

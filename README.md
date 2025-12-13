@@ -210,6 +210,226 @@ NODE_ENV=development
 
 **Note:** Update `STRIPE_TEST_KEY` with your actual Stripe test key for payment functionality.
 
+## 🚀 Deployment
+
+This project consists of a React frontend and Express backend, requiring different deployment strategies. Below are recommended deployment options:
+
+### Architecture Overview
+
+- **Frontend**: React + Vite (static site, can be served from CDN)
+- **Backend**: Express.js API (requires Node.js runtime)
+- **Database**: SQLite (file-based, needs migration for production)
+
+### Recommended Deployment Options
+
+#### Option 1: Vercel (Recommended)
+
+**Why Vercel:**
+- Excellent developer experience with automatic deployments from GitHub
+- Free tier includes serverless functions (can host Express API)
+- Built-in CDN for frontend
+- Easy environment variable management
+- Automatic HTTPS
+
+**Setup Steps:**
+
+1. **Install Vercel CLI:**
+   ```bash
+   npm i -g vercel
+   ```
+
+2. **Deploy from project root:**
+   ```bash
+   vercel
+   ```
+
+3. **Configure Vercel:**
+   - Frontend: Automatically detected as static site (builds from `client/` directory)
+   - Backend: Uses Vercel serverless functions via `api/index.js` (see `vercel.json` configuration)
+   - Database: **IMPORTANT** - Migrate to Vercel Postgres or external PostgreSQL before deploying
+
+4. **Environment Variables:**
+   Add all environment variables in Vercel dashboard:
+   ```
+   NODE_ENV=production
+   JWT_SECRET=<your-secret>
+   JWT_EXPIRES_IN=24h
+   REFRESH_TOKEN_SECRET=<your-secret>
+   REFRESH_TOKEN_EXPIRES_IN=7d
+   STRIPE_TEST_KEY=<your-stripe-key>
+   STRIPE_SECRET_KEY=<your-stripe-secret>
+   DATABASE_URL=<postgres-connection-string>
+   DB_TYPE=postgres
+   FRONTEND_URL=<your-vercel-frontend-url>
+   ```
+
+5. **Database Migration (REQUIRED):**
+   - SQLite is not suitable for serverless/production
+   - Migrate to PostgreSQL (Vercel Postgres, Supabase, or Railway)
+   - Update `server/src/database.js` to support both SQLite (dev) and PostgreSQL (prod)
+   - The `api/index.js` handler is configured for serverless but still needs database migration
+
+6. **File Uploads:**
+   - The current setup uses local file storage (`server/uploads/`)
+   - For production, migrate to cloud storage (AWS S3, Cloudflare R2, etc.)
+   - Update upload routes to use cloud storage instead of local filesystem
+
+**Cost**: Free tier sufficient for development/small projects
+
+#### Option 2: Cloudflare Pages + Workers
+
+**Why Cloudflare:**
+- Free tier with generous limits
+- Global CDN with edge computing
+- D1 database (SQLite-compatible) available
+- Excellent performance worldwide
+
+**Setup Steps:**
+
+1. **Frontend (Cloudflare Pages):**
+   - Connect GitHub repository
+   - Build command: `cd client && npm run build`
+   - Output directory: `client/dist`
+
+2. **Backend (Cloudflare Workers):**
+   - Convert Express routes to Cloudflare Workers
+   - Use `@cloudflare/workers-types` for type safety
+   - Or use Pages Functions for simpler setup
+
+3. **Database:**
+   - Use Cloudflare D1 (SQLite-compatible) for easy migration
+   - Or external PostgreSQL service
+
+**Cost**: Free tier sufficient
+
+#### Option 3: Railway/Render (Full-Stack Hosting)
+
+**Why Railway/Render:**
+- Designed for full-stack applications
+- Easy PostgreSQL setup
+- Automatic deployments from GitHub
+- Built-in SSL
+
+**Setup Steps:**
+
+1. **Connect Repository:**
+   - Link GitHub repository
+   - Configure build and start commands
+
+2. **Frontend:**
+   - Build command: `cd client && npm run build`
+   - Serve static files from `client/dist`
+
+3. **Backend:**
+   - Start command: `cd server && npm start`
+   - Set environment variables in dashboard
+
+4. **Database:**
+   - Provision PostgreSQL database
+   - Run migration scripts
+   - Update connection string
+
+**Cost**: Free tier available, paid plans start low
+
+#### Option 4: Netlify
+
+**Why Netlify:**
+- Great for static sites + serverless functions
+- Free tier available
+- Easy GitHub integration
+
+**Setup Steps:**
+
+1. **Frontend:**
+   - Connect GitHub repository
+   - Build command: `cd client && npm run build`
+   - Publish directory: `client/dist`
+
+2. **Backend:**
+   - Convert Express routes to Netlify Functions
+   - Use `@netlify/functions` adapter
+
+3. **Database:**
+   - Use external service (Supabase, PlanetScale, etc.)
+
+**Cost**: Free tier available
+
+### Database Migration Strategy
+
+**Current**: SQLite (file-based, not suitable for serverless/production)
+
+**Recommended Migration Path:**
+
+1. **Development**: Keep SQLite locally
+2. **Production**: Migrate to PostgreSQL or Cloudflare D1
+
+**Migration Steps:**
+
+1. Create migration scripts to convert SQLite schema to PostgreSQL
+2. Update database connection code to support both SQLite (dev) and PostgreSQL (prod)
+3. Use environment variables to switch between databases:
+   ```javascript
+   const dbType = process.env.DB_TYPE || 'sqlite';
+   const db = dbType === 'postgres' ? postgresConnection : sqliteConnection;
+   ```
+
+**Recommended Database Services:**
+- **Vercel Postgres**: If using Vercel
+- **Supabase**: Free PostgreSQL with great developer experience
+- **Cloudflare D1**: If using Cloudflare (SQLite-compatible)
+- **Railway Postgres**: If using Railway
+- **PlanetScale**: Serverless MySQL alternative
+
+### Hybrid Deployment Approach
+
+For more control, you can deploy components separately:
+
+- **Frontend**: Vercel/Netlify/Cloudflare Pages (static hosting)
+- **Backend**: Railway/Render/Fly.io (Node.js service)
+- **Database**: External PostgreSQL (Supabase, PlanetScale)
+
+This approach gives more flexibility but requires managing multiple services.
+
+### Environment Variables for Production
+
+Ensure all these are set in your deployment platform:
+
+**Backend:**
+```
+PORT=3001 (or platform-assigned port)
+JWT_SECRET=<strong-random-secret>
+JWT_EXPIRES_IN=24h
+REFRESH_TOKEN_SECRET=<strong-random-secret>
+REFRESH_TOKEN_EXPIRES_IN=7d
+STRIPE_TEST_KEY=<your-stripe-key>
+STRIPE_SECRET_KEY=<your-stripe-secret-key>
+NODE_ENV=production
+DATABASE_URL=<postgres-connection-string>
+DB_TYPE=postgres
+```
+
+**Frontend:**
+```
+VITE_API_URL=<your-backend-api-url>
+VITE_STRIPE_PUBLIC_KEY=<your-stripe-public-key>
+```
+
+### Continuous Deployment
+
+All recommended platforms support automatic deployments:
+
+1. Connect your GitHub repository
+2. Configure build settings
+3. Set environment variables
+4. Push to main branch triggers automatic deployment
+
+### Monitoring and Logs
+
+- **Vercel**: Built-in analytics and logs
+- **Cloudflare**: Workers analytics dashboard
+- **Railway/Render**: Built-in logging and metrics
+- **Netlify**: Function logs and analytics
+
 ## 📱 Responsive Design
 
 The application is mobile-first with optimized layouts for:
