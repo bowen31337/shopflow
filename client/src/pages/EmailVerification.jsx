@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 import api from '../api';
@@ -12,8 +12,40 @@ const EmailVerification = () => {
   const [status, setStatus] = useState(() => isAlreadyVerified ? 'success' : 'verifying'); // 'verifying', 'success', 'error', 'expired'
   const [error, setError] = useState('');
   const [resendStatus, setResendStatus] = useState('idle'); // 'idle', 'sending', 'success', 'error'
+  const verificationAttempted = useRef(false);
 
-  const verifyEmail = useCallback(async () => {
+  // Effect for email verification - using an async IIFE pattern with AbortController
+  useEffect(() => {
+    // Skip verification if already verified, no token, or already attempted
+    if (isAlreadyVerified || !token || verificationAttempted.current) {
+      return;
+    }
+
+    verificationAttempted.current = true;
+    const controller = new AbortController();
+
+    // Async IIFE - the API response callback will update state
+    (async () => {
+      try {
+        await api.post('/auth/verify-email', { token }, { signal: controller.signal });
+        setStatus('success');
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        console.error('Verification error:', err);
+        if (err.response?.status === 400) {
+          setStatus('expired');
+        } else {
+          setStatus('error');
+          setError(err.response?.data?.error || 'Verification failed');
+        }
+      }
+    })();
+
+    return () => controller.abort();
+  }, [token, isAlreadyVerified]);
+
+  // Manual verification retry function
+  const verifyEmail = async () => {
     try {
       setStatus('verifying');
       await api.post('/auth/verify-email', { token });
@@ -27,15 +59,7 @@ const EmailVerification = () => {
         setError(err.response?.data?.error || 'Verification failed');
       }
     }
-  }, [token]);
-
-  useEffect(() => {
-    // Skip verification if already verified or no token
-    if (isAlreadyVerified || !token) {
-      return;
-    }
-    verifyEmail();
-  }, [token, isAlreadyVerified, verifyEmail]);
+  };
 
   const handleResendVerification = async () => {
     if (!user) {
