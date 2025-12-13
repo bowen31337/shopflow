@@ -1,14 +1,14 @@
 {
   "project_name": "demo",
   "project_dir": "demo",
-  "report_generated": "2025-12-13T05:37:57.650282+00:00",
+  "report_generated": "2025-12-13T05:41:26.889975+00:00",
   "summary": {
-    "total_sessions": 102,
-    "total_api_calls": 102,
+    "total_sessions": 103,
+    "total_api_calls": 103,
     "total_input_tokens": 0,
     "total_output_tokens": 0,
     "total_tokens": 0,
-    "total_duration_seconds": 201201.66254162788,
+    "total_duration_seconds": 201405.44657731056,
     "estimated_cost_usd": 0.0
   },
   "endpoint_breakdown": {
@@ -34,7 +34,7 @@
       "estimated_cost_usd": 0.0
     },
     "https://api.z.ai/api/anthropic": {
-      "calls": 32,
+      "calls": 33,
       "input_tokens": 0,
       "output_tokens": 0,
       "total_tokens": 0,
@@ -412,6 +412,20 @@
       "successful_calls": 1,
       "failed_calls": 0,
       "duration_seconds": 197.0282108783722
+    },
+    {
+      "session_id": 103,
+      "start_time": "2025-12-13T05:38:01.658438+00:00",
+      "end_time": "2025-12-13T05:41:26.888678+00:00",
+      "endpoint": "https://api.z.ai/api/anthropic",
+      "model": "glm-4.6",
+      "total_calls": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "successful_calls": 1,
+      "failed_calls": 0,
+      "duration_seconds": 203.78403568267822
     }
   ],
   "calls": [
@@ -724,6 +738,18 @@
       "total_tokens": 0,
       "session_id": 102,
       "duration_seconds": 197.0282108783722,
+      "success": true,
+      "error": null
+    },
+    {
+      "timestamp": "2025-12-13T05:41:26.875999+00:00",
+      "endpoint": "https://api.z.ai/api/anthropic",
+      "model": "glm-4.6",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "session_id": 103,
+      "duration_seconds": 203.78403568267822,
       "success": true,
       "error": null
     }
