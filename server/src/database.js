@@ -268,6 +268,43 @@ export function initializeDatabase() {
     console.log('ℹ️ unit_price column already exists in cart_items table');
   }
 
+  // Recently viewed products table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS recently_viewed (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER,
+      session_id TEXT,
+      product_id INTEGER NOT NULL,
+      viewed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    )
+  `);
+
+  // Product recommendations cache table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS product_recommendations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      product_id INTEGER NOT NULL,
+      recommendation_type TEXT NOT NULL CHECK(recommendation_type IN ('frequently_bought_together', 'customers_also_bought', 'related_products')),
+      recommended_product_id INTEGER NOT NULL,
+      score REAL DEFAULT 0.0,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+      FOREIGN KEY (recommended_product_id) REFERENCES products(id) ON DELETE CASCADE,
+      UNIQUE(product_id, recommendation_type, recommended_product_id)
+    )
+  `);
+
+  // Create indexes for recommendation tables
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_recently_viewed_user ON recently_viewed(user_id);
+    CREATE INDEX IF NOT EXISTS idx_recently_viewed_session ON recently_viewed(session_id);
+    CREATE INDEX IF NOT EXISTS idx_recently_viewed_product ON recently_viewed(product_id);
+    CREATE INDEX IF NOT EXISTS idx_recommendations_product ON product_recommendations(product_id);
+    CREATE INDEX IF NOT EXISTS idx_recommendations_type ON product_recommendations(recommendation_type);
+  `);
+
   console.log('✓ Database schema initialized successfully');
 }
 
