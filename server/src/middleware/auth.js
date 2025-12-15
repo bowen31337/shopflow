@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import db from '../database.js';
 
 // Verify JWT token middleware
-export function authenticateToken(req, res, next) {
+export async function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
@@ -14,7 +14,7 @@ export function authenticateToken(req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Get user from database
-    const user = db.prepare('SELECT id, email, name, role FROM users WHERE id = ?').get(decoded.userId);
+    const user = await db.get('SELECT id, email, name, role FROM users WHERE id = ?', decoded.userId);
 
     if (!user) {
       return res.status(401).json({ error: 'User not found' });
@@ -39,7 +39,7 @@ export function requireAdmin(req, res, next) {
 }
 
 // Optional authentication - adds user if token present, but doesn't require it
-export function optionalAuth(req, res, next) {
+export async function optionalAuth(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -49,7 +49,7 @@ export function optionalAuth(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = db.prepare('SELECT id, email, name, role FROM users WHERE id = ?').get(decoded.userId);
+    const user = await db.get('SELECT id, email, name, role FROM users WHERE id = ?', decoded.userId);
 
     if (user) {
       req.user = user;

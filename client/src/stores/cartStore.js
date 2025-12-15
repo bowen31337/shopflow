@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { fetchCart, addToCart, updateCartItem, removeFromCart, applyPromoCode, removePromoCode, getCartTotals } from '../api/cart';
-import { addToWishlist, removeFromWishlist } from '../api/wishlist';
+import { fetchCart, addToCart, updateCartItem, removeFromCart, applyPromoCode, removePromoCode, getCartTotals, addToWishlist, removeFromWishlist } from '../api/cart';
+import api from '../api/index.js';
 
 const useCartStore = create(
   persist(
@@ -30,10 +30,8 @@ const useCartStore = create(
       fetchWishlist: async () => {
         set({ isLoading: true, error: null });
         try {
-          const response = await fetch('/api/wishlist');
-          if (!response.ok) throw new Error('Failed to load wishlist');
-          const data = await response.json();
-          set({ wishlistItems: data.wishlist, isLoading: false, error: null });
+          const data = await api.get('/api/wishlist');
+          set({ wishlistItems: data.wishlist || [], isLoading: false, error: null });
         } catch (error) {
           set({
             error: error.message || 'Failed to load wishlist',
@@ -80,10 +78,8 @@ const useCartStore = create(
 
         set({ isLoading: true, error: null });
         try {
-          const response = await fetch('/api/wishlist');
-          if (!response.ok) throw new Error('Failed to sync wishlist');
-          const data = await response.json();
-          set({ wishlistItems: data.wishlist, isLoading: false, error: null });
+          const data = await api.get('/api/wishlist');
+          set({ wishlistItems: data.wishlist || [], isLoading: false, error: null });
         } catch (error) {
           set({
             error: error.message || 'Failed to sync wishlist with server',
@@ -159,22 +155,10 @@ const useCartStore = create(
       reorderItems: async (orderId) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await fetch(`/api/orders/${orderId}/reorder`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include'
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to reorder items');
-          }
-
-          const data = await response.json();
+          const data = await api.post(`/api/orders/${orderId}/reorder`);
 
           set({
-            items: data.cart.items,
+            items: data.cart?.items || [],
             isLoading: false,
             error: null
           });

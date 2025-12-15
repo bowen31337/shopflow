@@ -5,6 +5,8 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Plus, Edit, Trash2, Percent, DollarSign, Calendar, Users } from 'lucide-react';
+import { useToast } from '../components/Toast';
+import { useConfirm } from '../components/ConfirmModal';
 import {
   Dialog,
   DialogContent,
@@ -14,6 +16,8 @@ import {
 } from '../components/ui/dialog';
 
 const AdminPromoCodes = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [promoCodes, setPromoCodes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -88,7 +92,12 @@ const AdminPromoCodes = () => {
   };
 
   const handleDelete = async (promoCodeId) => {
-    if (confirm('Are you sure you want to delete this promo code?')) {
+    const confirmed = await confirm('Are you sure you want to delete this promo code?', {
+      title: 'Delete Promo Code',
+      confirmText: 'Delete',
+      type: 'danger'
+    });
+    if (confirmed) {
       try {
         await adminApi.deletePromoCode(promoCodeId);
         fetchPromoCodes();

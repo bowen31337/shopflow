@@ -5,7 +5,7 @@
 import app, { initDB } from '../server/src/app.js';
 
 // Initialize database on cold start
-initDB();
+await initDB();
 
 // Export the Express app for Vercel
 export default app;

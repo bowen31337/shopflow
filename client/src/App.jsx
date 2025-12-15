@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import Header from './components/Header';
 import AdminGuard from './components/AdminGuard';
 import ProtectedRoute from './components/ProtectedRoute';
+import { ToastProvider } from './components/Toast';
+import { ConfirmProvider } from './components/ConfirmModal';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
@@ -27,6 +29,7 @@ import AdminInventory from './pages/AdminInventory';
 import ProductInventoryDetail from './pages/ProductInventoryDetail';
 import AdminAnalytics from './pages/AdminAnalytics';
 import AdminReports from './pages/AdminReports';
+import AdminProductForm from './pages/AdminProductForm';
 import useAuthStore from './stores/authStore';
 import api from './api';
 
@@ -39,13 +42,16 @@ function App() {
     }
   }, []);
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <Routes>
+    <ToastProvider>
+      <ConfirmProvider>
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            <Header />
+            <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:slug" element={<ProductDetail />} />
+          <Route path="/product/:slug" element={<ProductDetail />} />
           <Route path="/brands/:slug" element={<BrandPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -99,6 +105,16 @@ function App() {
               <AdminProducts />
             </AdminGuard>
           } />
+          <Route path="/admin/products/new" element={
+            <AdminGuard>
+              <AdminProductForm />
+            </AdminGuard>
+          } />
+          <Route path="/admin/products/:id/edit" element={
+            <AdminGuard>
+              <AdminProductForm />
+            </AdminGuard>
+          } />
           <Route path="/admin/orders" element={
             <AdminGuard>
               <AdminOrders />
@@ -129,9 +145,11 @@ function App() {
               <ProductInventoryDetail />
             </AdminGuard>
           } />
-        </Routes>
-      </div>
-    </Router>
+            </Routes>
+          </div>
+        </Router>
+      </ConfirmProvider>
+    </ToastProvider>
   );
 }
 

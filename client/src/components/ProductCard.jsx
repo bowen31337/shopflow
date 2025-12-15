@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { addToWishlist, removeFromWishlist } from '../api/wishlist';
 import useCartStore from '../stores/cartStore';
 import useAuthStore from '../stores/authStore';
+import { useToast } from './Toast';
 import HeartIcon from './HeartIcon';
 import QuickViewModal from './QuickViewModal';
 
@@ -11,6 +12,7 @@ export default function ProductCard({ product, view = 'grid' }) {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
+  const toast = useToast();
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
@@ -70,16 +72,16 @@ export default function ProductCard({ product, view = 'grid' }) {
 
       if (isInWishlistCheck) {
         await removeFromWishlist(product.id);
-        alert(`Removed ${product.name} from wishlist!`);
+        toast.success(`Removed ${product.name} from wishlist`);
       } else {
         await addToWishlist(product.id);
-        alert(`Added ${product.name} to wishlist!`);
+        toast.success(`Added ${product.name} to wishlist`);
       }
 
       // Refresh wishlist data
       await fetchWishlist();
     } catch (error) {
-      alert(`Error updating wishlist: ${error.message}`);
+      toast.error(`Error updating wishlist: ${error.message}`);
     } finally {
       setIsWishlistLoading(false);
     }

@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useCartStore from '../stores/cartStore';
 import AddressForm from '../components/AddressForm';
+import api from '../api/index.js';
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { items, getTotalPrice } = useCartStore();
+  const { items, getTotal } = useCartStore();
   const [currentStep, setCurrentStep] = useState(1);
   const [orderData, setOrderData] = useState({
     shippingAddress: null,
@@ -56,12 +57,12 @@ const Checkout = () => {
   };
 
   const calculateTax = () => {
-    const subtotal = getTotalPrice();
+    const subtotal = getTotal();
     return subtotal * 0.08; // 8% tax rate
   };
 
   const calculateTotal = () => {
-    const subtotal = getTotalPrice();
+    const subtotal = getTotal();
     const shipping = calculateShipping();
     const tax = calculateTax();
     return subtotal + shipping + tax;
@@ -207,29 +208,34 @@ const Checkout = () => {
 
               {/* Order Items */}
               <div className="space-y-4 mb-6">
-                {items.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-4">
-                    <img
-                      src={item.image || 'https://picsum.photos/seed/checkout/100/100'}
-                      alt={item.name}
-                      className="w-16 h-16 object-cover rounded-md"
-                    />
-                    <div className="flex-1">
-                      <h4 className="text-sm font-medium text-gray-900">{item.name}</h4>
-                      <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                {items.map((item) => {
+                  const price = item.variant?.adjustedPrice || item.product?.price || item.price || 0;
+                  const name = item.product?.name || item.name || 'Product';
+                  const image = item.product?.primary_image || item.image || 'https://picsum.photos/seed/checkout/100/100';
+                  return (
+                    <div key={item.id} className="flex items-center space-x-4">
+                      <img
+                        src={image}
+                        alt={name}
+                        className="w-16 h-16 object-cover rounded-md"
+                      />
+                      <div className="flex-1">
+                        <h4 className="text-sm font-medium text-gray-900">{name}</h4>
+                        <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                      </div>
+                      <p className="text-sm font-medium text-gray-900">
+                        ${(price * item.quantity).toFixed(2)}
+                      </p>
                     </div>
-                    <p className="text-sm font-medium text-gray-900">
-                      ${(item.price * item.quantity).toFixed(2)}
-                    </p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Order Totals */}
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal</span>
-                  <span className="font-medium">${getTotalPrice().toFixed(2)}</span>
+                  <span className="font-medium">${getTotal().toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Shipping</span>
@@ -268,15 +274,8 @@ const ShippingAddressStep = ({ onAddressSelect }) => {
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
-        const response = await fetch('/api/user/addresses', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setAddresses(data);
-        }
+        const data = await api.get('/api/user/addresses');
+        setAddresses(data.addresses || []);
       } catch (error) {
         console.error('Error fetching addresses:', error);
       } finally {
@@ -291,15 +290,8 @@ const ShippingAddressStep = ({ onAddressSelect }) => {
     setShowAddAddress(false);
     // Refetch addresses to get the updated list
     try {
-      const response = await fetch('/api/user/addresses', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setAddresses(data);
-      }
+      const data = await api.get('/api/user/addresses');
+      setAddresses(data.addresses || []);
     } catch (error) {
       console.error('Error refetching addresses:', error);
     }
@@ -592,17 +584,70 @@ const PaymentStep = ({ onPaymentSelect }) => {
 
 // Review Step Component
 const ReviewStep = ({ orderData, onPlaceOrder }) => {
-  const { items } = useCartStore();
+  const { items, getTotal, clearCart } = useCartStore();
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [orderError, setOrderError] = useState(null);
 
   const handlePlaceOrder = async () => {
+    // Validate all required data before placing order
+    if (!orderData.shippingAddress || !orderData.shippingMethod || !orderData.paymentMethod) {
+      setOrderError('Please complete all checkout steps before placing your order.');
+      return;
+    }
+
     setIsPlacingOrder(true);
+    setOrderError(null);
+
     try {
-      // Simulate order placement
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      onPlaceOrder();
+      // Calculate totals
+      const subtotal = getTotal();
+      const shippingCost = orderData.shippingMethod.cost || 0;
+      const tax = subtotal * 0.08;
+      const total = subtotal + shippingCost + tax;
+
+      // Prepare order items for API
+      const orderItems = items.map(item => ({
+        id: item.product.id,
+        name: item.product.name,
+        price: item.variant?.adjustedPrice || item.product.price,
+        quantity: item.quantity,
+        variantId: item.variant?.id || null,
+        image: item.product.image || item.product.primary_image
+      }));
+
+      // Create payment intent first
+      const paymentIntentResponse = await api.post('/api/checkout/create-payment-intent', {
+        items: orderItems,
+        shippingAddress: orderData.shippingAddress,
+        shippingMethod: orderData.shippingMethod
+      });
+
+      if (!paymentIntentResponse.success || !paymentIntentResponse.paymentIntent) {
+        throw new Error('Failed to create payment intent');
+      }
+
+      // Complete the order through the backend
+      const orderResponse = await api.post('/api/checkout/complete', {
+        paymentIntentId: paymentIntentResponse.paymentIntent.id,
+        shippingAddress: orderData.shippingAddress,
+        shippingMethod: orderData.shippingMethod,
+        paymentMethod: orderData.paymentMethod,
+        items: orderItems,
+        total: total
+      });
+
+      if (!orderResponse.success) {
+        throw new Error(orderResponse.message || 'Failed to complete order');
+      }
+
+      // Clear the local cart after successful order
+      clearCart();
+
+      // Call the success callback
+      onPlaceOrder(orderResponse.order);
     } catch (error) {
       console.error('Error placing order:', error);
+      setOrderError(error.message || 'Failed to place order. Please try again.');
     } finally {
       setIsPlacingOrder(false);
     }
@@ -663,17 +708,29 @@ const ReviewStep = ({ orderData, onPlaceOrder }) => {
       <div className="mb-6">
         <h3 className="text-lg font-medium text-gray-900 mb-3">Order Items</h3>
         <div className="space-y-2">
-          {items.map((item) => (
-            <div key={item.id} className="flex justify-between py-2 border-b">
-              <div>
-                <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+          {items.map((item) => {
+            const price = item.variant?.adjustedPrice || item.product?.price || item.price || 0;
+            const name = item.product?.name || item.name || 'Product';
+            return (
+              <div key={item.id} className="flex justify-between py-2 border-b">
+                <div>
+                  <p className="font-medium">{name}</p>
+                  <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+                </div>
+                <p className="font-medium">${(price * item.quantity).toFixed(2)}</p>
               </div>
-              <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
+
+      {/* Error Message */}
+      {orderError && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+          <p className="font-medium">Error</p>
+          <p>{orderError}</p>
+        </div>
+      )}
 
       {/* Place Order Button */}
       <div className="flex justify-end">

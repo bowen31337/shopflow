@@ -5,6 +5,8 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Plus, Edit, Trash2, Folder } from 'lucide-react';
+import { useToast } from '../components/Toast';
+import { useConfirm } from '../components/ConfirmModal';
 import {
   Dialog,
   DialogContent,
@@ -14,6 +16,8 @@ import {
 } from '../components/ui/dialog';
 
 const AdminCategories = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -67,7 +71,12 @@ const AdminCategories = () => {
   };
 
   const handleDelete = async (categoryId) => {
-    if (confirm('Are you sure you want to delete this category?')) {
+    const confirmed = await confirm('Are you sure you want to delete this category?', {
+      title: 'Delete Category',
+      confirmText: 'Delete',
+      type: 'danger'
+    });
+    if (confirmed) {
       try {
         await adminApi.deleteCategory(categoryId);
         fetchCategories();

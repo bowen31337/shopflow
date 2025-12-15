@@ -1,7 +1,18 @@
+import { useEffect } from 'react';
 import useCartStore from '../stores/cartStore';
+import useAuthStore from '../stores/authStore';
 
 export default function CartDrawer({ isOpen, onClose, continueShopping }) {
-  const { items, wishlistItems, getTotal, removeFromCart, updateQuantity, saveForLater, moveToCart, removeFromWishlist, isLoading, error } = useCartStore();
+  const { items, wishlistItems, getTotal, removeFromCart, updateQuantity, saveForLater, moveToCart, removeFromWishlist, isLoading, error, clearCart, clearWishlist } = useCartStore();
+  const { user } = useAuthStore();
+
+  // Clear stale cart data if user is not authenticated but cart has items
+  useEffect(() => {
+    if (!user && (items.length > 0 || wishlistItems.length > 0)) {
+      clearCart();
+      clearWishlist();
+    }
+  }, [user, items.length, wishlistItems.length, clearCart, clearWishlist]);
 
   const handleRemove = async (itemId) => {
     try {
@@ -48,14 +59,14 @@ export default function CartDrawer({ isOpen, onClose, continueShopping }) {
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop - using very high z-index to ensure it covers everything */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
+        className="fixed inset-0 bg-black bg-opacity-50 z-[9998] transition-opacity"
         onClick={onClose}
       />
 
-      {/* Drawer */}
-      <div className="fixed top-0 right-0 w-full max-w-md h-full bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out">
+      {/* Drawer - using even higher z-index to be above backdrop */}
+      <div className="fixed top-0 right-0 w-full max-w-md h-full bg-white shadow-xl z-[9999] transform transition-transform duration-300 ease-in-out">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
@@ -87,7 +98,25 @@ export default function CartDrawer({ isOpen, onClose, continueShopping }) {
               </div>
             )}
 
-            {!isLoading && items.length === 0 && wishlistItems.length === 0 && (
+            {/* Show login prompt if not authenticated */}
+            {!isLoading && !user && (
+              <div className="text-center py-8">
+                <div className="text-6xl mb-4">🔒</div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Please log in</h3>
+                <p className="text-gray-600 mb-4">Log in to view and manage your cart</p>
+                <button
+                  onClick={() => {
+                    onClose();
+                    window.location.href = '/login';
+                  }}
+                  className="bg-primary text-white px-6 py-2 rounded-full hover:bg-green-600 transition"
+                >
+                  Log In
+                </button>
+              </div>
+            )}
+
+            {!isLoading && user && items.length === 0 && wishlistItems.length === 0 && (
               <div className="text-center py-8">
                 <div className="text-6xl mb-4">🛒</div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Your cart is empty</h3>
@@ -104,8 +133,8 @@ export default function CartDrawer({ isOpen, onClose, continueShopping }) {
               </div>
             )}
 
-            {/* Cart Items Section */}
-            {!isLoading && items.length > 0 && (
+            {/* Cart Items Section - only show if authenticated */}
+            {!isLoading && user && items.length > 0 && (
               <div className="mb-6">
                 <h3 className="text-md font-semibold mb-3">Your Cart</h3>
                 <div className="space-y-4">
@@ -185,8 +214,8 @@ export default function CartDrawer({ isOpen, onClose, continueShopping }) {
               </div>
             )}
 
-            {/* Saved for Later Section */}
-            {!isLoading && wishlistItems.length > 0 && (
+            {/* Saved for Later Section - only show if authenticated */}
+            {!isLoading && user && wishlistItems.length > 0 && (
               <div className="mb-6">
                 <h3 className="text-md font-semibold mb-3">Saved for Later</h3>
                 <div className="space-y-4">
@@ -239,16 +268,16 @@ export default function CartDrawer({ isOpen, onClose, continueShopping }) {
               </div>
             )}
 
-            {/* Empty Wishlist Message */}
-            {!isLoading && items.length > 0 && wishlistItems.length === 0 && (
+            {/* Empty Wishlist Message - only show if authenticated */}
+            {!isLoading && user && items.length > 0 && wishlistItems.length === 0 && (
               <div className="text-center py-4 text-gray-500 text-sm">
                 No items saved for later
               </div>
             )}
           </div>
 
-          {/* Footer */}
-          {!isLoading && items.length > 0 && (
+          {/* Footer - only show if authenticated and has items */}
+          {!isLoading && user && items.length > 0 && (
             <div className="border-t p-4">
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between text-gray-600">

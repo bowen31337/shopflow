@@ -102,9 +102,14 @@ app.use((err, req, res, next) => {
 });
 
 // Initialize database function (for serverless cold starts)
-export function initDB() {
+let dbInitialized = false;
+
+export async function initDB() {
+  if (dbInitialized) return true;
+  
   try {
-    initializeDatabase();
+    await initializeDatabase();
+    dbInitialized = true;
     return true;
   } catch (error) {
     console.error('Database initialization error:', error);
@@ -113,4 +118,3 @@ export function initDB() {
 }
 
 export default app;
-

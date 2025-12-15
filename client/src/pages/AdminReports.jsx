@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { adminApi } from '../api/admin';
 import { Download, Calendar, Clock, TrendingUp, DollarSign, BarChart3 } from 'lucide-react';
+import { useToast } from '../components/Toast';
 
 const AdminReports = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
 
   // Date range state
@@ -49,7 +51,7 @@ const AdminReports = () => {
 
   const fetchReportData = async () => {
     if (!startDate || !endDate) {
-      alert('Please select both start and end dates');
+      toast.warning('Please select both start and end dates');
       return;
     }
 
@@ -65,7 +67,7 @@ const AdminReports = () => {
       setDetailedData(data.revenueByDay || []);
     } catch (error) {
       console.error('Failed to fetch report data:', error);
-      alert('Failed to generate report. Please try again.');
+      toast.error('Failed to generate report. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -73,7 +75,7 @@ const AdminReports = () => {
 
   const exportToCSV = () => {
     if (!detailedData || detailedData.length === 0) {
-      alert('No data to export');
+      toast.warning('No data to export');
       return;
     }
 

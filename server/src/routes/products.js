@@ -14,7 +14,7 @@ router.get('/', [
   query('maxPrice').optional().isFloat({ min: 0 }),
   query('sort').optional().isIn(['price_asc', 'price_desc', 'name_asc', 'name_desc', 'newest', 'popular', 'rating']),
   query('search').optional()
-], (req, res) => {
+], async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
@@ -90,7 +90,8 @@ router.get('/', [
       LEFT JOIN brands b ON p.brand_id = b.id
       WHERE ${whereClause}
     `;
-    const { total } = db.prepare(countQuery).get(...params);
+    const countResult = await db.get(countQuery, ...params);
+    const total = countResult?.total || 0;
 
     // Get products
     const productsQuery = `
@@ -111,7 +112,7 @@ router.get('/', [
       LIMIT ? OFFSET ?
     `;
 
-    const products = db.prepare(productsQuery).all(...params, limit, offset);
+    const products = await db.all(productsQuery, ...params, limit, offset);
 
     res.json({
       products,
@@ -129,11 +130,11 @@ router.get('/', [
 });
 
 // Get featured products
-router.get('/featured', (req, res) => {
+router.get('/featured', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 8;
 
-    const products = db.prepare(`
+    const products = await db.all(`
       SELECT
         p.*,
         c.name as category_name,
@@ -147,7 +148,7 @@ router.get('/featured', (req, res) => {
       WHERE p.is_active = 1 AND p.is_featured = 1
       ORDER BY p.created_at DESC
       LIMIT ?
-    `).all(limit);
+    `, limit);
 
     res.json({ products });
   } catch (error) {
@@ -157,7 +158,7 @@ router.get('/featured', (req, res) => {
 });
 
 // Search products
-router.get('/search', (req, res) => {
+router.get('/search', async (req, res) => {
   try {
     const { q, limit = 10 } = req.query;
 
@@ -167,7 +168,7 @@ router.get('/search', (req, res) => {
 
     const searchTerm = `%${q}%`;
 
-    const products = db.prepare(`
+    const products = await db.all(`
       SELECT
         p.id,
         p.name,
@@ -178,7 +179,7 @@ router.get('/search', (req, res) => {
       WHERE p.is_active = 1
         AND (p.name LIKE ? OR p.description LIKE ?)
       LIMIT ?
-    `).all(searchTerm, searchTerm, parseInt(limit));
+    `, searchTerm, searchTerm, parseInt(limit));
 
     res.json({ products });
   } catch (error) {
@@ -187,12 +188,17 @@ router.get('/search', (req, res) => {
   }
 });
 
-// Get single product by slug
-router.get('/:slug', (req, res) => {
+// Get single product by slug or ID
+router.get('/:slugOrId', async (req, res) => {
   try {
-    const { slug } = req.params;
+    const { slugOrId } = req.params;
 
-    const product = db.prepare(`
+    // Check if the param is a number (ID) or a string (slug)
+    const isId = /^\d+$/.test(slugOrId);
+    const whereClause = isId ? 'p.id = ?' : 'p.slug = ?';
+    const paramValue = isId ? parseInt(slugOrId) : slugOrId;
+
+    const product = await db.get(`
       SELECT
         p.*,
         c.name as category_name,
@@ -204,30 +210,30 @@ router.get('/:slug', (req, res) => {
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
       LEFT JOIN brands b ON p.brand_id = b.id
-      WHERE p.slug = ? AND p.is_active = 1
-    `).get(slug);
+      WHERE ${whereClause} AND p.is_active = 1
+    `, paramValue);
 
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
 
     // Get product images
-    const images = db.prepare(`
+    const images = await db.all(`
       SELECT id, url, alt_text, position, is_primary
       FROM product_images
       WHERE product_id = ?
       ORDER BY position
-    `).all(product.id);
+    `, product.id);
 
     // Get product variants
-    const variants = db.prepare(`
+    const variants = await db.all(`
       SELECT id, name, value, price_adjustment, stock_quantity, sku
       FROM product_variants
       WHERE product_id = ?
-    `).all(product.id);
+    `, product.id);
 
     // Get related products (same category)
-    const relatedProducts = db.prepare(`
+    const relatedProducts = await db.all(`
       SELECT
         p.*,
         (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as primary_image
@@ -237,7 +243,7 @@ router.get('/:slug', (req, res) => {
         AND p.is_active = 1
       ORDER BY RANDOM()
       LIMIT 4
-    `).all(product.category_id, product.id);
+    `, product.category_id, product.id);
 
     res.json({
       product: {

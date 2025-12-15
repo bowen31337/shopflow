@@ -64,7 +64,7 @@ export async function fetchProductReviews(productId: number, options?: { rating?
     }
 
     const queryString = params.toString();
-    const url = `/products/${productId}/reviews${queryString ? `?${queryString}` : ''}`;
+    const url = `/api/products/${productId}/reviews${queryString ? `?${queryString}` : ''}`;
 
     const response = await api.get(url);
     return response;
@@ -85,7 +85,7 @@ export async function fetchProductReviews(productId: number, options?: { rating?
  */
 export async function submitProductReview(productId: number, reviewData: ReviewData): Promise<Review> {
   try {
-    const response = await api.post(`/products/${productId}/reviews`, reviewData);
+    const response = await api.post(`/api/products/${productId}/reviews`, reviewData);
     return response.review;
   } catch (error) {
     console.error('Error submitting review:', error);
@@ -101,7 +101,7 @@ export async function submitProductReview(productId: number, reviewData: ReviewD
  */
 export async function updateReview(reviewId: number, reviewData: Partial<ReviewData>): Promise<Review> {
   try {
-    const response = await api.put(`/reviews/${reviewId}`, reviewData);
+    const response = await api.put(`/api/reviews/${reviewId}`, reviewData);
     return response.review;
   } catch (error) {
     console.error('Error updating review:', error);
@@ -116,7 +116,7 @@ export async function updateReview(reviewId: number, reviewData: Partial<ReviewD
  */
 export async function deleteReview(reviewId: number): Promise<{ success: boolean; message: string }> {
   try {
-    const response = await api.delete(`/reviews/${reviewId}`);
+    const response = await api.delete(`/api/reviews/${reviewId}`);
     return response;
   } catch (error) {
     console.error('Error deleting review:', error);
@@ -131,7 +131,7 @@ export async function deleteReview(reviewId: number): Promise<{ success: boolean
  */
 export async function markReviewAsHelpful(reviewId: number): Promise<{ success: boolean; message: string; helpful_count: number }> {
   try {
-    const response = await api.post(`/reviews/${reviewId}/helpful`);
+    const response = await api.post(`/api/reviews/${reviewId}/helpful`);
     return response;
   } catch (error) {
     console.error('Error marking review as helpful:', error);

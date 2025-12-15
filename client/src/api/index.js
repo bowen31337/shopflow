@@ -2,8 +2,9 @@
 // This provides axios-like functionality using fetch
 
 class ApiClient {
-  constructor(baseURL = 'http://localhost:3001') {
-    this.baseURL = baseURL;
+  constructor(baseURL = '') {
+    // Use relative URLs in production, localhost in development
+    this.baseURL = import.meta.env.PROD ? '' : 'http://localhost:3001';
     this.headers = {
       'Content-Type': 'application/json',
     };

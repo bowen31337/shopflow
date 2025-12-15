@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../api/index.js';
 
 export default function CategoryNavigation() {
   const [categories, setCategories] = useState([]);
@@ -14,8 +15,7 @@ export default function CategoryNavigation() {
   const fetchCategories = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/categories');
-      const data = await response.json();
+      const data = await api.get('/api/categories');
       setCategories(data.categories || []);
     } catch (error) {
       console.error('Error fetching categories:', error);

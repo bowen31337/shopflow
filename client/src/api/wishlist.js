@@ -1,72 +1,22 @@
 // API functions for wishlist operations
+import api from './index.js';
 
 export async function fetchWishlist() {
-  const response = await fetch('/api/wishlist');
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch wishlist');
-  }
-
-  return response.json();
+  return api.get('/api/wishlist');
 }
 
 export async function addToWishlist(productId) {
-  const response = await fetch('/api/wishlist', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      product_id: productId
-    })
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to add to wishlist');
-  }
-
-  return response.json();
+  return api.post('/api/wishlist', { product_id: productId });
 }
 
 export async function removeFromWishlist(productId) {
-  const response = await fetch(`/api/wishlist/${productId}`, {
-    method: 'DELETE'
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to remove from wishlist');
-  }
-
-  return response.json();
+  return api.delete(`/api/wishlist/${productId}`);
 }
 
 export async function moveToCart(productId, quantity = 1) {
-  const response = await fetch(`/api/wishlist/${productId}/move-to-cart`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      quantity
-    })
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to move to cart');
-  }
-
-  return response.json();
+  return api.post(`/api/wishlist/${productId}/move-to-cart`, { quantity });
 }
 
 export async function getSharedWishlist(userId) {
-  const response = await fetch(`/api/wishlist/shared/${userId}`);
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch shared wishlist');
-  }
-
-  return response.json();
+  return api.get(`/api/wishlist/shared/${userId}`);
 }

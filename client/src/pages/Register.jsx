@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useToast } from '../components/Toast';
 import api from '../api';
 
 export default function Register() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -43,7 +45,7 @@ export default function Register() {
         navigate(`/verify-email/${response.verificationToken}`);
       } else {
         // Fallback: show verification message and redirect to login
-        alert('Registration successful! Please check your email for verification instructions.');
+        toast.success('Registration successful! Please check your email for verification instructions.');
         navigate('/login');
       }
     } catch (err) {
@@ -169,7 +171,7 @@ export default function Register() {
               <button
                 type="button"
                 className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                onClick={() => alert('Google registration not implemented yet')}
+                onClick={() => toast.info('Google registration not implemented yet')}
               >
                 <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
                   <path

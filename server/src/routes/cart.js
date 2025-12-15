@@ -6,11 +6,11 @@ import { authenticateToken } from '../middleware/auth.js';
 const router = express.Router();
 
 // Get user's cart
-router.get('/', authenticateToken, (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const cartItems = db.prepare(`
+    const cartItems = await db.all(`
       SELECT
         ci.*,
         p.id as product_id,
@@ -30,7 +30,7 @@ router.get('/', authenticateToken, (req, res) => {
       LEFT JOIN product_variants pv ON ci.variant_id = pv.id
       WHERE ci.user_id = ? AND p.is_active = 1
       ORDER BY ci.created_at DESC
-    `).all(userId);
+    `, userId);
 
     // Calculate totals
     const items = cartItems.map(item => {
@@ -81,17 +81,17 @@ router.post('/items', [
   body('productId').isInt({ min: 1 }),
   body('quantity').isInt({ min: 1, max: 99 }),
   body('variantId').optional().isInt({ min: 1 })
-], authenticateToken, (req, res) => {
+], authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
     const { productId, quantity, variantId } = req.body;
 
     // Check if product exists and is active
-    const product = db.prepare(`
+    const product = await db.get(`
       SELECT id, name, price, stock_quantity, is_active
       FROM products
       WHERE id = ? AND is_active = 1
-    `).get(productId);
+    `, productId);
 
     if (!product) {
       return res.status(404).json({ error: 'Product not found or unavailable' });
@@ -99,11 +99,11 @@ router.post('/items', [
 
     // Check if variant exists and belongs to product
     if (variantId) {
-      const variant = db.prepare(`
+      const variant = await db.get(`
         SELECT id, name, value, price_adjustment, stock_quantity
         FROM product_variants
         WHERE id = ? AND product_id = ?
-      `).get(variantId, productId);
+      `, variantId, productId);
 
       if (!variant) {
         return res.status(404).json({ error: 'Variant not found' });
@@ -121,199 +121,30 @@ router.post('/items', [
     }
 
     // Check if item already exists in cart
-    const existingItem = db.prepare(`
+    const existingItem = await db.get(`
       SELECT id, quantity
       FROM cart_items
       WHERE user_id = ? AND product_id = ? AND (variant_id = ? OR (variant_id IS NULL AND ? IS NULL))
-    `).get(userId, productId, variantId || null, variantId || null);
+    `, userId, productId, variantId || null, variantId || null);
 
     if (existingItem) {
       // Update existing item
       const newQuantity = Math.min(existingItem.quantity + quantity, 99);
-      db.prepare(`
+      await db.run(`
         UPDATE cart_items
         SET quantity = ?
         WHERE id = ?
-      `).run(newQuantity, existingItem.id);
-
-      // Fetch updated cart
-      const updatedCart = db.prepare(`
-        SELECT
-          ci.*,
-          p.id as product_id,
-          p.name as product_name,
-          p.slug as product_slug,
-          p.price as product_price,
-          p.stock_quantity as product_stock,
-          p.is_active as product_is_active,
-          (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as product_image,
-          pv.id as variant_id,
-          pv.name as variant_name,
-          pv.value as variant_value,
-          pv.price_adjustment,
-          pv.stock_quantity as variant_stock
-        FROM cart_items ci
-        JOIN products p ON ci.product_id = p.id
-        LEFT JOIN product_variants pv ON ci.variant_id = pv.id
-        WHERE ci.user_id = ?
-        ORDER BY ci.created_at DESC
-      `).all(userId);
-
-      const items = updatedCart.map(item => {
-        const adjustedPrice = item.price_adjustment
-          ? item.product_price + item.price_adjustment
-          : item.product_price;
-
-        return {
-          id: item.id,
-          productId: item.product_id,
-          variantId: item.variant_id,
-          quantity: item.quantity,
-          unitPrice: adjustedPrice,
-          totalPrice: adjustedPrice * item.quantity,
-          product: {
-            id: item.product_id,
-            name: item.product_name,
-            slug: item.product_slug,
-            price: item.product_price,
-            stockQuantity: item.product_stock,
-            isActive: item.product_is_active,
-            image: item.product_image
-          },
-          variant: item.variant_id ? {
-            id: item.variant_id,
-            name: item.variant_name,
-            value: item.variant_value,
-            adjustedPrice,
-            stockQuantity: item.variant_stock
-          } : null
-        };
-      });
-
-      const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
-
-      res.json({
-        message: 'Cart updated successfully',
-        items,
-        subtotal
-      });
+      `, newQuantity, existingItem.id);
     } else {
       // Add new item to cart
-      const result = db.prepare(`
+      await db.run(`
         INSERT INTO cart_items (user_id, product_id, variant_id, quantity)
         VALUES (?, ?, ?, ?)
-      `).run(userId, productId, variantId || null, quantity);
-
-      // Fetch updated cart
-      const updatedCart = db.prepare(`
-        SELECT
-          ci.*,
-          p.id as product_id,
-          p.name as product_name,
-          p.slug as product_slug,
-          p.price as product_price,
-          p.stock_quantity as product_stock,
-          p.is_active as product_is_active,
-          (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as product_image,
-          pv.id as variant_id,
-          pv.name as variant_name,
-          pv.value as variant_value,
-          pv.price_adjustment,
-          pv.stock_quantity as variant_stock
-        FROM cart_items ci
-        JOIN products p ON ci.product_id = p.id
-        LEFT JOIN product_variants pv ON ci.variant_id = pv.id
-        WHERE ci.user_id = ?
-        ORDER BY ci.created_at DESC
-      `).all(userId);
-
-      const items = updatedCart.map(item => {
-        const adjustedPrice = item.price_adjustment
-          ? item.product_price + item.price_adjustment
-          : item.product_price;
-
-        return {
-          id: item.id,
-          productId: item.product_id,
-          variantId: item.variant_id,
-          quantity: item.quantity,
-          unitPrice: adjustedPrice,
-          totalPrice: adjustedPrice * item.quantity,
-          product: {
-            id: item.product_id,
-            name: item.product_name,
-            slug: item.product_slug,
-            price: item.product_price,
-            stockQuantity: item.product_stock,
-            isActive: item.product_is_active,
-            image: item.product_image
-          },
-          variant: item.variant_id ? {
-            id: item.variant_id,
-            name: item.variant_name,
-            value: item.variant_value,
-            adjustedPrice,
-            stockQuantity: item.variant_stock
-          } : null
-        };
-      });
-
-      const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
-
-      res.status(201).json({
-        message: 'Item added to cart',
-        items,
-        subtotal
-      });
+      `, userId, productId, variantId || null, quantity);
     }
-  } catch (error) {
-    console.error('Error adding to cart:', error);
-    res.status(500).json({ error: 'Failed to add item to cart' });
-  }
-});
-
-// Update item quantity in cart
-router.put('/items/:id', [
-  body('quantity').isInt({ min: 1, max: 99 }),
-  param('id').isInt({ min: 1 })
-], authenticateToken, (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { id } = req.params;
-    const { quantity } = req.body;
-
-    // Check if cart item exists and belongs to user
-    const cartItem = db.prepare(`
-      SELECT ci.*, p.stock_quantity as product_stock, p.is_active
-      FROM cart_items ci
-      JOIN products p ON ci.product_id = p.id
-      WHERE ci.id = ? AND ci.user_id = ?
-    `).get(id, userId);
-
-    if (!cartItem) {
-      return res.status(404).json({ error: 'Cart item not found' });
-    }
-
-    if (!cartItem.is_active) {
-      return res.status(400).json({ error: 'Product is no longer available' });
-    }
-
-    // Check stock availability
-    if (cartItem.product_stock < quantity) {
-      return res.status(400).json({
-        error: `Insufficient stock. Only ${cartItem.product_stock} available.`
-      });
-    }
-
-    // Update quantity
-    db.prepare(`
-      UPDATE cart_items
-      SET quantity = ?
-      WHERE id = ?
-    `).run(quantity, id);
 
     // Fetch updated cart
-    const updatedCart = db.prepare(`
+    const updatedCart = await db.all(`
       SELECT
         ci.*,
         p.id as product_id,
@@ -333,7 +164,114 @@ router.put('/items/:id', [
       LEFT JOIN product_variants pv ON ci.variant_id = pv.id
       WHERE ci.user_id = ?
       ORDER BY ci.created_at DESC
-    `).all(userId);
+    `, userId);
+
+    const items = updatedCart.map(item => {
+      const adjustedPrice = item.price_adjustment
+        ? item.product_price + item.price_adjustment
+        : item.product_price;
+
+      return {
+        id: item.id,
+        productId: item.product_id,
+        variantId: item.variant_id,
+        quantity: item.quantity,
+        unitPrice: adjustedPrice,
+        totalPrice: adjustedPrice * item.quantity,
+        product: {
+          id: item.product_id,
+          name: item.product_name,
+          slug: item.product_slug,
+          price: item.product_price,
+          stockQuantity: item.product_stock,
+          isActive: item.product_is_active,
+          image: item.product_image
+        },
+        variant: item.variant_id ? {
+          id: item.variant_id,
+          name: item.variant_name,
+          value: item.variant_value,
+          adjustedPrice,
+          stockQuantity: item.variant_stock
+        } : null
+      };
+    });
+
+    const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
+
+    res.status(existingItem ? 200 : 201).json({
+      message: existingItem ? 'Cart updated successfully' : 'Item added to cart',
+      items,
+      subtotal
+    });
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    res.status(500).json({ error: 'Failed to add item to cart' });
+  }
+});
+
+// Update item quantity in cart
+router.put('/items/:id', [
+  body('quantity').isInt({ min: 1, max: 99 }),
+  param('id').isInt({ min: 1 })
+], authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { id } = req.params;
+    const { quantity } = req.body;
+
+    // Check if cart item exists and belongs to user
+    const cartItem = await db.get(`
+      SELECT ci.*, p.stock_quantity as product_stock, p.is_active
+      FROM cart_items ci
+      JOIN products p ON ci.product_id = p.id
+      WHERE ci.id = ? AND ci.user_id = ?
+    `, id, userId);
+
+    if (!cartItem) {
+      return res.status(404).json({ error: 'Cart item not found' });
+    }
+
+    if (!cartItem.is_active) {
+      return res.status(400).json({ error: 'Product is no longer available' });
+    }
+
+    // Check stock availability
+    if (cartItem.product_stock < quantity) {
+      return res.status(400).json({
+        error: `Insufficient stock. Only ${cartItem.product_stock} available.`
+      });
+    }
+
+    // Update quantity
+    await db.run(`
+      UPDATE cart_items
+      SET quantity = ?
+      WHERE id = ?
+    `, quantity, id);
+
+    // Fetch updated cart
+    const updatedCart = await db.all(`
+      SELECT
+        ci.*,
+        p.id as product_id,
+        p.name as product_name,
+        p.slug as product_slug,
+        p.price as product_price,
+        p.stock_quantity as product_stock,
+        p.is_active as product_is_active,
+        (SELECT url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as product_image,
+        pv.id as variant_id,
+        pv.name as variant_name,
+        pv.value as variant_value,
+        pv.price_adjustment,
+        pv.stock_quantity as variant_stock
+      FROM cart_items ci
+      JOIN products p ON ci.product_id = p.id
+      LEFT JOIN product_variants pv ON ci.variant_id = pv.id
+      WHERE ci.user_id = ?
+      ORDER BY ci.created_at DESC
+    `, userId);
 
     const items = updatedCart.map(item => {
       const adjustedPrice = item.price_adjustment
@@ -388,11 +326,11 @@ router.post('/promo-code', [
     const { code } = req.body;
 
     // Get promo code details
-    const promoCode = db.prepare(`
+    const promoCode = await db.get(`
       SELECT id, code, type, value, min_order_amount, max_uses, current_uses, start_date, end_date, is_active
       FROM promo_codes
       WHERE code = ? COLLATE NOCASE
-    `).get(code);
+    `, code);
 
     if (!promoCode) {
       return res.status(404).json({ error: 'Invalid promo code' });
@@ -423,7 +361,7 @@ router.post('/promo-code', [
     }
 
     // Get current cart subtotal
-    const cartItems = db.prepare(`
+    const cartItems = await db.all(`
       SELECT
         ci.quantity,
         p.price,
@@ -432,7 +370,7 @@ router.post('/promo-code', [
       JOIN products p ON ci.product_id = p.id
       LEFT JOIN product_variants pv ON ci.variant_id = pv.id
       WHERE ci.user_id = ? AND p.is_active = 1
-    `).all(userId);
+    `, userId);
 
     const subtotal = cartItems.reduce((sum, item) => {
       const adjustedPrice = item.price_adjustment ? item.price + item.price_adjustment : item.price;
@@ -454,15 +392,11 @@ router.post('/promo-code', [
     }
 
     // Update promo code usage
-    db.prepare(`
+    await db.run(`
       UPDATE promo_codes
       SET current_uses = current_uses + 1
       WHERE id = ?
-    `).run(promoCode.id);
-
-    // Store promo code in cart (we'll use a simple approach by adding to session storage)
-    // For simplicity, we'll just calculate the discount and include it in the response
-    // In a production app, you might want to store this in the database
+    `, promoCode.id);
 
     const tax = subtotal * 0.08; // 8% tax
     const shipping = subtotal >= 50 ? 0 : 9.99; // Free shipping over $50
@@ -494,8 +428,6 @@ router.post('/promo-code', [
 // Remove promo code from cart
 router.delete('/promo-code', authenticateToken, (req, res) => {
   try {
-    // For simplicity, we don't store promo code in database
-    // The frontend will just remove it from state
     res.json({
       message: 'Promo code removed',
       promoCode: null
@@ -507,11 +439,11 @@ router.delete('/promo-code', authenticateToken, (req, res) => {
 });
 
 // Get cart with totals including any applied promo codes
-router.get('/totals', authenticateToken, (req, res) => {
+router.get('/totals', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const cartItems = db.prepare(`
+    const cartItems = await db.all(`
       SELECT
         ci.quantity,
         p.price,
@@ -520,7 +452,7 @@ router.get('/totals', authenticateToken, (req, res) => {
       JOIN products p ON ci.product_id = p.id
       LEFT JOIN product_variants pv ON ci.variant_id = pv.id
       WHERE ci.user_id = ? AND p.is_active = 1
-    `).all(userId);
+    `, userId);
 
     const subtotal = cartItems.reduce((sum, item) => {
       const adjustedPrice = item.price_adjustment ? item.price + item.price_adjustment : item.price;
@@ -548,30 +480,30 @@ router.get('/totals', authenticateToken, (req, res) => {
 // Remove item from cart
 router.delete('/items/:id', [
   param('id').isInt({ min: 1 })
-], authenticateToken, (req, res) => {
+], authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
 
     // Check if cart item exists and belongs to user
-    const cartItem = db.prepare(`
+    const cartItem = await db.get(`
       SELECT id
       FROM cart_items
       WHERE id = ? AND user_id = ?
-    `).get(id, userId);
+    `, id, userId);
 
     if (!cartItem) {
       return res.status(404).json({ error: 'Cart item not found' });
     }
 
     // Remove item
-    db.prepare(`
+    await db.run(`
       DELETE FROM cart_items
       WHERE id = ?
-    `).run(id);
+    `, id);
 
     // Fetch updated cart
-    const updatedCart = db.prepare(`
+    const updatedCart = await db.all(`
       SELECT
         ci.*,
         p.id as product_id,
@@ -591,7 +523,7 @@ router.delete('/items/:id', [
       LEFT JOIN product_variants pv ON ci.variant_id = pv.id
       WHERE ci.user_id = ?
       ORDER BY ci.created_at DESC
-    `).all(userId);
+    `, userId);
 
     const items = updatedCart.map(item => {
       const adjustedPrice = item.price_adjustment

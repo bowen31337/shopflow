@@ -1,10 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
+import { useToast } from '../components/Toast';
+import { useConfirm } from '../components/ConfirmModal';
 import api from '../api';
 
 export default function OrderHistory() {
   const { isAuthenticated } = useAuthStore();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -22,14 +26,15 @@ export default function OrderHistory() {
       setLoading(true);
       setError('');
       const response = await api.get(`/api/orders?page=${pagination.page}&limit=${pagination.limit}`);
-      setOrders(response.data.orders);
+      // API returns data directly, not wrapped in .data
+      setOrders(response.orders || []);
       setPagination(prev => ({
         ...prev,
-        ...response.data.pagination
+        ...(response.pagination || {})
       }));
     } catch (err) {
       console.error('Error fetching orders:', err);
-      setError(err.response?.data?.message || 'Failed to fetch orders');
+      setError(err.response?.data?.message || err.message || 'Failed to fetch orders');
     } finally {
       setLoading(false);
     }
@@ -60,6 +65,26 @@ export default function OrderHistory() {
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
       setPagination(prev => ({ ...prev, page: newPage }));
+    }
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    const confirmed = await confirm('Are you sure you want to cancel this order?', {
+      title: 'Cancel Order',
+      confirmText: 'Yes, Cancel',
+      cancelText: 'No, Keep It',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
+
+    try {
+      await api.post(`/api/orders/${orderId}/cancel`);
+      toast.success('Order cancelled successfully');
+      // Refresh the orders list
+      fetchOrders();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to cancel order');
     }
   };
 
@@ -237,19 +262,4 @@ export default function OrderHistory() {
       )}
     </div>
   );
-}
-
-// Cancel order handler
-async function handleCancelOrder(orderId) {
-  if (!window.confirm('Are you sure you want to cancel this order?')) {
-    return;
-  }
-
-  try {
-    await api.post(`/api/orders/${orderId}/cancel`);
-    // Refresh the orders list
-    window.location.reload();
-  } catch (error) {
-    alert(error.response?.data?.message || 'Failed to cancel order');
-  }
 }

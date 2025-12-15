@@ -37,7 +37,7 @@ router.post('/register',
       const { email, password, name } = req.body;
 
       // Check if user already exists
-      const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+      const existingUser = await db.get('SELECT id FROM users WHERE email = ?', email);
       if (existingUser) {
         return res.status(400).json({ error: 'Email already registered' });
       }
@@ -53,10 +53,10 @@ router.post('/register',
       );
 
       // Insert user with email_verified = 0
-      const result = db.prepare(`
+      const result = await db.run(`
         INSERT INTO users (email, password_hash, name, role, email_verified)
         VALUES (?, ?, ?, 'customer', 0)
-      `).run(email, passwordHash, name);
+      `, email, passwordHash, name);
 
       const userId = result.lastInsertRowid;
 
@@ -90,7 +90,7 @@ router.post('/login',
       const { email, password, rememberMe } = req.body;
 
       // Get user
-      const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+      const user = await db.get('SELECT * FROM users WHERE email = ?', email);
       if (!user) {
         return res.status(401).json({ error: 'Invalid email or password' });
       }
@@ -174,7 +174,7 @@ router.post('/forgot-password',
       const { email } = req.body;
 
       // Check if user exists
-      const user = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+      const user = await db.get('SELECT id FROM users WHERE email = ?', email);
 
       // Always return success to prevent email enumeration
       res.json({
@@ -222,8 +222,8 @@ router.post('/reset-password',
       const passwordHash = await bcrypt.hash(newPassword, 10);
 
       // Update password
-      db.prepare('UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
-        .run(passwordHash, decoded.userId);
+      await db.run('UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        passwordHash, decoded.userId);
 
       res.json({ message: 'Password reset successful' });
     } catch (error) {
@@ -250,7 +250,7 @@ router.post('/change-password',
       const { currentPassword, newPassword } = req.body;
 
       // Get user with password
-      const user = db.prepare('SELECT password_hash FROM users WHERE id = ?').get(req.user.id);
+      const user = await db.get('SELECT password_hash FROM users WHERE id = ?', req.user.id);
 
       // Verify current password
       const validPassword = await bcrypt.compare(currentPassword, user.password_hash);
@@ -262,8 +262,8 @@ router.post('/change-password',
       const passwordHash = await bcrypt.hash(newPassword, 10);
 
       // Update password
-      db.prepare('UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
-        .run(passwordHash, req.user.id);
+      await db.run('UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        passwordHash, req.user.id);
 
       res.json({ message: 'Password changed successfully' });
     } catch (error) {
@@ -292,15 +292,15 @@ router.post('/google', async (req, res) => {
     };
 
     // Check if user already exists
-    let user = db.prepare('SELECT * FROM users WHERE email = ?').get(mockGoogleUser.email);
+    let user = await db.get('SELECT * FROM users WHERE email = ?', mockGoogleUser.email);
 
     if (!user) {
       // Create new user
       const passwordHash = await bcrypt.hash('GoogleOAuth123!', 10);
-      const result = db.prepare(`
+      const result = await db.run(`
         INSERT INTO users (email, password_hash, name, role, email_verified, avatar_url)
         VALUES (?, ?, ?, ?, ?, ?)
-      `).run(
+      `,
         mockGoogleUser.email,
         passwordHash,
         mockGoogleUser.name,
@@ -356,8 +356,8 @@ router.post('/verify-email',
       }
 
       // Update user's email verification status
-      const result = db.prepare('UPDATE users SET email_verified = 1, updated_at = CURRENT_TIMESTAMP WHERE email = ?')
-        .run(decoded.email);
+      const result = await db.run('UPDATE users SET email_verified = 1, updated_at = CURRENT_TIMESTAMP WHERE email = ?',
+        decoded.email);
 
       if (result.changes === 0) {
         return res.status(404).json({ error: 'User not found' });
@@ -384,7 +384,7 @@ router.post('/resend-verification',
       const { email } = req.body;
 
       // Find user
-      const user = db.prepare('SELECT id, email_verified FROM users WHERE email = ?').get(email);
+      const user = await db.get('SELECT id, email_verified FROM users WHERE email = ?', email);
 
       if (!user) {
         // Always return success to prevent email enumeration

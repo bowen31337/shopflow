@@ -2,6 +2,7 @@
   "version": 2,
   "buildCommand": "cd client && npm run build",
   "outputDirectory": "client/dist",
+  "installCommand": "cd server && npm install && cd ../client && npm install",
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -12,9 +13,6 @@
     "api/index.js": {
       "runtime": "nodejs18.x"
     }
-  },
-  "env": {
-    "NODE_ENV": "production"
   }
 }
 

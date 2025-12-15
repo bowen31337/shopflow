@@ -85,7 +85,16 @@ const useAuthStore = create(
       },
 
       // Logout action
-      logout: () => {
+      logout: async () => {
+        // Clear cart when logging out
+        try {
+          const useCartStore = (await import('../stores/cartStore.js')).default;
+          useCartStore.getState().clearCart();
+          useCartStore.getState().clearWishlist();
+        } catch (error) {
+          console.error('Error clearing cart on logout:', error);
+        }
+        
         set({ user: null, token: null, error: null });
         api.setAuthToken(null);
       },
@@ -136,7 +145,13 @@ const useAuthStore = create(
       partialize: (state) => ({
         user: state.user,
         token: state.token
-      })
+      }),
+      onRehydrateStorage: () => (state) => {
+        // Set the auth token on the API client when state is rehydrated from storage
+        if (state?.token) {
+          api.setAuthToken(state.token);
+        }
+      }
     }
   )
 );

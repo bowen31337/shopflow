@@ -6,6 +6,7 @@ import CartDrawer from './CartDrawer';
 import CategoryNavigation from './CategoryNavigation';
 import Autocomplete from './Autocomplete';
 import SearchHistory from './SearchHistory';
+import api from '../api/index.js';
 
 export default function Header() {
   // Initialize state from storage (lazy initialization avoids useEffect for simple reads)
@@ -40,8 +41,7 @@ export default function Header() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('/api/categories');
-        const data = await response.json();
+        const data = await api.get('/api/categories');
         setCategories(data.categories || []);
       } catch (error) {
         console.error('Error fetching categories:', error);

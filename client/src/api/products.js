@@ -1,4 +1,5 @@
 // API functions for products
+import api from './index.js';
 
 export async function fetchProducts(params = {}) {
   const queryParams = new URLSearchParams();
@@ -13,31 +14,13 @@ export async function fetchProducts(params = {}) {
   if (params.search) queryParams.append('search', params.search);
 
   const url = `/api/products${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch products');
-  }
-
-  return response.json();
+  return api.get(url);
 }
 
 export async function fetchFeaturedProducts() {
-  const response = await fetch('/api/products/featured');
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch featured products');
-  }
-
-  return response.json();
+  return api.get('/api/products/featured');
 }
 
 export async function fetchProductBySlug(slug) {
-  const response = await fetch(`/api/products/${slug}`);
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch product');
-  }
-
-  return response.json();
+  return api.get(`/api/products/${slug}`);
 }

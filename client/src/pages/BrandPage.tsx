@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import ProductCard from '../components/ProductCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
@@ -26,14 +26,14 @@ const BrandPage: React.FC = () => {
         setError('');
 
         // Fetch brand details
-        const brandResponse = await axios.get(`http://localhost:3001/api/brands/${slug}`);
-        setBrand(brandResponse.data.brand);
+        const brandResponse = await api.get(`/api/brands/${slug}`);
+        setBrand(brandResponse.brand);
 
         // Fetch products for this brand
-        const productsResponse = await axios.get(
-          `http://localhost:3001/api/products?brand=${slug}&sort=${filters.sortBy}`
+        const productsResponse = await api.get(
+          `/api/products?brand=${slug}&sort=${filters.sortBy}`
         );
-        setProducts(productsResponse.data.products);
+        setProducts(productsResponse.products);
 
       } catch (error) {
         console.error('Error fetching brand data:', error);
@@ -62,8 +62,8 @@ const BrandPage: React.FC = () => {
         if (filters.minPrice) params.append('minPrice', filters.minPrice);
         if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
 
-        const response = await axios.get(`http://localhost:3001/api/products?${params.toString()}`);
-        setProducts(response.data.products);
+        const response = await api.get(`/api/products?${params.toString()}`);
+        setProducts(response.products);
       } catch (error) {
         console.error('Error filtering products:', error);
       }

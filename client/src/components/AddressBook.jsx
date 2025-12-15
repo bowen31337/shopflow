@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
+import { useToast } from './Toast';
+import { useConfirm } from './ConfirmModal';
 import AddressForm from './AddressForm';
 
 export default function AddressBook() {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [addresses, setAddresses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -18,7 +22,7 @@ export default function AddressBook() {
     try {
       setIsLoading(true);
       const response = await api.get('/api/user/addresses');
-      setAddresses(response.data.addresses);
+      setAddresses(response.addresses || []);
       setError('');
     } catch (error) {
       console.error('Error fetching addresses:', error);
@@ -41,9 +45,12 @@ export default function AddressBook() {
   };
 
   const handleDeleteAddress = async (addressId) => {
-    if (!window.confirm('Are you sure you want to delete this address?')) {
-      return;
-    }
+    const confirmed = await confirm('Are you sure you want to delete this address?', {
+      title: 'Delete Address',
+      confirmText: 'Delete',
+      type: 'danger'
+    });
+    if (!confirmed) return;
 
     try {
       await api.delete(`/api/user/addresses/${addressId}`);
@@ -59,8 +66,18 @@ export default function AddressBook() {
 
   const handleSetDefault = async (addressId) => {
     try {
+      const address = addresses.find(addr => addr.id === addressId);
       await api.put(`/api/user/addresses/${addressId}`, {
-        ...addresses.find(addr => addr.id === addressId),
+        label: address.label,
+        firstName: address.first_name,
+        lastName: address.last_name,
+        streetAddress: address.street_address,
+        apartment: address.apartment,
+        city: address.city,
+        state: address.state,
+        postalCode: address.postal_code,
+        country: address.country,
+        phone: address.phone,
         isDefault: true
       });
 

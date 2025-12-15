@@ -78,7 +78,6 @@ router.get('/address-autocomplete', (req, res) => {
     }
 
     // Mock address suggestions for demo purposes
-    // In a real application, this would integrate with a geocoding service like Google Places
     const mockAddresses = [
       {
         id: 'addr_1',
@@ -106,69 +105,6 @@ router.get('/address-autocomplete', (req, res) => {
         postal_code: '60601',
         country: 'United States',
         formatted_address: '789 Pine Road, Chicago, IL 60601, United States'
-      },
-      {
-        id: 'addr_4',
-        street_address: '101 Maple Drive',
-        city: 'Houston',
-        state: 'TX',
-        postal_code: '77001',
-        country: 'United States',
-        formatted_address: '101 Maple Drive, Houston, TX 77001, United States'
-      },
-      {
-        id: 'addr_5',
-        street_address: '202 Elm Street',
-        city: 'Phoenix',
-        state: 'AZ',
-        postal_code: '85001',
-        country: 'United States',
-        formatted_address: '202 Elm Street, Phoenix, AZ 85001, United States'
-      },
-      {
-        id: 'addr_6',
-        street_address: '303 Cedar Lane',
-        city: 'Philadelphia',
-        state: 'PA',
-        postal_code: '19101',
-        country: 'United States',
-        formatted_address: '303 Cedar Lane, Philadelphia, PA 19101, United States'
-      },
-      {
-        id: 'addr_7',
-        street_address: '404 Birch Boulevard',
-        city: 'San Antonio',
-        state: 'TX',
-        postal_code: '78201',
-        country: 'United States',
-        formatted_address: '404 Birch Boulevard, San Antonio, TX 78201, United States'
-      },
-      {
-        id: 'addr_8',
-        street_address: '505 Walnut Way',
-        city: 'San Diego',
-        state: 'CA',
-        postal_code: '92101',
-        country: 'United States',
-        formatted_address: '505 Walnut Way, San Diego, CA 92101, United States'
-      },
-      {
-        id: 'addr_9',
-        street_address: '606 Spruce Street',
-        city: 'Dallas',
-        state: 'TX',
-        postal_code: '75201',
-        country: 'United States',
-        formatted_address: '606 Spruce Street, Dallas, TX 75201, United States'
-      },
-      {
-        id: 'addr_10',
-        street_address: '707 Ash Avenue',
-        city: 'San Jose',
-        state: 'CA',
-        postal_code: '95101',
-        country: 'United States',
-        formatted_address: '707 Ash Avenue, San Jose, CA 95101, United States'
       }
     ];
 
@@ -178,7 +114,7 @@ router.get('/address-autocomplete', (req, res) => {
       addr.street_address.toLowerCase().includes(searchQuery) ||
       addr.city.toLowerCase().includes(searchQuery) ||
       addr.formatted_address.toLowerCase().includes(searchQuery)
-    ).slice(0, 5); // Limit to 5 suggestions
+    ).slice(0, 5);
 
     res.json({
       success: true,
@@ -344,10 +280,10 @@ router.post('/complete', authenticateToken, async (req, res) => {
       order_number: orderNumber,
       status: 'pending',
       shipping_address: JSON.stringify(shippingAddress),
-      billing_address: JSON.stringify(shippingAddress), // Same as shipping for now
-      subtotal: items.reduce((total, item) => total + (item.price * item.quantity), 0),
+      billing_address: JSON.stringify(shippingAddress),
+      subtotal: items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
       shipping_cost: shippingMethod.cost || 0,
-      tax: items.reduce((total, item) => total + (item.price * item.quantity), 0) * 0.08,
+      tax: items.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 0.08,
       discount: 0,
       total: total,
       payment_method: paymentMethod,
@@ -359,13 +295,13 @@ router.post('/complete', authenticateToken, async (req, res) => {
       updated_at: new Date().toISOString()
     };
 
-    const result = db.prepare(`
+    const result = await db.run(`
       INSERT INTO orders (
         user_id, order_number, status, shipping_address, billing_address,
         subtotal, shipping_cost, tax, discount, total, payment_method,
         payment_status, shipping_method, tracking_number, notes, created_at, updated_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
+    `,
       orderData.user_id,
       orderData.order_number,
       orderData.status,
@@ -403,11 +339,11 @@ router.post('/complete', authenticateToken, async (req, res) => {
         })
       };
 
-      db.prepare(`
+      await db.run(`
         INSERT INTO order_items (
           order_id, product_id, variant_id, quantity, unit_price, total_price, product_snapshot
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
-      `).run(
+      `,
         orderItemData.order_id,
         orderItemData.product_id,
         orderItemData.variant_id,
@@ -420,10 +356,9 @@ router.post('/complete', authenticateToken, async (req, res) => {
 
     // Clear user's cart
     try {
-      db.prepare('DELETE FROM cart_items WHERE user_id = ?').run(req.user.id);
+      await db.run('DELETE FROM cart_items WHERE user_id = ?', req.user.id);
     } catch (error) {
       console.error('Error clearing cart:', error);
-      // Don't fail the order if cart clearing fails
     }
 
     // Return successful response

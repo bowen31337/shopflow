@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3001;
 async function startServer() {
   try {
     console.log('Initializing database...');
-    initDB();
+    await initDB();
 
     console.log('Seeding database...');
     await seedDatabase();

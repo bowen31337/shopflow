@@ -24,7 +24,7 @@ router.get('/', authenticateToken, async (req, res) => {
     const userId = req.user.id;
 
     // Get wishlist items with product details
-    const wishlistItems = db.prepare(`
+    const wishlistItems = await db.all(`
       SELECT
         w.id,
         w.user_id,
@@ -47,7 +47,7 @@ router.get('/', authenticateToken, async (req, res) => {
       LEFT JOIN brands b ON p.brand_id = b.id
       WHERE w.user_id = ? AND p.is_active = 1
       ORDER BY w.created_at DESC
-    `).all(userId);
+    `, userId);
 
     // Format the response
     const formattedItems = wishlistItems.map(item => ({
@@ -95,7 +95,7 @@ router.post('/', authenticateToken, [
     const { product_id } = req.body;
 
     // Check if product exists and is active
-    const product = db.prepare('SELECT id, is_active FROM products WHERE id = ?').get(product_id);
+    const product = await db.get('SELECT id, is_active FROM products WHERE id = ?', product_id);
     if (!product) {
       return res.status(404).json({
         success: false,
@@ -111,7 +111,7 @@ router.post('/', authenticateToken, [
     }
 
     // Check if already in wishlist
-    const existing = db.prepare('SELECT id FROM wishlist WHERE user_id = ? AND product_id = ?').get(userId, product_id);
+    const existing = await db.get('SELECT id FROM wishlist WHERE user_id = ? AND product_id = ?', userId, product_id);
     if (existing) {
       return res.status(400).json({
         success: false,
@@ -120,7 +120,7 @@ router.post('/', authenticateToken, [
     }
 
     // Add to wishlist
-    const result = db.prepare('INSERT INTO wishlist (user_id, product_id) VALUES (?, ?)').run(userId, product_id);
+    const result = await db.run('INSERT INTO wishlist (user_id, product_id) VALUES (?, ?)', userId, product_id);
 
     res.status(201).json({
       success: true,
@@ -157,7 +157,7 @@ router.delete('/:productId', authenticateToken, async (req, res) => {
     }
 
     // Check if wishlist item exists
-    const wishlistItem = db.prepare('SELECT id FROM wishlist WHERE user_id = ? AND product_id = ?').get(userId, parseInt(productId));
+    const wishlistItem = await db.get('SELECT id FROM wishlist WHERE user_id = ? AND product_id = ?', userId, parseInt(productId));
     if (!wishlistItem) {
       return res.status(404).json({
         success: false,
@@ -166,7 +166,7 @@ router.delete('/:productId', authenticateToken, async (req, res) => {
     }
 
     // Remove from wishlist
-    db.prepare('DELETE FROM wishlist WHERE user_id = ? AND product_id = ?').run(userId, parseInt(productId));
+    await db.run('DELETE FROM wishlist WHERE user_id = ? AND product_id = ?', userId, parseInt(productId));
 
     res.json({
       success: true,
@@ -203,7 +203,7 @@ router.post('/:productId/move-to-cart', authenticateToken, [
     }
 
     // Check if product exists and is active
-    const product = db.prepare('SELECT id, is_active, stock_quantity FROM products WHERE id = ?').get(parseInt(productId));
+    const product = await db.get('SELECT id, is_active, stock_quantity FROM products WHERE id = ?', parseInt(productId));
     if (!product) {
       return res.status(404).json({
         success: false,
@@ -226,19 +226,19 @@ router.post('/:productId/move-to-cart', authenticateToken, [
     }
 
     // Check if already in cart
-    const existingCart = db.prepare('SELECT id, quantity FROM cart_items WHERE user_id = ? AND product_id = ?').get(userId, parseInt(productId));
+    const existingCart = await db.get('SELECT id, quantity FROM cart_items WHERE user_id = ? AND product_id = ?', userId, parseInt(productId));
 
     if (existingCart) {
       // Update existing cart item
       const newQuantity = Math.min(existingCart.quantity + quantity, product.stock_quantity);
-      db.prepare('UPDATE cart_items SET quantity = ? WHERE id = ?').run(newQuantity, existingCart.id);
+      await db.run('UPDATE cart_items SET quantity = ? WHERE id = ?', newQuantity, existingCart.id);
     } else {
       // Add new cart item
-      db.prepare('INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)').run(userId, parseInt(productId), quantity);
+      await db.run('INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)', userId, parseInt(productId), quantity);
     }
 
     // Remove from wishlist
-    db.prepare('DELETE FROM wishlist WHERE user_id = ? AND product_id = ?').run(userId, parseInt(productId));
+    await db.run('DELETE FROM wishlist WHERE user_id = ? AND product_id = ?', userId, parseInt(productId));
 
     res.json({
       success: true,
@@ -260,7 +260,7 @@ router.get('/shared/:userId', async (req, res) => {
     const { userId } = req.params;
 
     // Get wishlist items for the specified user (no authentication required)
-    const wishlistItems = db.prepare(`
+    const wishlistItems = await db.all(`
       SELECT
         w.id,
         w.product_id,
@@ -282,7 +282,7 @@ router.get('/shared/:userId', async (req, res) => {
       LEFT JOIN brands b ON p.brand_id = b.id
       WHERE w.user_id = ? AND p.is_active = 1
       ORDER BY w.created_at DESC
-    `).all(parseInt(userId));
+    `, parseInt(userId));
 
     // Format the response
     const formattedItems = wishlistItems.map(item => ({

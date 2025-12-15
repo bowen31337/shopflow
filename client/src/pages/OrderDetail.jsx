@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 import useCartStore from '../stores/cartStore';
+import { useToast } from '../components/Toast';
+import { useConfirm } from '../components/ConfirmModal';
 import api from '../api';
 
 export default function OrderDetail() {
@@ -9,6 +11,8 @@ export default function OrderDetail() {
   const { isAuthenticated } = useAuthStore();
   const { reorderItems } = useCartStore();
   const navigate = useNavigate();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -20,10 +24,11 @@ export default function OrderDetail() {
       setLoading(true);
       setError('');
       const response = await api.get(`/api/orders/${id}`);
-      setOrder(response.data.order);
+      // API returns data directly, not wrapped in .data
+      setOrder(response.order);
     } catch (err) {
       console.error('Error fetching order details:', err);
-      setError(err.response?.data?.message || 'Failed to fetch order details');
+      setError(err.response?.data?.message || err.message || 'Failed to fetch order details');
     } finally {
       setLoading(false);
     }
@@ -133,30 +138,41 @@ export default function OrderDetail() {
   };
 
   const handleCancelOrder = async () => {
-    if (!window.confirm('Are you sure you want to cancel this order?')) {
-      return;
-    }
+    const confirmed = await confirm('Are you sure you want to cancel this order?', {
+      title: 'Cancel Order',
+      confirmText: 'Yes, Cancel',
+      cancelText: 'No, Keep It',
+      type: 'danger'
+    });
+
+    if (!confirmed) return;
 
     try {
       await api.post(`/api/orders/${id}/cancel`);
+      toast.success('Order cancelled successfully');
       // Refresh order details
       fetchOrderDetails();
     } catch (error) {
-      alert(error.response?.data?.message || 'Failed to cancel order');
+      toast.error(error.response?.data?.message || 'Failed to cancel order');
     }
   };
 
   const handleReorder = async () => {
-    if (!window.confirm('Add all items from this order to your cart?')) {
-      return;
-    }
+    const confirmed = await confirm('Add all items from this order to your cart?', {
+      title: 'Reorder Items',
+      confirmText: 'Yes, Add to Cart',
+      cancelText: 'Cancel',
+      type: 'info'
+    });
+
+    if (!confirmed) return;
 
     try {
       await reorderItems(id);
-      alert('Items added to cart successfully!');
+      toast.success('Items added to cart successfully!');
       navigate('/cart');
     } catch (error) {
-      alert(error.message || 'Failed to reorder items');
+      toast.error(error.message || 'Failed to reorder items');
     }
   };
 

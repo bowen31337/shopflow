@@ -5,6 +5,7 @@ import ProductCard from '../components/ProductCard';
 import RecentlyViewedProducts from '../components/RecentlyViewedProducts';
 import Pagination from '../components/Pagination';
 import PriceRangeSlider from '../components/PriceRangeSlider';
+import api from '../api/index.js';
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -85,32 +86,23 @@ export default function Products() {
   const loadFilters = async () => {
     try {
       // Load categories
-      const categoriesResponse = await fetch('/api/categories');
-      if (categoriesResponse.ok) {
-        const categoriesData = await categoriesResponse.json();
-        setCategories(categoriesData.categories || []);
-      }
+      const categoriesData = await api.get('/api/categories');
+      setCategories(categoriesData.categories || []);
 
       // Load brands
-      const brandsResponse = await fetch('/api/brands');
-      if (brandsResponse.ok) {
-        const brandsData = await brandsResponse.json();
-        setBrands(brandsData.brands || []);
-      }
+      const brandsData = await api.get('/api/brands');
+      setBrands(brandsData.brands || []);
 
       // Load price limits
-      const productsResponse = await fetch('/api/products?limit=1000');
-      if (productsResponse.ok) {
-        const productsData = await productsResponse.json();
-        const productsList = productsData.products || [];
-        if (productsList.length > 0) {
-          const minPrice = Math.floor(Math.min(...productsList.map(p => p.price)));
-          const maxPrice = Math.ceil(Math.max(...productsList.map(p => p.price)));
-          setPriceLimits({
-            min: Math.floor(minPrice * 0.9),
-            max: Math.ceil(maxPrice * 1.1)
-          });
-        }
+      const productsData = await api.get('/api/products?limit=1000');
+      const productsList = productsData.products || [];
+      if (productsList.length > 0) {
+        const minPrice = Math.floor(Math.min(...productsList.map(p => p.price)));
+        const maxPrice = Math.ceil(Math.max(...productsList.map(p => p.price)));
+        setPriceLimits({
+          min: Math.floor(minPrice * 0.9),
+          max: Math.ceil(maxPrice * 1.1)
+        });
       }
     } catch (err) {
       console.error('Failed to load filters:', err);

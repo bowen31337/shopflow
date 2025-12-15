@@ -69,9 +69,9 @@ export default function AddressForm({ address, onSuccess, onCancel }) {
     setIsFetchingSuggestions(true);
     try {
       const response = await api.get(`/api/checkout/address-autocomplete?query=${encodeURIComponent(query)}`);
-      if (response.data.success) {
-        setAddressSuggestions(response.data.suggestions);
-        setShowSuggestions(response.data.suggestions.length > 0);
+      if (response.success) {
+        setAddressSuggestions(response.suggestions || []);
+        setShowSuggestions((response.suggestions || []).length > 0);
       }
     } catch (error) {
       console.error('Error fetching address suggestions:', error);
@@ -189,16 +189,18 @@ export default function AddressForm({ address, onSuccess, onCancel }) {
       if (address) {
         // Update existing address
         const response = await api.put(`/api/user/addresses/${address.id}`, formData);
-        onSuccess(response.data.message);
+        onSuccess(response.message || 'Address updated successfully');
       } else {
         // Add new address
         const response = await api.post('/api/user/addresses', formData);
-        onSuccess(response.data.message);
+        onSuccess(response.message || 'Address added successfully');
       }
     } catch (error) {
       console.error('Error saving address:', error);
       if (error.response?.data?.error) {
         setErrors({ submit: error.response.data.error });
+      } else if (error.message) {
+        setErrors({ submit: error.message });
       } else {
         setErrors({ submit: 'Failed to save address. Please try again.' });
       }

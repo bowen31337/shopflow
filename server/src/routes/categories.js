@@ -4,16 +4,16 @@ import db from '../database.js';
 const router = express.Router();
 
 // Get all categories
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const categories = db.prepare(`
+    const categories = await db.all(`
       SELECT
         c.*,
         (SELECT COUNT(*) FROM products WHERE category_id = c.id AND is_active = 1) as product_count
       FROM categories c
       WHERE c.is_active = 1
       ORDER BY c.position, c.name
-    `).all();
+    `);
 
     // Build hierarchical structure
     const categoryMap = {};
@@ -41,23 +41,23 @@ router.get('/', (req, res) => {
 });
 
 // Get category by slug
-router.get('/:slug', (req, res) => {
+router.get('/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
 
-    const category = db.prepare(`
+    const category = await db.get(`
       SELECT * FROM categories WHERE slug = ? AND is_active = 1
-    `).get(slug);
+    `, slug);
 
     if (!category) {
       return res.status(404).json({ error: 'Category not found' });
     }
 
     // Get subcategories
-    const subcategories = db.prepare(`
+    const subcategories = await db.all(`
       SELECT * FROM categories WHERE parent_id = ? AND is_active = 1
       ORDER BY position, name
-    `).all(category.id);
+    `, category.id);
 
     res.json({
       category: {
@@ -72,27 +72,28 @@ router.get('/:slug', (req, res) => {
 });
 
 // Get products by category slug
-router.get('/:slug/products', (req, res) => {
+router.get('/:slug/products', async (req, res) => {
   try {
     const { slug } = req.params;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
     const offset = (page - 1) * limit;
 
-    const category = db.prepare('SELECT id FROM categories WHERE slug = ?').get(slug);
+    const category = await db.get('SELECT id FROM categories WHERE slug = ?', slug);
 
     if (!category) {
       return res.status(404).json({ error: 'Category not found' });
     }
 
     // Get total count
-    const { total } = db.prepare(`
+    const countResult = await db.get(`
       SELECT COUNT(*) as total FROM products
       WHERE category_id = ? AND is_active = 1
-    `).get(category.id);
+    `, category.id);
+    const total = countResult?.total || 0;
 
     // Get products
-    const products = db.prepare(`
+    const products = await db.all(`
       SELECT
         p.*,
         b.name as brand_name,
@@ -104,7 +105,7 @@ router.get('/:slug/products', (req, res) => {
       WHERE p.category_id = ? AND p.is_active = 1
       ORDER BY p.created_at DESC
       LIMIT ? OFFSET ?
-    `).all(category.id, limit, offset);
+    `, category.id, limit, offset);
 
     res.json({
       products,

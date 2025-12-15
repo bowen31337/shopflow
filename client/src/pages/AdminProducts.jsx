@@ -2,9 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../api/admin';
 import { Search, Plus, Edit, Trash2, Eye, Image as ImageIcon } from 'lucide-react';
+import { useToast } from '../components/Toast';
+import { useConfirm } from '../components/ConfirmModal';
 
 const AdminProducts = () => {
   const navigate = useNavigate();
+  const toast = useToast();
+  const confirm = useConfirm();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -50,7 +54,12 @@ const AdminProducts = () => {
   }, []);
 
   const handleDelete = async (productId) => {
-    if (confirm('Are you sure you want to delete this product?')) {
+    const confirmed = await confirm('Are you sure you want to delete this product?', {
+      title: 'Delete Product',
+      confirmText: 'Delete',
+      type: 'danger'
+    });
+    if (confirmed) {
       try {
         await adminApi.deleteProduct(productId);
         fetchProducts();

@@ -6,6 +6,7 @@ import { fetchProductReviews, submitProductReview, updateReview, deleteReview } 
 import useCartStore from '../stores/cartStore';
 import useAuthStore from '../stores/authStore';
 import useRecentlyViewedStore from '../stores/recentlyViewedStore';
+import { useToast } from '../components/Toast';
 import RecentlyViewedProducts from '../components/RecentlyViewedProducts';
 
 // TypeScript interfaces
@@ -88,6 +89,7 @@ interface ReviewFormData {
 
 export default function ProductDetail() {
   const { slug } = useParams();
+  const toast = useToast();
   const [product, setProduct] = useState<Product | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState<boolean>(false);
@@ -250,7 +252,7 @@ export default function ProductDetail() {
         ));
 
         setIsEditingReview(null);
-        alert('Review updated successfully!');
+        toast.success('Review updated successfully!');
       } else {
         // Create new review
         result = await submitProductReview(product.id, {
@@ -261,7 +263,7 @@ export default function ProductDetail() {
 
         // Add the new review to the list
         setReviews(prev => [result, ...prev]);
-        alert('Thank you for your review!');
+        toast.success('Thank you for your review!');
       }
 
       setIsReviewFormOpen(false);
@@ -326,7 +328,7 @@ export default function ProductDetail() {
 
       setIsEditingReview(null);
       setReviewForm({ rating: 0, title: '', content: '' });
-      alert('Review updated successfully!');
+      toast.success('Review updated successfully!');
     } catch (error) {
       console.error('Error updating review:', error);
       if (error?.response?.data?.message) {
@@ -351,7 +353,7 @@ export default function ProductDetail() {
 
       // Remove the review from the list
       setReviews(prev => prev.filter(review => review.id !== reviewId));
-      alert('Review deleted successfully!');
+      toast.success('Review deleted successfully!');
 
       // Reset edit state if the deleted review was being edited
       if (isEditingReview === reviewId) {
@@ -387,16 +389,16 @@ export default function ProductDetail() {
 
       if (isInWishlistCheck) {
         await removeFromWishlist(product.id);
-        alert(`Removed ${product.name} from wishlist!`);
+        toast.success(`Removed ${product.name} from wishlist`);
       } else {
         await addToWishlist(product.id);
-        alert(`Added ${product.name} to wishlist!`);
+        toast.success(`Added ${product.name} to wishlist`);
       }
 
       // Refresh wishlist data
       await fetchWishlist();
     } catch (error: any) {
-      alert(`Error updating wishlist: ${error.message}`);
+      toast.error(`Error updating wishlist: ${error.message}`);
     } finally {
       setIsWishlistLoading(false);
     }
@@ -677,7 +679,7 @@ export default function ProductDetail() {
                       const missingVariants = requiredVariantGroups.filter(group => !selectedVariants[group]);
 
                       if (missingVariants.length > 0) {
-                        alert(`Please select ${missingVariants.join(', ')}`);
+                        toast.warning(`Please select ${missingVariants.join(', ')}`);
                         return;
                       }
 
@@ -692,9 +694,9 @@ export default function ProductDetail() {
                       }
 
                       await addToCart(product.id, quantity, selectedVariant?.id);
-                      alert(`Added ${quantity} ${product.name}(s) to cart!`);
-                    } catch (error) {
-                      alert(`Error adding to cart: ${error.message}`);
+                      toast.success(`Added ${quantity} ${product.name}(s) to cart!`);
+                    } catch (error: any) {
+                      toast.error(`Error adding to cart: ${error.message}`);
                     }
                   }}
                 >

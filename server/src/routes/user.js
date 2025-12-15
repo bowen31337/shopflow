@@ -1,4 +1,5 @@
 import express from 'express';
+import bcrypt from 'bcryptjs';
 import { body, param } from 'express-validator';
 import db from '../database.js';
 import { authenticateToken } from '../middleware/auth.js';
@@ -6,15 +7,15 @@ import { authenticateToken } from '../middleware/auth.js';
 const router = express.Router();
 
 // Get user profile
-router.get('/profile', authenticateToken, (req, res) => {
+router.get('/profile', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const user = db.prepare(`
+    const user = await db.get(`
       SELECT id, email, name, phone, avatar_url, role, created_at, updated_at
       FROM users
       WHERE id = ?
-    `).get(userId);
+    `, userId);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -52,39 +53,39 @@ router.put('/profile', [
     .optional()
     .isEmail()
     .withMessage('Please provide a valid email address')
-], authenticateToken, (req, res) => {
+], authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
     const { name, phone, email } = req.body;
 
     // Check if email is already taken by another user
     if (email) {
-      const existingUser = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(email, userId);
+      const existingUser = await db.get('SELECT id FROM users WHERE email = ? AND id != ?', email, userId);
       if (existingUser) {
         return res.status(400).json({ error: 'Email is already taken' });
       }
     }
 
     // Update user
-    const result = db.prepare(`
+    const result = await db.run(`
       UPDATE users
       SET name = COALESCE(?, name),
           phone = COALESCE(?, phone),
           email = COALESCE(?, email),
           updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `).run(name || null, phone || null, email || null, userId);
+    `, name || null, phone || null, email || null, userId);
 
     if (result.changes === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     // Return updated user
-    const updatedUser = db.prepare(`
+    const updatedUser = await db.get(`
       SELECT id, email, name, phone, avatar_url, role, created_at, updated_at
       FROM users
       WHERE id = ?
-    `).get(userId);
+    `, userId);
 
     res.json({
       message: 'Profile updated successfully',
@@ -113,22 +114,20 @@ router.post('/change-password', [
   body('newPassword')
     .isLength({ min: 6 })
     .withMessage('New password must be at least 6 characters long')
-], authenticateToken, (req, res) => {
+], authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
     const { currentPassword, newPassword } = req.body;
 
-    const bcrypt = require('bcryptjs');
-
     // Get current user
-    const user = db.prepare('SELECT id, email, password_hash FROM users WHERE id = ?').get(userId);
+    const user = await db.get('SELECT id, email, password_hash FROM users WHERE id = ?', userId);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     // Verify current password
-    const isMatch = bcrypt.compareSync(currentPassword, user.password_hash);
+    const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
 
     if (!isMatch) {
       return res.status(400).json({ error: 'Current password is incorrect' });
@@ -136,11 +135,11 @@ router.post('/change-password', [
 
     // Hash new password
     const saltRounds = 12;
-    const hashedPassword = bcrypt.hashSync(newPassword, saltRounds);
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
     // Update password
-    db.prepare('UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
-      .run(hashedPassword, userId);
+    await db.run('UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      hashedPassword, userId);
 
     res.json({ message: 'Password changed successfully' });
   } catch (error) {
@@ -150,16 +149,16 @@ router.post('/change-password', [
 });
 
 // Get user addresses
-router.get('/addresses', authenticateToken, (req, res) => {
+router.get('/addresses', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const addresses = db.prepare(`
+    const addresses = await db.all(`
       SELECT id, user_id, label, first_name, last_name, street_address, apartment, city, state, postal_code, country, phone, is_default
       FROM addresses
       WHERE user_id = ?
       ORDER BY is_default DESC, created_at DESC
-    `).all(userId);
+    `, userId);
 
     res.json({ addresses });
   } catch (error) {
@@ -179,7 +178,7 @@ router.post('/addresses', [
   body('postalCode').isLength({ min: 3 }).withMessage('Postal code must be at least 3 characters'),
   body('country').isLength({ min: 2 }).withMessage('Country must be at least 2 characters'),
   body('phone').isMobilePhone().withMessage('Please provide a valid phone number')
-], authenticateToken, (req, res) => {
+], authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
     const {
@@ -188,21 +187,21 @@ router.post('/addresses', [
 
     // If setting as default, unset other defaults
     if (isDefault) {
-      db.prepare('UPDATE addresses SET is_default = 0 WHERE user_id = ?').run(userId);
+      await db.run('UPDATE addresses SET is_default = 0 WHERE user_id = ?', userId);
     }
 
     // Insert new address
-    const result = db.prepare(`
+    const result = await db.run(`
       INSERT INTO addresses (user_id, label, first_name, last_name, street_address, apartment, city, state, postal_code, country, phone, is_default)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(userId, label, firstName, lastName, streetAddress, apartment || null, city, state, postalCode, country, phone, isDefault ? 1 : 0);
+    `, userId, label, firstName, lastName, streetAddress, apartment || null, city, state, postalCode, country, phone, isDefault ? 1 : 0);
 
     // Return new address
-    const newAddress = db.prepare(`
+    const newAddress = await db.get(`
       SELECT id, user_id, label, first_name, last_name, street_address, apartment, city, state, postal_code, country, phone, is_default
       FROM addresses
       WHERE id = ?
-    `).get(result.lastInsertRowid);
+    `, result.lastInsertRowid);
 
     res.status(201).json({
       message: 'Address added successfully',
@@ -225,7 +224,7 @@ router.put('/addresses/:id', [
   body('postalCode').optional().isLength({ min: 3 }),
   body('country').optional().isLength({ min: 2 }),
   body('phone').optional().isMobilePhone()
-], authenticateToken, (req, res) => {
+], authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
@@ -234,7 +233,7 @@ router.put('/addresses/:id', [
     } = req.body;
 
     // Check if address belongs to user
-    const address = db.prepare('SELECT id, user_id FROM addresses WHERE id = ? AND user_id = ?').get(id, userId);
+    const address = await db.get('SELECT id, user_id FROM addresses WHERE id = ? AND user_id = ?', id, userId);
 
     if (!address) {
       return res.status(404).json({ error: 'Address not found' });
@@ -242,11 +241,11 @@ router.put('/addresses/:id', [
 
     // If setting as default, unset other defaults
     if (isDefault) {
-      db.prepare('UPDATE addresses SET is_default = 0 WHERE user_id = ?').run(userId);
+      await db.run('UPDATE addresses SET is_default = 0 WHERE user_id = ?', userId);
     }
 
     // Update address
-    db.prepare(`
+    await db.run(`
       UPDATE addresses
       SET label = COALESCE(?, label),
           first_name = COALESCE(?, first_name),
@@ -260,18 +259,18 @@ router.put('/addresses/:id', [
           phone = COALESCE(?, phone),
           is_default = ?
       WHERE id = ?
-    `).run(
+    `,
       label || null, firstName || null, lastName || null, streetAddress || null,
       apartment || null, city || null, state || null, postalCode || null,
       country || null, phone || null, isDefault ? 1 : 0, id
     );
 
     // Return updated address
-    const updatedAddress = db.prepare(`
+    const updatedAddress = await db.get(`
       SELECT id, user_id, label, first_name, last_name, street_address, apartment, city, state, postal_code, country, phone, is_default
       FROM addresses
       WHERE id = ?
-    `).get(id);
+    `, id);
 
     res.json({
       message: 'Address updated successfully',
@@ -284,20 +283,20 @@ router.put('/addresses/:id', [
 });
 
 // Delete address
-router.delete('/addresses/:id', authenticateToken, (req, res) => {
+router.delete('/addresses/:id', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
 
     // Check if address belongs to user
-    const address = db.prepare('SELECT id, user_id FROM addresses WHERE id = ? AND user_id = ?').get(id, userId);
+    const address = await db.get('SELECT id, user_id FROM addresses WHERE id = ? AND user_id = ?', id, userId);
 
     if (!address) {
       return res.status(404).json({ error: 'Address not found' });
     }
 
     // Delete address
-    db.prepare('DELETE FROM addresses WHERE id = ?').run(id);
+    await db.run('DELETE FROM addresses WHERE id = ?', id);
 
     res.json({ message: 'Address deleted successfully' });
   } catch (error) {
