@@ -3,50 +3,47 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Determine database URL
-const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
-const dbUrl = process.env.TURSO_DATABASE_URL;
+// Lazy-initialized database client
+let client = null;
+let clientError = null;
 
-if (isProduction && !dbUrl) {
-  console.error('========================================');
-  console.error('ERROR: TURSO_DATABASE_URL is not set!');
-  console.error('========================================');
-  console.error('In production/Vercel, you must configure:');
-  console.error('  - TURSO_DATABASE_URL: Your Turso database URL');
-  console.error('  - TURSO_AUTH_TOKEN: Your Turso auth token');
-  console.error('');
-  console.error('To set up Turso:');
-  console.error('  1. Create account at https://turso.tech');
-  console.error('  2. Create a database: turso db create shopflow');
-  console.error('  3. Get URL: turso db show shopflow --url');
-  console.error('  4. Get token: turso db tokens create shopflow');
-  console.error('  5. Add these as environment variables in Vercel');
-  console.error('========================================');
-}
-
-// Create Turso client - in production without config, this will fail
-let client;
-const finalUrl = dbUrl || "file:./database/shopflow.db";
-
-try {
+function getDbClient() {
+  if (clientError) throw clientError;
+  if (client) return client;
+  
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+  const dbUrl = process.env.TURSO_DATABASE_URL;
+  
+  if (isProduction && !dbUrl) {
+    clientError = new Error('TURSO_DATABASE_URL environment variable is required in production. Get one at https://turso.tech');
+    throw clientError;
+  }
+  
+  const finalUrl = dbUrl || "file:./database/shopflow.db";
+  
   console.log('Attempting to connect to database...');
   console.log('Database URL type:', finalUrl?.startsWith('libsql://') ? 'Turso remote' : finalUrl?.startsWith('file:') ? 'Local file' : 'Unknown');
+  console.log('URL (masked):', finalUrl?.substring(0, 20) + '...' + (finalUrl?.length > 30 ? finalUrl.slice(-10) : ''));
   
-  client = createClient({
-    url: finalUrl,
-    authToken: process.env.TURSO_AUTH_TOKEN
-  });
-  console.log('Database client created successfully');
-} catch (error) {
-  console.error('Failed to create database client:', error.message);
-  console.error('URL used (masked):', finalUrl?.substring(0, 20) + '...');
-  throw new Error(`Database initialization failed: ${error.message}. URL format should be 'libsql://your-db.turso.io' for Turso or 'file:./path/to/db' for local.`);
+  try {
+    client = createClient({
+      url: finalUrl,
+      authToken: process.env.TURSO_AUTH_TOKEN
+    });
+    console.log('Database client created successfully');
+    return client;
+  } catch (error) {
+    console.error('Failed to create database client:', error.message);
+    clientError = new Error(`Database initialization failed: ${error.message}. URL format should be 'libsql://your-db.turso.io' for Turso or 'file:./path/to/db' for local.`);
+    throw clientError;
+  }
 }
 
 // Database wrapper that provides a similar API to better-sqlite3 but async
+// Uses lazy initialization via getDbClient()
 class Database {
-  constructor(client) {
-    this.client = client;
+  get client() {
+    return getDbClient();
   }
 
   // Execute a single SQL statement and return all rows
@@ -101,7 +98,7 @@ class Database {
   }
 }
 
-const db = new Database(client);
+const db = new Database();
 
 // Initialize database schema
 export async function initializeDatabase() {
