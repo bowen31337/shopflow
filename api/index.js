@@ -30,15 +30,18 @@ export default async function handler(req, res) {
   await initialize();
   
   if (initError) {
+    const tursoUrl = process.env.TURSO_DATABASE_URL || '';
     return res.status(500).json({
       error: 'Server initialization failed',
       message: initError.message,
       stack: initError.stack,
-      hint: 'Make sure TURSO_DATABASE_URL and TURSO_AUTH_TOKEN environment variables are set in Vercel',
+      hint: 'TURSO_DATABASE_URL should be in format: libsql://your-database-name.turso.io',
       env: {
         hasTursoUrl: !!process.env.TURSO_DATABASE_URL,
         hasTursoToken: !!process.env.TURSO_AUTH_TOKEN,
-        nodeEnv: process.env.NODE_ENV
+        nodeEnv: process.env.NODE_ENV,
+        tursoUrlFormat: tursoUrl ? `${tursoUrl.substring(0, 15)}...${tursoUrl.slice(-10)}` : 'not set',
+        tursoUrlLength: tursoUrl.length
       }
     });
   }

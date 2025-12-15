@@ -26,14 +26,21 @@ if (isProduction && !dbUrl) {
 
 // Create Turso client - in production without config, this will fail
 let client;
+const finalUrl = dbUrl || "file:./database/shopflow.db";
+
 try {
+  console.log('Attempting to connect to database...');
+  console.log('Database URL type:', finalUrl?.startsWith('libsql://') ? 'Turso remote' : finalUrl?.startsWith('file:') ? 'Local file' : 'Unknown');
+  
   client = createClient({
-    url: dbUrl || "file:./database/shopflow.db",
+    url: finalUrl,
     authToken: process.env.TURSO_AUTH_TOKEN
   });
+  console.log('Database client created successfully');
 } catch (error) {
   console.error('Failed to create database client:', error.message);
-  throw new Error(`Database initialization failed: ${error.message}. Make sure TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are set in production.`);
+  console.error('URL used (masked):', finalUrl?.substring(0, 20) + '...');
+  throw new Error(`Database initialization failed: ${error.message}. URL format should be 'libsql://your-db.turso.io' for Turso or 'file:./path/to/db' for local.`);
 }
 
 // Database wrapper that provides a similar API to better-sqlite3 but async
