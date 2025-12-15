@@ -1,6 +1,7 @@
 // Vercel serverless function handler
 // This minimal file re-exports the Express app from server/src/app.js
 // All business logic is in server/src/ - this is just a Vercel adapter
+// Build timestamp: 2025-12-15T07:10
 
 let app = null;
 let initDB = null;
