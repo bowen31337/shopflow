@@ -56,6 +56,27 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Database debug endpoint
+app.get('/api/debug/db', async (req, res) => {
+  try {
+    const db = (await import('./database.js')).default;
+    const result = await db.all('SELECT COUNT(*) as count FROM categories');
+    const tursoUrl = process.env.TURSO_DATABASE_URL || 'not set';
+    res.json({
+      status: 'connected',
+      categoryCount: result[0]?.count || 0,
+      dbUrl: tursoUrl.substring(0, 20) + '...',
+      hasToken: !!process.env.TURSO_AUTH_TOKEN
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: error.message,
+      stack: error.stack
+    });
+  }
+});
+
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({

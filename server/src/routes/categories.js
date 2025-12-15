@@ -6,6 +6,7 @@ const router = express.Router();
 // Get all categories
 router.get('/', async (req, res) => {
   try {
+    console.log('Fetching categories...');
     const categories = await db.all(`
       SELECT
         c.*,
@@ -14,6 +15,7 @@ router.get('/', async (req, res) => {
       WHERE c.is_active = 1
       ORDER BY c.position, c.name
     `);
+    console.log('Categories fetched:', categories?.length || 0);
 
     // Build hierarchical structure
     const categoryMap = {};
@@ -35,8 +37,13 @@ router.get('/', async (req, res) => {
 
     res.json({ categories: rootCategories });
   } catch (error) {
-    console.error('Error fetching categories:', error);
-    res.status(500).json({ error: 'Failed to fetch categories' });
+    console.error('Error fetching categories:', error.message);
+    console.error('Stack:', error.stack);
+    res.status(500).json({ 
+      error: 'Failed to fetch categories',
+      message: error.message,
+      hint: 'Database query failed'
+    });
   }
 });
 
