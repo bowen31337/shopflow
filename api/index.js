@@ -33,6 +33,7 @@ export default async function handler(req, res) {
   if (initError) {
     const tursoUrl = process.env.TURSO_DATABASE_URL || '';
     return res.status(500).json({
+      version: 'v2-lazy-init',
       error: 'Server initialization failed',
       message: initError.message,
       stack: initError.stack,
