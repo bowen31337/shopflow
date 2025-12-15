@@ -3,11 +3,38 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Create Turso client
-const client = createClient({
-  url: process.env.TURSO_DATABASE_URL || "file:./database/shopflow.db",
-  authToken: process.env.TURSO_AUTH_TOKEN
-});
+// Determine database URL
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+const dbUrl = process.env.TURSO_DATABASE_URL;
+
+if (isProduction && !dbUrl) {
+  console.error('========================================');
+  console.error('ERROR: TURSO_DATABASE_URL is not set!');
+  console.error('========================================');
+  console.error('In production/Vercel, you must configure:');
+  console.error('  - TURSO_DATABASE_URL: Your Turso database URL');
+  console.error('  - TURSO_AUTH_TOKEN: Your Turso auth token');
+  console.error('');
+  console.error('To set up Turso:');
+  console.error('  1. Create account at https://turso.tech');
+  console.error('  2. Create a database: turso db create shopflow');
+  console.error('  3. Get URL: turso db show shopflow --url');
+  console.error('  4. Get token: turso db tokens create shopflow');
+  console.error('  5. Add these as environment variables in Vercel');
+  console.error('========================================');
+}
+
+// Create Turso client - in production without config, this will fail
+let client;
+try {
+  client = createClient({
+    url: dbUrl || "file:./database/shopflow.db",
+    authToken: process.env.TURSO_AUTH_TOKEN
+  });
+} catch (error) {
+  console.error('Failed to create database client:', error.message);
+  throw new Error(`Database initialization failed: ${error.message}. Make sure TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are set in production.`);
+}
 
 // Database wrapper that provides a similar API to better-sqlite3 but async
 class Database {
