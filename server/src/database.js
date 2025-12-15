@@ -5,7 +5,7 @@ dotenv.config();
 
 // Create Turso client
 const client = createClient({
-  url: process.env.TURSO_DATABASE_URL || "file:../database/shopflow.db",
+  url: process.env.TURSO_DATABASE_URL || "file:./database/shopflow.db",
   authToken: process.env.TURSO_AUTH_TOKEN
 });
 
